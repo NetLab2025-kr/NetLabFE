@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>제출 내역</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .top-nav {
+        text-align: left;
+        margin: 20px;
+    }
+    .top-nav a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+    }
+  
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    ul#submissionList {
+      list-style: none;
+      padding: 0;
+    }
+    ul#submissionList li {
+      background-color: #f1f1f1;
+      margin-bottom: 10px;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+    <div class="top-nav">
+        <a href="../index.html">← 관리자 홈으로</a>
+    </div>
+  <div class="container">
+    <h1>제출 내역</h1>
+    <ul id="submissionList"></ul>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    $.ajax({
+      url: 'http://localhost:8080/api/admin/submissions',
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      success: function (res) {
+        const list = $('#submissionList');
+        res.forEach(s => {
+          list.append(`<li>사용자: ${s.userId}, 문제 ID: ${s.problemId}, 결과: ${s.result}</li>`);
+        });
+      },
+      error: function (xhr) {
+        alert("제출 내역 조회 실패: " + xhr.responseText);
+      }
+    });
+  </script>
+</body>
+</html>

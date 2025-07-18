@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>NetLab</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .navbar {
+      background-color: #333;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+    }
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+    .welcome {
+      color: white;
+    }
+    .container {
+      text-align: center;
+      margin-top: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="welcome">NetLab 시스템</div>
+    <div id="nav-links">
+      <!-- 동적으로 채움 -->
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>NetLab에 오신 걸 환영합니다</h1>
+    <p>네트워크 실습을 효율적으로 관리하고 평가하세요.</p>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      const token = localStorage.getItem('token');
+      const nav = $('#nav-links');
+  
+      if (token) {
+        $.ajax({
+          url: "http://localhost:8080/api/auth/is-admin",  // 실제 백엔드 주소로 변경
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          success: function (isAdmin) {
+            if (isAdmin) {
+              nav.append('<a href="admin/index.html">관리자 메뉴</a>');
+            }
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          },
+          error: function () {
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          }
+        });
+      } else {
+        nav.append('<a href="./login/login.html">로그인</a>');
+        nav.append('<a href="./login/signUp.html">회원가입</a>');
+      }
+  
+      $(document).on('click', '#logoutBtn', function () {
+        localStorage.removeItem('token');
+        alert('로그아웃 되었습니다');
+        location.reload();
+      });
+    });
+  </script>
+  
+</body>
+</html>

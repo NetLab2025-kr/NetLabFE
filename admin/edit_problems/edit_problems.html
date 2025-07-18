@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>문제 수정</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="top-nav">
+        <a href="../index.html">← 관리자 홈으로</a>
+    </div>
+  <div class="container">
+    <h1>문제 수정</h1>
+    <textarea id="editJson" placeholder="문제 ID와 수정할 JSON을 입력하세요."></textarea>
+    <button id="editBtn">수정하기</button>
+  </div>
+
+  <script>
+    const exampleJson = {
+      "id": "4",
+      "title": "IP 설정 문제",
+      "description": "PC 2대에 각각 IP 주소를 설정하세요. PC1은 192.168.1.2, PC2는 192.168.1.3이어야 합니다.",
+      "expectedCommandsJson": "{\"pc1\": [\"ip address 192.168.1.2 255.255.255.0\"], \"pc2\": [\"ip address 192.168.1.3 255.255.255.0\"]}",
+      "requiredDevicesJson": "{\"pc\": 2}",
+      "difficulty": "EASY",
+      "tags": "ip,pc"
+    };
+  
+    // 🔧 수정된 부분
+    $('#editJson').val(JSON.stringify(exampleJson, null, 2));
+  
+    $('#editBtn').click(function () {
+      const token = localStorage.getItem('token');
+      if (!token) return alert('로그인이 필요합니다');
+  
+      let raw = $('#editJson').val();
+      let json;
+      try {
+        json = JSON.parse(raw);
+      } catch (e) {
+        return alert("유효한 JSON 형식이 아닙니다");
+      }
+      const id = json.id;
+      delete json.id;
+  
+      $.ajax({
+        url: `http://localhost:8080/api/admin/problems/${id}`,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(json),
+        headers: {
+          'Authorization': 'Bearer ' + token
+        },
+        success: function () {
+          alert("문제 수정 성공");
+        },
+        error: function (xhr) {
+          alert("수정 실패: " + xhr.responseText);
+        }
+      });
+    });
+  </script>
+  </body>
+</html>
+

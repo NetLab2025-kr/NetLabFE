@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>문제 삭제 - NetLab</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="top-nav">
+        <a href="../index.html">← 관리자 홈으로</a>
+    </div>
+  <div class="container">
+    <h2>문제 삭제</h2>
+    <input type="number" id="problemId" placeholder="삭제할 문제 ID 입력" />
+    <button onclick="deleteProblem()">삭제하기</button>
+  </div>
+
+  <script>
+    function deleteProblem() {
+      const id = $('#problemId').val();
+      const token = localStorage.getItem('token');
+
+      if (!id) {
+        alert('문제 ID를 입력해주세요.');
+        return;
+      }
+
+      $.ajax({
+        url: `http://localhost:8080/api/admin/problems/${id}`,
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        success: function () {
+          alert('삭제 성공!');
+        },
+        error: function () {
+          alert('삭제 실패.');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

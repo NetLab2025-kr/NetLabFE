@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>문제 등록</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+  <div class="top-nav">
+    <a href="../index.html">← 관리자 홈으로</a>
+  </div>
+  
+  <div class="container">
+    <h1>문제 등록</h1>
+    <textarea id="problemJson" placeholder='문제 정보를 JSON 형식으로 입력하세요.'></textarea>
+    <button id="submitBtn">등록하기</button>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    let token = localStorage.getItem('token');
+    const exampleJson = {
+      "title": "IP 설정 문제",
+      "description": "PC 2대에 각각 IP 주소를 설정하세요. PC1은 192.168.1.2, PC2는 192.168.1.3이어야 합니다.",
+      "expectedCommandsJson": "{\"pc1\": [\"ip address 192.168.1.2 255.255.255.0\"], \"pc2\": [\"ip address 192.168.1.3 255.255.255.0\"]}",
+      "requiredDevicesJson": "{\"pc\": 2}",
+      "difficulty": "EASY",
+      "tags": "ip,pc"
+    };
+
+
+    
+$('#problemJson').val(JSON.stringify(exampleJson, null, 2));
+
+    console.log(token)
+    $('#submitBtn').click(function () {
+      
+      if (!token) return alert("로그인이 필요합니다");
+
+      let jsonText = $('#problemJson').val();
+      let problemData;
+
+      try {
+        problemData = JSON.parse(jsonText);
+      } catch (e) {
+        return alert("유효한 JSON 형식이 아닙니다.");
+      }
+
+      $.ajax({
+        url: 'http://localhost:8080/api/admin/problems',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(problemData),
+        headers: {
+          'Authorization': 'Bearer ' + token
+        },
+        success: function () {
+          alert("문제 등록 성공!");
+          $('#problemJson').val('');
+        },
+        error: function (xhr) {
+          alert("문제 등록 실패: " + xhr.responseText);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
