@@ -5,11 +5,96 @@
   <title>문제 수정</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #2b94d4;
+      width: 100%;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .navbar .welcome {
+      margin-right: auto;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 120px auto 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 300px;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-family: monospace;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-    <div class="top-nav">
-        <a href="../index.html">← 관리자 홈으로</a>
-    </div>
+
+  <div class="navbar">
+    <div class="welcome"><a href="../index.html" style="color: white; text-decoration: none;">← 관리자 홈</a></div>
+    <div id="nav-links"></div>
+  </div>
+
   <div class="container">
     <h1>문제 수정</h1>
     <textarea id="editJson" placeholder="문제 ID와 수정할 JSON을 입력하세요."></textarea>
@@ -26,14 +111,15 @@
       "difficulty": "EASY",
       "tags": "ip,pc"
     };
-  
-    // 🔧 수정된 부분
+
+    // 예제 자동 삽입
     $('#editJson').val(JSON.stringify(exampleJson, null, 2));
-  
+
+    // 수정 요청
     $('#editBtn').click(function () {
       const token = localStorage.getItem('token');
       if (!token) return alert('로그인이 필요합니다');
-  
+
       let raw = $('#editJson').val();
       let json;
       try {
@@ -41,9 +127,10 @@
       } catch (e) {
         return alert("유효한 JSON 형식이 아닙니다");
       }
+
       const id = json.id;
       delete json.id;
-  
+
       $.ajax({
         url: `http://localhost:8080/api/admin/problems/${id}`,
         method: 'PUT',
@@ -60,7 +147,41 @@
         }
       });
     });
-  </script>
-  </body>
-</html>
 
+    // 로그인/로그아웃 네비게이션 처리
+    $(document).ready(function () {
+      const token = localStorage.getItem('token');
+      const nav = $('#nav-links');
+
+      if (token) {
+        $.ajax({
+          url: "http://localhost:8080/api/auth/is-admin",
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          success: function (isAdmin) {
+            if (isAdmin) {
+              nav.append('<a href="../../index.html">홈</a>');
+            }
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          },
+          error: function () {
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          }
+        });
+      } else {
+        nav.append('<a href="../../login/login.html">로그인</a>');
+        nav.append('<a href="../../login/signUp.html">회원가입</a>');
+      }
+
+      $(document).on('click', '#logoutBtn', function () {
+        localStorage.removeItem('token');
+        alert('로그아웃 되었습니다');
+        location.href = '../../index.html';
+      });
+    }); 
+  </script>
+
+</body>
+</html>

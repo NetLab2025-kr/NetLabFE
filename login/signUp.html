@@ -5,20 +5,69 @@
   <title>NetLab 회원가입</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: sans-serif;
+      margin: 0;
+      background: #f0f0f0;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #2b94d4;
+      width: 100%;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .navbar .welcome {
+      margin-right: auto;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    .main {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: #f0f0f0;
     }
+
     .signup-box {
+      margin-top: 80px;
       background: white;
-      padding: 30px;
+      padding: 40px;
       border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 400px;
     }
+
+    .signup-box h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
     input {
       display: block;
       width: 100%;
@@ -26,44 +75,83 @@
       margin-top: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      font-size: 15px;
     }
+
     button {
       margin-top: 20px;
-      padding: 10px;
+      padding: 12px;
       width: 100%;
       background: #2196F3;
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
     }
+
     button:hover {
       background: #1976D2;
     }
   </style>
 </head>
 <body>
-  <div class="signup-box">
-    <h2>회원가입</h2>
-    <input type="text" id="userId" placeholder="id">
-    <input type="password" id="password" placeholder="비밀번호">
-    <input type="text" id="name" placeholder="닉네임">
-    <button onclick="signUp()">가입하기</button>
+
+  <div class="navbar">
+    <div class="welcome"><a href="../index.html" style="color: white; text-decoration: none;">NetLab</a></div>
+    <div id="nav-links"></div>
+  </div>
+
+  <div class="main">
+    <div class="signup-box">
+      <h2>회원가입</h2>
+      <input type="text" id="userId" placeholder="아이디">
+      <input type="password" id="password" placeholder="비밀번호">
+      <input type="text" id="name" placeholder="닉네임">
+      <button onclick="signUp()">가입하기</button>
+    </div>
   </div>
 
   <script>
+    // 상단바 구성
+    $(document).ready(function () {
+      const token = localStorage.getItem('token');
+      const nav = $('#nav-links');
+
+      if (token) {
+        nav.append('<a href="../index.html">홈</a>');
+        nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+      } else {
+        nav.append('<a href="../index.html">홈</a>');
+        nav.append('<a href="./login.html">로그인</a>');
+      }
+
+      $(document).on('click', '#logoutBtn', function () {
+        localStorage.removeItem('token');
+        alert('로그아웃 되었습니다');
+        location.href = '../index.html';
+      });
+    });
+
+    // 회원가입 처리
     function signUp() {
       const userId = $('#userId').val();
       const password = $('#password').val();
       const name = $('#name').val();
-      
+
+      if (!userId || !password || !name) {
+        alert('모든 항목을 입력해주세요.');
+        return;
+      }
+
       $.ajax({
-        url: 'http://localhost:8080/api/auth/signup', // 실제 회원가입 API 주소로 변경
+        url: 'http://localhost:8080/api/auth/signup',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({ userId, password, name }),
         success: function(response) {
-          alert('회원가입 성공! 로그인 페이지로 이동합  니다.');
+          alert('회원가입 성공! 로그인 페이지로 이동합니다.');
           window.location.href = 'login.html';
         },
         error: function(xhr) {
@@ -72,5 +160,6 @@
       });
     }
   </script>
+
 </body>
 </html>

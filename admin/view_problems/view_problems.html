@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,22 +5,84 @@
   <title>문제 목록</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
-    .top-nav {
-        text-align: left;
-        margin: 20px;
+    * {
+      box-sizing: border-box;
     }
-    .top-nav a {
-        text-decoration: none;
-        color: #333;
-        font-weight: bold;
+
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
     }
-  
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #2b94d4;
+      width: 100%;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .navbar .welcome {
+      margin-right: auto;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 120px auto 0 auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #problemList {
+      list-style: none;
+      padding: 0;
+    }
+
+    #problemList li {
+      background-color: #f1f1f1;
+      margin-bottom: 12px;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
-    <div class="top-nav">
-        <a href="../index.html">← 관리자 홈으로</a>
-    </div>
+
+  <!-- ✅ 상단 네비게이션 바 -->
+  <div class="navbar">
+    <div class="welcome"><a href="../index.html" style="color: white; text-decoration: none;">← 관리자 홈</a></div>
+    <div id="nav-links"></div>
+  </div>
+
   <div class="container">
     <h1>문제 목록 조회</h1>
     <ul id="problemList"></ul>
@@ -29,22 +90,58 @@
 
   <script>
     const token = localStorage.getItem('token');
-    $.ajax({
-      url: 'http://localhost:8080/api/admin/problems',
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      },
-      success: function (res) {
-        const list = $('#problemList');
-        res.forEach(p => {
-          list.append(`<li><strong>${p.title}</strong> (${p.difficulty}) - ${p.tags}</li>`);
+
+    // ✅ navbar 로그인/로그아웃 링크 구성
+    $(document).ready(function () {
+      const nav = $('#nav-links');
+
+      if (token) {
+        $.ajax({
+          url: "http://localhost:8080/api/auth/is-admin",
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          success: function (isAdmin) {
+            if (isAdmin) {
+              nav.append('<a href="../../index.html">홈</a>');
+            }
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          },
+          error: function () {
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          }
         });
-      },
-      error: function (xhr) {
-        alert("문제 불러오기 실패: " + xhr.responseText);
+      } else {
+        nav.append('<a href="../../login/login.html">로그인</a>');
+        nav.append('<a href="../../login/signUp.html">회원가입</a>');
       }
+
+      $(document).on('click', '#logoutBtn', function () {
+        localStorage.removeItem('token');
+        alert('로그아웃 되었습니다');
+        location.href = '../../index.html';
+      });
+
+      // ✅ 문제 목록 불러오기
+      $.ajax({
+        url: 'http://localhost:8080/api/admin/problems',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        },
+        success: function (res) {
+          const list = $('#problemList');
+          res.forEach(p => {
+            list.append(`<li><strong>${p.title}</strong> (${p.difficulty})<br>태그: ${p.tags}</li>`);
+          });
+        },
+        error: function (xhr) {
+          alert("문제 불러오기 실패: " + xhr.responseText);
+        }
+      });
     });
   </script>
+
 </body>
 </html>

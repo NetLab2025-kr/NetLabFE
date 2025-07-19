@@ -4,8 +4,99 @@
   <meta charset="UTF-8">
   <title>관리자 메뉴 - NetLab</title>
   <link rel="stylesheet" href="../assets/css/style.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+    }
+
+    /* 네비게이션 바 */
+    .navbar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #2b94d4;
+      width: 100%;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .navbar .welcome {
+      margin-right: auto;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    /* 관리자 메뉴 박스 */
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 600px;
+      margin: 120px auto 0 auto; /* 상단 여백 확보 */
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    .menu {
+      list-style: none;
+      padding: 0;
+    }
+
+    .menu li {
+      margin: 30px 0;
+    }
+
+    .menu a {
+      text-decoration: none;
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border-radius: 5px;
+      transition: background 0.2s ease;
+    }
+
+    .menu a:hover {
+      background: #45a049;
+    }
+  </style>
 </head>
 <body>
+
+  <!-- 네비게이션 바 -->
+  <div class="navbar">
+    <div class="welcome">NetLab 관리자</div>
+    <div id="nav-links">
+      <!-- 로그인 여부에 따라 동적 삽입 -->
+    </div>
+  </div>
+
+  <!-- 관리자 메뉴 -->
   <div class="container">
     <h1>NetLab 관리자 페이지</h1>
     <ul class="menu">
@@ -16,5 +107,42 @@
       <li><a href="./view_problems/view_problems.html">문제 내역 조회</a></li>
     </ul>
   </div>
+
+  <!-- 로그아웃 버튼 동작 -->
+  <script>
+    $(document).ready(function () {
+      const token = localStorage.getItem('token');
+      const nav = $('#nav-links');
+
+      if (token) {
+        $.ajax({
+          url: "http://localhost:8080/api/auth/is-admin",
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          success: function (isAdmin) {
+            if (isAdmin) {
+              nav.append('<a href="../index.html">홈</a>');
+            }
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          },
+          error: function () {
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          }
+        });
+      } else {
+        nav.append('<a href="../login/login.html">로그인</a>');
+        nav.append('<a href="../login/signUp.html">회원가입</a>');
+      }
+
+      $(document).on('click', '#logoutBtn', function () {
+        localStorage.removeItem('token');
+        alert('로그아웃 되었습니다');
+        location.href = '../index.html';
+      });
+    });
+  </script>
+
 </body>
 </html>

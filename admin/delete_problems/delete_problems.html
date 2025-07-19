@@ -5,18 +5,135 @@
   <title>문제 삭제 - NetLab</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #2b94d4;
+      width: 100%;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .navbar .welcome {
+      margin-right: auto;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 120px auto 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input[type="number"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 80%;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #c0392b;
+    }
+  </style>
 </head>
 <body>
-    <div class="top-nav">
-        <a href="../index.html">← 관리자 홈으로</a>
-    </div>
+
+  <div class="navbar">
+    <div class="welcome"><a href="../index.html" style="color: white; text-decoration: none;">← 관리자 홈</a></div>
+    <div id="nav-links"></div>
+  </div>
+
   <div class="container">
     <h2>문제 삭제</h2>
     <input type="number" id="problemId" placeholder="삭제할 문제 ID 입력" />
+    <br />
     <button onclick="deleteProblem()">삭제하기</button>
   </div>
 
   <script>
+    // 상단 네비게이션 링크 처리
+    $(document).ready(function () {
+      const token = localStorage.getItem('token');
+      const nav = $('#nav-links');
+
+      if (token) {
+        $.ajax({
+          url: "http://localhost:8080/api/auth/is-admin",
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          success: function (isAdmin) {
+            if (isAdmin) {
+              nav.append('<a href="../../index.html">홈</a>');
+            }
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          },
+          error: function () {
+            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          }
+        });
+      } else {
+        nav.append('<a href="../../login/login.html">로그인</a>');
+        nav.append('<a href="../../login/signUp.html">회원가입</a>');
+      }
+
+      $(document).on('click', '#logoutBtn', function () {
+        localStorage.removeItem('token');
+        alert('로그아웃 되었습니다');
+        location.href = '../../index.html';
+      });
+    });
+
     function deleteProblem() {
       const id = $('#problemId').val();
       const token = localStorage.getItem('token');
@@ -34,12 +151,14 @@
         },
         success: function () {
           alert('삭제 성공!');
+          $('#problemId').val('');
         },
-        error: function () {
-          alert('삭제 실패.');
+        error: function (xhr) {
+          alert('삭제 실패: ' + xhr.responseText);
         }
       });
     }
   </script>
+
 </body>
 </html>
