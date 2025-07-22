@@ -162,7 +162,7 @@
       // --- 질문 등록 (refresh 로직 포함) ---
       function registerQuestion(title, content, accessToken, retry) {
         $.ajax({
-          url: 'https://netlab.kr/api/questions',
+          url: 'https://be.netlab.kr/api/questions',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({ title, content }),
@@ -175,7 +175,7 @@
             if (xhr.status === 401 && refreshToken && !retry) {
               // 401(토큰 만료)면 refresh로 토큰 갱신
               $.ajax({
-                url: 'https://netlab.kr/api/auth/refresh',
+                url: 'https://be.netlab.kr/api/auth/refresh',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ refreshToken }),

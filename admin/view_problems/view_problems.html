@@ -139,7 +139,7 @@
       function refreshAndRetry(cb) {
         if (!refreshToken) return rejectAccess();
         $.ajax({
-          url: 'https://netlab.kr/api/auth/refresh',
+          url: 'https://be.netlab.kr/api/auth/refresh',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({ refreshToken }),
@@ -155,7 +155,7 @@
       // ----------- 문제 리스트 불러오기 -----------
       function renderProblemList(token) {
         $.ajax({
-          url: 'https://netlab.kr/api/admin/problems',
+          url: 'https://be.netlab.kr/api/admin/problems',
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + token },
           success: function (res) {
@@ -186,7 +186,7 @@
       // ----------- 관리자 인증 후 네비+리스트 -----------
       function checkAdminAndRender(token) {
         $.ajax({
-          url: "https://netlab.kr/api/auth/is-admin",
+          url: "https://be.netlab.kr/api/auth/is-admin",
           method: "GET",
           headers: { "Authorization": "Bearer " + token },
           success: function (isAdmin) {
@@ -205,7 +205,7 @@
         if (!confirm(`정말 문제 ${problemId}를 삭제하시겠습니까?`)) return;
         function deleteProblem(token, isRetry) {
           $.ajax({
-            url: `https://netlab.kr/api/admin/problems/${problemId}`,
+            url: `https://be.netlab.kr/api/admin/problems/${problemId}`,
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + token },
             success: function () {

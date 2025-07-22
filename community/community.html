@@ -188,7 +188,7 @@
           return;
         }
         $.ajax({
-          url: 'https://netlab.kr/api/auth/refresh',
+          url: 'https://be.netlab.kr/api/auth/refresh',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({ refreshToken }),
@@ -209,7 +209,7 @@
       // ---- 질문 목록 조회 ----
       function loadQuestions() {
         $.ajax({
-          url: 'https://netlab.kr/api/questions',
+          url: 'https://be.netlab.kr/api/questions',
           method: 'GET',
           dataType: 'json',
           success: function (res) {
@@ -248,7 +248,7 @@
         if ($(e.target).hasClass('edit-btn') || $(e.target).hasClass('delete-btn')) return;
         const id = $(this).data('id');
         $.ajax({
-          url: `https://netlab.kr/api/questions/${id}`,
+          url: `https://be.netlab.kr/api/questions/${id}`,
           method: 'GET',
           dataType: 'json',
           success: function (q) {
@@ -278,7 +278,7 @@
         const id = $(this).data('id');
         function deleteQuestion(token, isRetry) {
           $.ajax({
-            url: `https://netlab.kr/api/questions/${id}`,
+            url: `https://be.netlab.kr/api/questions/${id}`,
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + token },
             success: function () {
@@ -303,7 +303,7 @@
         e.stopPropagation();
         const id = $(this).data('id');
         $.ajax({
-          url: `https://netlab.kr/api/questions/${id}`,
+          url: `https://be.netlab.kr/api/questions/${id}`,
           method: 'GET',
           dataType: 'json',
           success: function (q) {
@@ -328,7 +328,7 @@
               }
               function updateQuestion(token, isRetry) {
                 $.ajax({
-                  url: `https://netlab.kr/api/questions/${id}`,
+                  url: `https://be.netlab.kr/api/questions/${id}`,
                   method: 'PUT',
                   contentType: 'application/json',
                   headers: { 'Authorization': 'Bearer ' + token },

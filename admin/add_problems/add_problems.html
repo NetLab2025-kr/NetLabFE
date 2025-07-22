@@ -140,7 +140,7 @@
       function refreshAndRetry(cb) {
         if (!refreshToken) return rejectAccess();
         $.ajax({
-          url: 'https://netlab.kr/api/auth/refresh',
+          url: 'https://be.netlab.kr/api/auth/refresh',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({ refreshToken }),
@@ -163,7 +163,7 @@
           }
           function doRegister(token2, retry) {
             $.ajax({
-              url: 'https://netlab.kr/api/admin/problems',
+              url: 'https://be.netlab.kr/api/admin/problems',
               method: 'POST',
               contentType: 'application/json',
               data: JSON.stringify(problemData),
@@ -195,7 +195,7 @@
       }
       function checkAdminAndInit(token) {
         $.ajax({
-          url: "https://netlab.kr/api/auth/is-admin",
+          url: "https://be.netlab.kr/api/auth/is-admin",
           method: "GET",
           headers: { "Authorization": "Bearer " + token },
           success: function (isAdmin) {
