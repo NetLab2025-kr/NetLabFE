@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>커뮤니티 - 질문 목록</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Pretendard', sans-serif;
+      margin: 0;
+      background: #f8fafb;
+    }
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      background: #3DAEFA; padding: 0 36px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 1000; box-shadow: 0 4px 16px rgba(61,174,250,0.06);
+    }
+    .navbar .welcome a { color: #fff; font-size: 18px; font-weight: 600; text-decoration: none; }
+    .navbar #nav-links a { color: #fff; text-decoration: none; margin-left: 26px; font-size: 16px; font-weight: 500; padding: 8px 14px; border-radius: 7px; background: transparent; transition: background 0.16s; }
+    .navbar #nav-links a:hover { background: #379fde; }
+    .navbar .user-info { color: #fff; font-weight: 600; margin-left: 18px; display: none; }
+    .container {
+      max-width: 800px; background: #fff; padding: 44px 38px 36px 38px; border-radius: 16px;
+      box-shadow: 0 10px 32px rgba(61,174,250,0.08); margin: 110px auto 0 auto;
+    }
+    h1 { margin-bottom: 32px; font-size: 25px; color: #3DAEFA; font-weight: 700; text-align: center; }
+    .question-list { list-style: none; padding: 0; margin: 0 0 30px 0; }
+    .question-list li {
+      background: #f6fafd; margin-bottom: 18px; padding: 20px 18px; border-radius: 12px;
+      box-shadow: 0 2px 8px #3daefa0b; border: 1.5px solid #d2e5f9; cursor: pointer;
+      transition: background 0.14s; display: flex; flex-direction: column; gap: 3px;
+    }
+    .question-list li:hover { background: #eaf6fe; }
+    .question-title { font-size: 18px; color: #2563eb; font-weight: bold; margin-bottom: 3px; text-align: left; }
+    .question-meta {
+      font-size: 13px; color: #7a869a; margin-bottom: 0; text-align: left;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .edit-btn, .delete-btn {
+      margin-left: 8px; padding: 2px 10px; font-size: 12px; border-radius: 6px; border: none;
+      background: #eaf6fe; color: #3DAEFA; font-weight: 600; cursor: pointer; transition: background 0.13s;
+    }
+    .edit-btn:hover, .delete-btn:hover { background: #c5e3f9; color: #206090; }
+    .ask-btn {
+      display: inline-block; background: #3DAEFA; color: #fff; padding: 13px 28px;
+      border-radius: 8px; font-weight: 600; font-size: 17px; border: none; cursor: pointer; margin-bottom: 16px;
+      transition: background 0.18s; box-shadow: 0 2px 8px #3daefa18;
+    }
+    .ask-btn:hover { background: #3499d6; }
+    /* 모달 */
+    .modal-bg {
+      display: none; position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.32); z-index: 9999; justify-content: center; align-items: center;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 14px;
+      max-width: 900px;       /* 최대 크기 확대 */
+      width: 98vw;            /* 거의 전체 */
+      min-height: 340px;
+      padding: 50px 40px 40px 40px;
+      box-shadow: 0 10px 40px #2222;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      animation: fadein 0.12s;
+    }
+    .modal-title {
+      font-size: 28px;        /* 제목 폰트 키움 */
+      font-weight: 700;
+      color: #3DAEFA;
+      margin-bottom: 16px;
+      word-break: break-all;
+    }
+    .modal-title-edit {
+      font-size: 22px;        /* 제목 input 크게 */
+      font-weight: 600;
+      width: 100%;
+      padding: 16px 12px;
+      border: 1.5px solid #b3d6f6;
+      border-radius: 10px;
+      margin-bottom: 18px;
+    }
+    .modal-meta {
+      font-size: 16px;        /* 작성자/날짜 크기 */
+      color: #7a869a;
+      margin-bottom: 22px;
+    }
+    .modal-content {
+      font-size: 18px;        /* 내용 폰트 크기 */
+      color: #222;
+      margin-bottom: 30px;
+      white-space: pre-line;
+    }
+    .modal-content-edit {
+      width: 100%;
+      border: 1.5px solid #b3d6f6;
+      border-radius: 10px;
+      padding: 20px;
+      min-height: 160px;      /* 높이 키움 */
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+    .close-btn {
+      position: absolute; top: 18px; right: 28px; background: none; border: none;
+      font-size: 30px; color: #6c7a8a; cursor: pointer; font-weight: bold;
+    }
+    .modal-btn-group {
+      display: flex; gap: 24px; width: 100%; justify-content: flex-end;
+      margin-top: 15px;
+    }
+    .modal-btn-save, .modal-btn-cancel {
+      padding: 13px 36px; border-radius: 9px; font-weight: 700; font-size: 18px;
+      border: none; cursor: pointer; transition: background 0.15s;
+    }
+    .modal-btn-save { background: #3DAEFA; color: #fff; }
+    .modal-btn-save:hover { background: #218fe5; }
+    .modal-btn-cancel { background: #eaf6fe; color: #3499d6; }
+    .modal-btn-cancel:hover { background: #c5e3f9; color: #206090; }
+    @media (max-width: 700px) {
+      .modal-box { max-width: 97vw; padding: 14px 2vw 14px 2vw; }
+      .modal-title { font-size: 19px; }
+      .modal-title-edit, .modal-content-edit { font-size: 15px; padding: 7px 5px; }
+      .modal-btn-save, .modal-btn-cancel { font-size: 13px; padding: 8px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="welcome"><a href="/index.html">← 홈</a></div>
+    <div style="display:flex;align-items:center;gap:18px;">
+      <div id="nav-links"></div>
+      <div class="user-info" id="user-info"></div>
+    </div>
+  </div>
+  <div class="container">
+    <h1>커뮤니티</h1>
+    <button class="ask-btn" onclick="location.href='/community/add_question.html'">글 등록하기</button>
+    <ul class="question-list" id="questionList"></ul>
+  </div>
+  <!-- 모달(상세/수정) -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal-box">
+      <button class="close-btn" id="closeModal">&times;</button>
+      <div id="modalInner"></div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      const userInfo = $('#user-info');
+      const name = localStorage.getItem('name');
+      if (name) {
+        userInfo.text(name);
+        userInfo.show();
+      } else {
+        userInfo.hide();
+      }
+
+      // 네비(로그인/로그아웃) - 절대경로
+      const token = localStorage.getItem('token');
+      const refreshToken = localStorage.getItem('refreshToken');
+      const nav = $('#nav-links');
+      if (token) {
+        nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
+      } else {
+        nav.html('<a href="/index.html">홈</a><a href="/login/login.html">로그인</a>');
+      }
+      $(document).on('click', '#logoutBtn', function () {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('name');
+        alert('로그아웃 되었습니다');
+        location.href = '/index.html';
+      });
+
+      // ---- refresh 자동 갱신 공통 함수 ----
+      function refreshAndRetry(requestFn) {
+        if (!refreshToken) {
+          alert('로그인 정보가 만료되었습니다. 다시 로그인 해주세요!');
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          window.location.href = "/login/login.html";
+          return;
+        }
+        $.ajax({
+          url: 'http://54.79.120.182:8080/api/auth/refresh',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ refreshToken }),
+          success: function (res) {
+            localStorage.setItem('token', res.accessToken);
+            localStorage.setItem('refreshToken', res.refreshToken);
+            requestFn(res.accessToken); // 새 accessToken으로 재시도
+          },
+          error: function () {
+            alert('로그인 정보가 만료되었습니다. 다시 로그인 해주세요!');
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            window.location.href = "/login/login.html";
+          }
+        });
+      }
+
+      // ---- 질문 목록 조회 ----
+      function loadQuestions() {
+        $.ajax({
+          url: 'http://54.79.120.182:8080/api/questions',
+          method: 'GET',
+          dataType: 'json',
+          success: function (res) {
+            const list = $('#questionList');
+            list.empty();
+            if (res.length === 0) {
+              list.append('<li style="text-align:center;color:#aaa;">등록된 질문이 없습니다.</li>');
+            } else {
+              res.reverse().forEach(q => {
+                const isMine = (name && name === q.author);
+                const item = $(`
+                  <li data-id="${q.id}">
+                    <div class="question-title">${q.title}</div>
+                    <div class="question-meta">
+                      작성자: ${q.author} | 작성일: ${q.createdAt ? q.createdAt.replace('T', ' ').slice(0,19) : ''}
+                      ${isMine ? `
+                        <button class="edit-btn" data-id="${q.id}">수정</button>
+                        <button class="delete-btn" data-id="${q.id}">삭제</button>
+                      ` : ''}
+                    </div>
+                  </li>
+                `);
+                list.append(item);
+              });
+            }
+          },
+          error: function (xhr) {
+            alert('질문 목록 불러오기 실패: ' + xhr.statusText);
+          }
+        });
+      }
+      loadQuestions();
+
+      // ---- 질문 상세 모달 ----
+      $(document).on('click', '.question-list li', function (e) {
+        if ($(e.target).hasClass('edit-btn') || $(e.target).hasClass('delete-btn')) return;
+        const id = $(this).data('id');
+        $.ajax({
+          url: `http://54.79.120.182:8080/api/questions/${id}`,
+          method: 'GET',
+          dataType: 'json',
+          success: function (q) {
+            $('#modalInner').html(`
+              <div class="modal-title">${q.title}</div>
+              <div class="modal-meta">작성자: ${q.author} | 작성일: ${q.createdAt ? q.createdAt.replace('T', ' ').slice(0,19) : ''}</div>
+              <div class="modal-content">${q.content}</div>
+            `);
+            $('#modalBg').css('display', 'flex');
+          },
+          error: function (xhr) {
+            alert('상세 조회 실패: ' + xhr.statusText);
+          }
+        });
+      });
+      $('#closeModal, #modalBg').on('click', function (e) {
+        if (e.target === this) $('#modalBg').hide();
+      });
+      $('.modal-box').on('click', function(e) {
+        e.stopPropagation();
+      });
+
+      // ---- 삭제 버튼 클릭 (refresh 자동 적용) ----
+      $(document).on('click', '.delete-btn', function (e) {
+        e.stopPropagation();
+        if (!confirm('정말 삭제할까요?')) return;
+        const id = $(this).data('id');
+        function deleteQuestion(token, isRetry) {
+          $.ajax({
+            url: `http://54.79.120.182:8080/api/questions/${id}`,
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token },
+            success: function () {
+              alert('삭제되었습니다.');
+              loadQuestions();
+              $('#modalBg').hide();
+            },
+            error: function (xhr) {
+              if (xhr.status === 401 && !isRetry) {
+                refreshAndRetry(newToken => deleteQuestion(newToken, true));
+              } else {
+                alert('삭제 실패: ' + (xhr.responseText || xhr.statusText));
+              }
+            }
+          });
+        }
+        deleteQuestion(token, false);
+      });
+
+      // ---- 수정 버튼 클릭 (refresh 자동 적용) ----
+      $(document).on('click', '.edit-btn', function (e) {
+        e.stopPropagation();
+        const id = $(this).data('id');
+        $.ajax({
+          url: `http://54.79.120.182:8080/api/questions/${id}`,
+          method: 'GET',
+          dataType: 'json',
+          success: function (q) {
+            $('#modalInner').html(`
+              <input type="text" id="editTitle" class="modal-title-edit" value="${q.title.replace(/"/g, '&quot;')}">
+              <div class="modal-meta">작성자: ${q.author} | 작성일: ${q.createdAt ? q.createdAt.replace('T', ' ').slice(0,19) : ''}</div>
+              <textarea id="editContent" class="modal-content-edit">${q.content.replace(/</g, '&lt;')}</textarea>
+              <div class="modal-btn-group">
+                <button class="modal-btn-save" id="saveEditBtn">저장</button>
+                <button class="modal-btn-cancel" id="cancelEditBtn">취소</button>
+              </div>
+            `);
+            $('#modalBg').css('display', 'flex');
+
+            // 저장
+            $('#saveEditBtn').off('click').on('click', function () {
+              const newTitle = $('#editTitle').val().trim();
+              const newContent = $('#editContent').val().trim();
+              if (!newTitle || !newContent) {
+                alert('제목과 내용을 모두 입력하세요.');
+                return;
+              }
+              function updateQuestion(token, isRetry) {
+                $.ajax({
+                  url: `http://54.79.120.182:8080/api/questions/${id}`,
+                  method: 'PUT',
+                  contentType: 'application/json',
+                  headers: { 'Authorization': 'Bearer ' + token },
+                  data: JSON.stringify({ title: newTitle, content: newContent }),
+                  success: function () {
+                    alert('수정 완료!');
+                    $('#modalBg').hide();
+                    loadQuestions();
+                  },
+                  error: function (xhr) {
+                    if (xhr.status === 401 && !isRetry) {
+                      refreshAndRetry(newToken => updateQuestion(newToken, true));
+                    } else {
+                      alert('수정 실패: ' + (xhr.responseText || xhr.statusText));
+                    }
+                  }
+                });
+              }
+              updateQuestion(token, false);
+            });
+
+            // 취소
+            $('#cancelEditBtn').off('click').on('click', function () {
+              $('#modalBg').hide();
+            });
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

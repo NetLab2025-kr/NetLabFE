@@ -3,86 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <title>NetLab</title>
-  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      background: #ffffff;
-    }
-
+    * { box-sizing: border-box; }
+    body { font-family: 'Pretendard', sans-serif; margin: 0; background: #f8fafb; color: #222; }
     .navbar {
       position: fixed;
-      top: 0;
-      right: 0;
-      background-color: #2b94d4;
-      width: 100%;
-      padding: 14px 20px;
+      top: 0; left: 0; width: 100%;
+      background: #3DAEFA;
+      padding: 0 36px;
+      height: 64px;
       display: flex;
-      justify-content: flex-end;
       align-items: center;
+      justify-content: space-between;
       z-index: 1000;
+      box-shadow: 0 4px 16px rgba(61,174,250,0.06);
     }
-
-    .navbar .welcome {
-      margin-right: auto;
-      color: white;
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    .navbar a {
-      color: white;
+    .navbar .brand {
+      font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 0.5px; text-shadow: 0 1px 2px #36a6ee44;
       text-decoration: none;
-      margin-left: 20px;
+      transition: opacity 0.2s;
+    }
+    .navbar .brand:hover { opacity: 0.85; }
+    .navbar .right-group {
+      display: flex;
+      align-items: center;
+    }
+    .navbar #nav-links a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 24px;
+      font-size: 16px;
       font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 7px;
+      transition: background 0.16s;
+      background: transparent;
     }
-
-    .navbar a:hover {
-      text-decoration: underline;
+    .navbar #nav-links a:hover {
+      background: #379fde;
     }
-
+    .navbar .user-info {
+      color: #fff;
+      font-weight: 600;
+      margin-left: 26px;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+      padding: 8px 0;
+      transition: opacity 0.15s;
+      opacity: 0.95;
+    }
     .main-content {
-      margin-top: 100px;
-      padding: 40px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
+      max-width: 900px;
+      margin: 100px auto 40px;
+      padding: 0 20px;
       text-align: center;
     }
-
-    h1 {
-      margin-bottom: 20px;
-      font-size: 28px;
-    }
-
-    p {
-      margin-top: 0;
-      color: #555;
-      font-size: 16px;
-    }
-
+    h1 { font-size: 32px; margin-bottom: 14px; color: #23272f; }
+    p { font-size: 18px; color: #5c5c6b; margin-bottom: 40px; }
     .feature-box {
       width: 100%;
-      height: 300px;
-      background-color: #e0e0e0;
+      min-height: 300px;
+      background: #fff;
+      border-radius: 16px;
+      border: 1.5px solid #dbeafe;
+      box-shadow: 0 2px 12px rgba(61,174,250,0.06);
+      margin: 0 auto 24px;
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .go-community-btn {
+      margin-top: 16px;
+      padding: 14px 38px;
+      font-size: 17px;
+      background: #3DAEFA;
+      color: #fff;
+      border: none;
       border-radius: 8px;
-      margin-top: 30px;
-      border: 2px dashed #bbb;
+      font-weight: bold;
+      box-shadow: 0 2px 8px #3daefa18;
+      cursor: pointer;
+      transition: background 0.18s;
+      display: inline-block;
+    }
+    .go-community-btn:hover { background: #3499d6; }
+    @media (max-width: 700px) {
+      .main-content { margin-top: 80px; }
+      .feature-box { padding: 16px; min-height: 180px;}
+      .go-community-btn { font-size: 15px; padding: 10px 18px;}
+      .navbar { padding: 0 14px; height: 54px; }
+      .navbar .brand { font-size: 18px; }
+      .navbar .user-info { margin-left: 10px; font-size: 14px;}
+      .navbar #nav-links a { margin-left: 10px; font-size: 14px; padding: 6px 8px;}
     }
   </style>
 </head>
 <body>
-
   <div class="navbar">
-    <div class="welcome">NetLab 시스템</div>
-    <div id="nav-links">
-      <!-- 동적으로 링크 삽입 -->
+    <a class="brand" href="/index.html">NetLab</a>
+    <div class="right-group">
+      <div id="nav-links"></div>
+      <div class="user-info" id="user-info" style="display:none;"></div>
     </div>
   </div>
 
@@ -90,44 +114,95 @@
     <h1>NetLab에 오신 걸 환영합니다</h1>
     <p>네트워크 실습을 효율적으로 관리하고 평가하세요.</p>
     <div class="feature-box">
-      <!-- 여기에 기능 구현화면 들어갈 예정 -->
+      <span style="color:#99b2c9;">여기에 주요 기능이 표시됩니다.</span>
     </div>
+    <button class="go-community-btn" onclick="location.href='/community/community.html'">커뮤니티(질문 게시판) 바로가기</button>
   </div>
 
   <script>
     $(document).ready(function () {
-      const token = localStorage.getItem('token');
+      const accessToken = localStorage.getItem('token');
+      const refreshToken = localStorage.getItem('refreshToken');
       const nav = $('#nav-links');
-
-      if (token) {
+      const userInfo = $('#user-info');
+  
+      function renderNav(isAdmin, name) {
+        let links = '';
+        if (isAdmin) links += '<a href="/admin/index.html">관리자 메뉴</a>';
+        links += '<a href="/community/community.html">커뮤니티</a>';
+        links += '<a href="#" id="logoutBtn">로그아웃</a>';
+        nav.html(links);
+        if (name) {
+          userInfo.text(name);
+          userInfo.show();
+        } else {
+          userInfo.hide();
+        }
+      }
+  
+      function checkAdminAndRender(token, name) {
         $.ajax({
-          url: "http://localhost:8080/api/auth/is-admin",
+          url: "http://54.79.120.182:8080/api/auth/is-admin",
           method: "GET",
-          headers: {
-            "Authorization": "Bearer " + token
-          },
-          success: function (isAdmin) {
-            if (isAdmin) {
-              nav.append('<a href="admin/index.html">관리자 메뉴</a>');
-            }
-            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+          headers: { "Authorization": "Bearer " + token },
+          success: function (isAdmin) { renderNav(isAdmin, name); },
+          error: function () {
+            nav.html(
+              '<a href="/community/community.html">커뮤니티</a>' +
+              '<a href="/login/login.html">로그인</a><a href="/login/signUp.html">회원가입</a>'
+            );
+            userInfo.hide();
+          }
+        });
+      }
+
+      // 이름 저장/갱신 
+      function getNameFromStorage() {
+        return localStorage.getItem('name');
+      }
+      function setNameToStorage(name) {
+        if(name) localStorage.setItem('name', name);
+      }
+  
+      if (accessToken) {
+        // 바로 admin체크 + 이름 표시
+        checkAdminAndRender(accessToken, getNameFromStorage());
+      } else if (refreshToken) {
+        $.ajax({
+          url: 'http://54.79.120.182:8080/api/auth/refresh',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ refreshToken }),
+          success: function (res) {
+            localStorage.setItem('token', res.accessToken);
+            localStorage.setItem('refreshToken', res.refreshToken);
+            setNameToStorage(res.name); // 서버에서 내려준 name 저장
+            checkAdminAndRender(res.accessToken, res.name);
           },
           error: function () {
-            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
+            nav.html(
+              '<a href="/community/community.html">커뮤니티</a>' +
+              '<a href="/login/login.html">로그인</a><a href="/login/signUp.html">회원가입</a>'
+            );
+            userInfo.hide();
           }
         });
       } else {
-        nav.append('<a href="./login/login.html">로그인</a>');
-        nav.append('<a href="./login/signUp.html">회원가입</a>');
+        nav.html(
+          '<a href="/community/community.html">커뮤니티</a>' +
+          '<a href="/login/login.html">로그인</a><a href="/login/signUp.html">회원가입</a>'
+        );
+        userInfo.hide();
       }
-
+  
       $(document).on('click', '#logoutBtn', function () {
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('name');
         alert('로그아웃 되었습니다');
         location.reload();
       });
     });
   </script>
-
 </body>
 </html>

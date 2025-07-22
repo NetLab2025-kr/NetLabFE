@@ -3,144 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <title>제출 내역</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
-      font-family: sans-serif;
+      font-family: 'Pretendard', sans-serif;
       margin: 0;
-      background-color: #f4f4f4;
+      background: #f8fafb;
     }
-
     .navbar {
       position: fixed;
-      top: 0;
-      right: 0;
-      background-color: #2b94d4;
-      width: 100%;
-      padding: 14px 20px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
+      top: 0; left: 0; width: 100%;
+      background: #3DAEFA;
+      padding: 0 36px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
       z-index: 1000;
+      box-shadow: 0 4px 16px rgba(61, 174, 250, 0.06);
     }
-
-    .navbar .welcome {
-      margin-right: auto;
-      color: white;
-      font-weight: bold;
-      font-size: 18px;
+    .navbar .welcome a {
+      color: #fff; font-size: 18px; font-weight: 600; text-decoration: none;
+      letter-spacing: 0.2px; display: flex; align-items: center;
+      transition: opacity 0.2s; gap: 4px;
     }
-
-    .navbar a {
-      color: white;
-      text-decoration: none;
-      margin-left: 20px;
-      font-weight: 500;
+    .navbar .welcome a:hover {
+      opacity: 0.85; text-decoration: underline;
     }
-
-    .navbar a:hover {
-      text-decoration: underline;
+    .navbar #nav-links a {
+      color: #fff; text-decoration: none; margin-left: 26px; font-size: 16px;
+      font-weight: 500; padding: 8px 14px; border-radius: 7px; background: transparent;
+      transition: background 0.16s;
     }
-
+    .navbar #nav-links a:hover { background: #379fde; }
     .container {
-      max-width: 600px;
-      margin: 120px auto 0 auto;
-      padding: 30px;
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      max-width: 700px; margin: 110px auto 0 auto; padding: 38px 30px 34px 30px;
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 10px 32px rgba(61, 174, 250, 0.08);
     }
-
     h1 {
-      font-size: 24px;
-      margin-bottom: 20px;
-      text-align: center;
+      font-size: 25px; margin-bottom: 32px; color: #3DAEFA; font-weight: 700; text-align: center;
     }
-
     ul#submissionList {
-      list-style: none;
-      padding: 0;
+      list-style: none; padding: 0; margin: 0;
     }
-
     ul#submissionList li {
-      background-color: #f1f1f1;
-      margin-bottom: 10px;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 15px;
+      background: #f6fafd; margin-bottom: 18px; padding: 17px 18px; border-radius: 12px;
+      font-size: 16px; box-shadow: 0 2px 8px #3daefa0b; border: 1.5px solid #d2e5f9;
+      display: flex; flex-direction: column; gap: 3px; color: #23272f;
+    }
+    ul#submissionList li span { font-weight: 500; color: #2563eb; }
+    @media (max-width: 700px) {
+      .navbar { padding: 0 12px; height: 54px;}
+      .navbar .welcome a { font-size: 15px;}
+      .container { padding: 18px 6vw; margin-top: 80px;}
+      ul#submissionList li { padding: 10px 6vw; font-size: 14px;}
     }
   </style>
 </head>
 <body>
-
-  <!-- ✅ 네비게이션 바 -->
   <div class="navbar">
-    <div class="welcome"><a href="../index.html" style="color: white; text-decoration: none;">← 관리자 홈</a></div>
+    <div class="welcome"><a href="/admin/index.html">← 관리자 홈</a></div>
     <div id="nav-links"></div>
   </div>
-
   <div class="container">
     <h1>제출 내역</h1>
     <ul id="submissionList"></ul>
   </div>
-
   <script>
-    const token = localStorage.getItem('token');
-
     $(document).ready(function () {
+      const accessToken = localStorage.getItem('token');
+      const refreshToken = localStorage.getItem('refreshToken');
       const nav = $('#nav-links');
 
-      if (token) {
+      function rejectAccess() {
+        alert('접근 권한이 없습니다.');
+        location.href = '/index.html';
+      }
+      function renderNav() {
+        nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
+      }
+
+      // ----- 토큰 refresh 공통 -----
+      function refreshAndRetry(cb) {
+        if (!refreshToken) return rejectAccess();
         $.ajax({
-          url: "http://localhost:8080/api/auth/is-admin",
-          method: "GET",
-          headers: {
-            "Authorization": "Bearer " + token
+          url: 'http://54.79.120.182:8080/api/auth/refresh',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ refreshToken }),
+          success: function (res) {
+            localStorage.setItem('token', res.accessToken);
+            localStorage.setItem('refreshToken', res.refreshToken);
+            cb(res.accessToken);
           },
-          success: function (isAdmin) {
-            if (isAdmin) {
-              nav.append('<a href="../../index.html">홈</a>');
+          error: function () { rejectAccess(); }
+        });
+      }
+
+      function renderSubmissions(token) {
+        $.ajax({
+          url: 'http://54.79.120.182:8080/api/admin/submissions',
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + token },
+          success: function (res) {
+            const list = $('#submissionList');
+            list.empty();
+            res.forEach(s => {
+              list.append(`
+                <li>
+                  <div><span>사용자</span>: ${s.userId}</div>
+                  <div><span>문제 ID</span>: ${s.problemId}</div>
+                  <div><span>결과</span>: ${s.result}</div>
+                </li>
+              `);
+            });
+          },
+          error: function (xhr) {
+            if (xhr.status === 401) {
+              refreshAndRetry(renderSubmissions);
+            } else {
+              alert("제출 내역 조회 실패: " + xhr.responseText);
             }
-            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
-          },
-          error: function () {
-            nav.append('<a href="#" id="logoutBtn">로그아웃</a>');
           }
         });
+      }
+
+      function checkAdminAndRender(token) {
+        $.ajax({
+          url: "http://54.79.120.182:8080/api/auth/is-admin",
+          method: "GET",
+          headers: { "Authorization": "Bearer " + token },
+          success: function (isAdmin) {
+            if (isAdmin) {
+              renderNav();
+              renderSubmissions(token);
+            } else rejectAccess();
+          },
+          error: function () { rejectAccess(); }
+        });
+      }
+
+      if (accessToken) {
+        checkAdminAndRender(accessToken);
+      } else if (refreshToken) {
+        refreshAndRetry(checkAdminAndRender);
       } else {
-        nav.append('<a href="../../login/login.html">로그인</a>');
-        nav.append('<a href="../../login/signUp.html">회원가입</a>');
+        rejectAccess();
       }
 
       $(document).on('click', '#logoutBtn', function () {
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         alert('로그아웃 되었습니다');
-        location.href = '../../index.html';
-      });
-
-      // ✅ 제출 내역 조회
-      $.ajax({
-        url: 'http://localhost:8080/api/admin/submissions',
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + token
-        },
-        success: function (res) {
-          const list = $('#submissionList');
-          res.forEach(s => {
-            list.append(`<li>사용자: ${s.userId}, 문제 ID: ${s.problemId}, 결과: ${s.result}</li>`);
-          });
-        },
-        error: function (xhr) {
-          alert("제출 내역 조회 실패: " + xhr.responseText);
-        }
+        location.href = '/index.html';
       });
     });
   </script>
-
 </body>
 </html>
