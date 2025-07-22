@@ -127,7 +127,7 @@
   <script>
     $(document).ready(function() {
       $.ajax({
-        url: 'https://be.netlab.kr/api/problems', // 유저용 문제 조회 API 주소
+        url: 'https://be.netlab.kr/api/submit/problems', // 유저용 문제 조회 API 주소
         method: 'GET',
         success: function(res) {
           const list = $('#problemList');
