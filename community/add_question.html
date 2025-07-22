@@ -51,6 +51,13 @@
     .navbar #nav-links a:hover {
       background: #379fde;
     }
+    .navbar #user-name {
+      color: #fff;
+      font-weight: 600;
+      margin-left: 18px;
+      font-size: 16px;
+      white-space: nowrap;
+    }
     .container {
       max-width: 600px;
       background: #fff;
@@ -116,7 +123,10 @@
 <body>
   <div class="navbar">
     <div class="welcome"><a href="/index.html">NetLab</a></div>
-    <div id="nav-links"></div>
+    <div style="display:flex; align-items:center;">
+      <div id="nav-links"></div>
+      <div id="user-name"></div>
+    </div>
   </div>
   <div class="container">
     <h1>게시글 등록</h1>
@@ -129,9 +139,9 @@
       const token = localStorage.getItem('token');
       const refreshToken = localStorage.getItem('refreshToken');
       const nav = $('#nav-links');
+      const userNameDiv = $('#user-name');
       const name = localStorage.getItem('name');
 
-      // 네비바 렌더링 함수 (로그인 상태에 따라 메뉴 변경)
       function renderNav(loggedIn) {
         if (loggedIn) {
           nav.html(`
@@ -140,6 +150,8 @@
             <a href="/community/community.html">커뮤니티</a>
             <a href="#" id="logoutBtn">로그아웃</a>
           `);
+          userNameDiv.text(name || '');
+          userNameDiv.show();
         } else {
           nav.html(`
             <a href="/index.html">홈</a>
@@ -148,13 +160,12 @@
             <a href="/login/login.html">로그인</a>
             <a href="/login/signUp.html">회원가입</a>
           `);
+          userNameDiv.hide();
         }
       }
 
-      // 초기 네비바 렌더링
       renderNav(!!token);
 
-      // 로그아웃 이벤트 핸들러
       $(document).on('click', '#logoutBtn', function () {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
@@ -163,13 +174,12 @@
         location.href = '/index.html';
       });
 
-      // 엔터로 등록(제목 input에서)
       $('#title').keypress(function(e){
         if(e.which === 13){
           $('#submitBtn').click();
         }
       });
-      // textarea에서 엔터+shift만 줄바꿈, 엔터 단독은 등록
+
       $('#content').keydown(function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
@@ -177,7 +187,6 @@
         }
       });
 
-      // --- 질문 등록 (refresh 로직 포함) ---
       function registerQuestion(title, content, accessToken, retry) {
         $.ajax({
           url: 'https://be.netlab.kr/api/questions',
@@ -191,7 +200,6 @@
           },
           error: function (xhr) {
             if (xhr.status === 401 && refreshToken && !retry) {
-              // 401(토큰 만료)면 refresh로 토큰 갱신
               $.ajax({
                 url: 'https://be.netlab.kr/api/auth/refresh',
                 method: 'POST',
