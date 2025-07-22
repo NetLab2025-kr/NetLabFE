@@ -126,7 +126,7 @@
       const accessToken = localStorage.getItem('token');
       const refreshToken = localStorage.getItem('refreshToken');
       const nav = $('#nav-links');
-
+  
       function rejectAccess() {
         alert('접근 권한이 없습니다.');
         location.href = '/index.html';
@@ -134,7 +134,7 @@
       function renderNav() {
         nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
       }
-
+  
       // ----------- 토큰 refresh 공통 -----------
       function refreshAndRetry(cb) {
         if (!refreshToken) return rejectAccess();
@@ -151,7 +151,7 @@
           error: function () { rejectAccess(); }
         });
       }
-
+  
       // ----------- 문제 리스트 불러오기 -----------
       function renderProblemList(token) {
         $.ajax({
@@ -166,6 +166,7 @@
                 <li>
                   <div><strong>ID: ${p.id}</strong></div>
                   <div><strong>${p.title}</strong> (${p.difficulty})</div>
+                  <div>설명: ${p.description}</div>
                   <div>태그: ${p.tags}</div>
                   <button class="delete-btn" data-id="${p.id}">삭제</button>
                 </li>
@@ -182,7 +183,7 @@
           }
         });
       }
-
+  
       // ----------- 관리자 인증 후 네비+리스트 -----------
       function checkAdminAndRender(token) {
         $.ajax({
@@ -198,7 +199,7 @@
           error: function () { rejectAccess(); }
         });
       }
-
+  
       // ----------- delete 버튼 이벤트 -----------
       $(document).on('click', '.delete-btn', function () {
         const problemId = $(this).data('id');
@@ -210,7 +211,7 @@
             headers: { 'Authorization': 'Bearer ' + token },
             success: function () {
               alert("삭제되었습니다");
-              renderProblemList(token); // 새로고침 말고 리스트만 새로 그림
+              renderProblemList(token);
             },
             error: function (xhr) {
               if (xhr.status === 401 && !isRetry) {
@@ -223,7 +224,7 @@
         }
         deleteProblem(localStorage.getItem('token'), false);
       });
-
+  
       // ----------- 진입시 분기 -----------
       if (accessToken) {
         checkAdminAndRender(accessToken);
@@ -241,5 +242,7 @@
       });
     });
   </script>
+  
+  
 </body>
 </html>

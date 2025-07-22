@@ -76,7 +76,7 @@
       justify-content: center;
     }
     .go-community-btn {
-      margin-top: 16px;
+      margin-top: 12px;
       padding: 14px 38px;
       font-size: 17px;
       background: #3DAEFA;
@@ -116,7 +116,12 @@
     <div class="feature-box">
       <span style="color:#99b2c9;">여기에 주요 기능이 표시됩니다.</span>
     </div>
-    <button class="go-community-btn" onclick="location.href='/community/community.html'">커뮤니티(질문 게시판) 바로가기</button>
+    <button class="go-community-btn" onclick="location.href='/problems/solve.html'" style="margin-bottom: 12px;">
+      문제 풀러가기
+    </button>
+    <button class="go-community-btn" onclick="location.href='/community/community.html'">
+      커뮤니티(질문 게시판) 바로가기
+    </button>
   </div>
 
   <script>
@@ -129,6 +134,7 @@
       function renderNav(isAdmin, name) {
         let links = '';
         if (isAdmin) links += '<a href="/admin/index.html">관리자 메뉴</a>';
+        links += '<a href="/problems/list.html">문제목록</a>';
         links += '<a href="/community/community.html">커뮤니티</a>';
         links += '<a href="#" id="logoutBtn">로그아웃</a>';
         nav.html(links);
@@ -148,15 +154,16 @@
           success: function (isAdmin) { renderNav(isAdmin, name); },
           error: function () {
             nav.html(
+              '<a href="/problems/list.html">문제목록</a>' +
               '<a href="/community/community.html">커뮤니티</a>' +
-              '<a href="/login/login.html">로그인</a><a href="/login/signUp.html">회원가입</a>'
+              '<a href="/login/login.html">로그인</a>' +
+              '<a href="/login/signUp.html">회원가입</a>'
             );
             userInfo.hide();
           }
         });
       }
 
-      // 이름 저장/갱신 
       function getNameFromStorage() {
         return localStorage.getItem('name');
       }
@@ -165,7 +172,6 @@
       }
   
       if (accessToken) {
-        // 바로 admin체크 + 이름 표시
         checkAdminAndRender(accessToken, getNameFromStorage());
       } else if (refreshToken) {
         $.ajax({
@@ -176,21 +182,25 @@
           success: function (res) {
             localStorage.setItem('token', res.accessToken);
             localStorage.setItem('refreshToken', res.refreshToken);
-            setNameToStorage(res.name); // 서버에서 내려준 name 저장
+            setNameToStorage(res.name);
             checkAdminAndRender(res.accessToken, res.name);
           },
           error: function () {
             nav.html(
+              '<a href="/problems/list.html">문제목록</a>' +
               '<a href="/community/community.html">커뮤니티</a>' +
-              '<a href="/login/login.html">로그인</a><a href="/login/signUp.html">회원가입</a>'
+              '<a href="/login/login.html">로그인</a>' +
+              '<a href="/login/signUp.html">회원가입</a>'
             );
             userInfo.hide();
           }
         });
       } else {
         nav.html(
+          '<a href="/problems/list.html">문제목록</a>' +
           '<a href="/community/community.html">커뮤니티</a>' +
-          '<a href="/login/login.html">로그인</a><a href="/login/signUp.html">회원가입</a>'
+          '<a href="/login/login.html">로그인</a>' +
+          '<a href="/login/signUp.html">회원가입</a>'
         );
         userInfo.hide();
       }
