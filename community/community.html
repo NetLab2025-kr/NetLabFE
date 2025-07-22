@@ -159,19 +159,29 @@
       const refreshToken = localStorage.getItem('refreshToken');
       const nav = $('#nav-links');
       let isAdmin = false;
-    
-      // 네비 렌더링
+
+      // 네비 렌더링 (토큰 있어도 없어도 다 보여줌)
       function renderNav() {
+        nav.html(`
+          <a href="/index.html">홈</a>
+          <a href="/community/community.html">커뮤니티</a>
+          <a href="/problems/list.html">문제</a>
+          <a href="/login/login.html" id="loginLink">로그인</a>
+          <a href="#" id="logoutBtn" style="display:none;">로그아웃</a>
+        `);
+
         if (token) {
-          nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
+          $('#loginLink').hide();
+          $('#logoutBtn').show();
           userInfo.text(name || '');
           userInfo.show();
         } else {
-          nav.html('<a href="/index.html">홈</a><a href="/login/login.html">로그인</a>');
+          $('#loginLink').show();
+          $('#logoutBtn').hide();
           userInfo.hide();
         }
       }
-    
+
       // 관리자 체크
       function checkAdmin(token, cb) {
         $.ajax({
@@ -188,7 +198,7 @@
           }
         });
       }
-    
+
       // refresh 토큰으로 재시도
       function refreshAndRetry(requestFn) {
         if (!refreshToken) {
@@ -215,7 +225,7 @@
           }
         });
       }
-    
+
       // 질문 목록 불러오기
       function loadQuestions() {
         $.ajax({
@@ -254,7 +264,7 @@
           }
         });
       }
-    
+
       // 초기화: 관리자 체크 후 렌더링
       if (token) {
         checkAdmin(token, function () {
@@ -265,14 +275,14 @@
         renderNav();
         loadQuestions();
       }
-    
+
       // 로그아웃
       $(document).on('click', '#logoutBtn', function () {
         localStorage.clear();
         alert('로그아웃 되었습니다');
         location.href = '/index.html';
       });
-    
+
       // 질문 상세 모달
       $(document).on('click', '.question-list li', function (e) {
         if ($(e.target).hasClass('edit-btn') || $(e.target).hasClass('delete-btn')) return;
@@ -300,40 +310,40 @@
       $('.modal-box').on('click', function(e) {
         e.stopPropagation();
       });
-    
-     // 삭제 버튼 (refresh 자동 적용)
-    $(document).on('click', '.delete-btn', function (e) {
-      e.stopPropagation();
-      if (!confirm('정말 삭제할까요?')) return;
-      const id = $(this).data('id');
 
-      function deleteQuestion(token, isRetry) {
-        // isAdmin 여부에 따라 URL 분기
-        const url = isAdmin
-          ? `https://be.netlab.kr/api/admin/questions/${id}`
-          : `https://be.netlab.kr/api/questions/${id}`;
+      // 삭제 버튼 (refresh 자동 적용)
+      $(document).on('click', '.delete-btn', function (e) {
+        e.stopPropagation();
+        if (!confirm('정말 삭제할까요?')) return;
+        const id = $(this).data('id');
 
-        $.ajax({
-          url: url,
-          method: 'DELETE',
-          headers: { 'Authorization': 'Bearer ' + token },
-          success: function () {
-            alert('삭제되었습니다.');
-            loadQuestions();
-            $('#modalBg').hide();
-          },
-          error: function (xhr) {
-            if (xhr.status === 401 && !isRetry) {
-              refreshAndRetry(newToken => deleteQuestion(newToken, true));
-            } else {
-              alert('삭제 실패: ' + (xhr.responseText || xhr.statusText));
+        function deleteQuestion(token, isRetry) {
+          // isAdmin 여부에 따라 URL 분기
+          const url = isAdmin
+            ? `https://be.netlab.kr/api/admin/questions/${id}`
+            : `https://be.netlab.kr/api/questions/${id}`;
+
+          $.ajax({
+            url: url,
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token },
+            success: function () {
+              alert('삭제되었습니다.');
+              loadQuestions();
+              $('#modalBg').hide();
+            },
+            error: function (xhr) {
+              if (xhr.status === 401 && !isRetry) {
+                refreshAndRetry(newToken => deleteQuestion(newToken, true));
+              } else {
+                alert('삭제 실패: ' + (xhr.responseText || xhr.statusText));
+              }
             }
-          }
-        });
-      }
-      deleteQuestion(token, false);
-    });
-    
+          });
+        }
+        deleteQuestion(token, false);
+      });
+
       // 수정 버튼 (refresh 자동 적용)
       $(document).on('click', '.edit-btn', function (e) {
         e.stopPropagation();
@@ -353,7 +363,7 @@
               </div>
             `);
             $('#modalBg').css('display', 'flex');
-    
+
             // 저장
             $('#saveEditBtn').off('click').on('click', function () {
               const newTitle = $('#editTitle').val().trim();
@@ -385,7 +395,7 @@
               }
               updateQuestion(token, false);
             });
-    
+
             // 취소
             $('#cancelEditBtn').off('click').on('click', function () {
               $('#modalBg').hide();
@@ -394,6 +404,7 @@
         });
       });
     });
+
     </script>
     
 </body>
