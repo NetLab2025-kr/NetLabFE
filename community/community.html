@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>커뮤니티 - 질문 목록</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
+    /* 스타일은 그대로 유지하세요 */
     * { box-sizing: border-box; }
     body {
       font-family: 'Pretendard', sans-serif;
@@ -59,8 +60,8 @@
     .modal-box {
       background: #fff;
       border-radius: 14px;
-      max-width: 900px;       /* 최대 크기 확대 */
-      width: 98vw;            /* 거의 전체 */
+      max-width: 900px;
+      width: 98vw;
       min-height: 340px;
       padding: 50px 40px 40px 40px;
       box-shadow: 0 10px 40px #2222;
@@ -71,14 +72,14 @@
       animation: fadein 0.12s;
     }
     .modal-title {
-      font-size: 28px;        /* 제목 폰트 키움 */
+      font-size: 28px;
       font-weight: 700;
       color: #3DAEFA;
       margin-bottom: 16px;
       word-break: break-all;
     }
     .modal-title-edit {
-      font-size: 22px;        /* 제목 input 크게 */
+      font-size: 22px;
       font-weight: 600;
       width: 100%;
       padding: 16px 12px;
@@ -87,12 +88,12 @@
       margin-bottom: 18px;
     }
     .modal-meta {
-      font-size: 16px;        /* 작성자/날짜 크기 */
+      font-size: 16px;
       color: #7a869a;
       margin-bottom: 22px;
     }
     .modal-content {
-      font-size: 18px;        /* 내용 폰트 크기 */
+      font-size: 18px;
       color: #222;
       margin-bottom: 30px;
       white-space: pre-line;
@@ -102,7 +103,7 @@
       border: 1.5px solid #b3d6f6;
       border-radius: 10px;
       padding: 20px;
-      min-height: 160px;      /* 높이 키움 */
+      min-height: 160px;
       font-size: 18px;
       margin-bottom: 30px;
     }
@@ -154,36 +155,45 @@
     $(document).ready(function () {
       const userInfo = $('#user-info');
       const name = localStorage.getItem('name');
-      if (name) {
-        userInfo.text(name);
-        userInfo.show();
-      } else {
-        userInfo.hide();
-      }
-
-      // 네비(로그인/로그아웃) - 절대경로
       const token = localStorage.getItem('token');
       const refreshToken = localStorage.getItem('refreshToken');
       const nav = $('#nav-links');
-      if (token) {
-        nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
-      } else {
-        nav.html('<a href="/index.html">홈</a><a href="/login/login.html">로그인</a>');
+      let isAdmin = false;
+    
+      // 네비 렌더링
+      function renderNav() {
+        if (token) {
+          nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
+          userInfo.text(name || '');
+          userInfo.show();
+        } else {
+          nav.html('<a href="/index.html">홈</a><a href="/login/login.html">로그인</a>');
+          userInfo.hide();
+        }
       }
-      $(document).on('click', '#logoutBtn', function () {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('name');
-        alert('로그아웃 되었습니다');
-        location.href = '/index.html';
-      });
-
-      // ---- refresh 자동 갱신 공통 함수 ----
+    
+      // 관리자 체크
+      function checkAdmin(token, cb) {
+        $.ajax({
+          url: 'https://be.netlab.kr/api/auth/is-admin',
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + token },
+          success: function (res) {
+            isAdmin = res === true;
+            cb();
+          },
+          error: function () {
+            isAdmin = false;
+            cb();
+          }
+        });
+      }
+    
+      // refresh 토큰으로 재시도
       function refreshAndRetry(requestFn) {
         if (!refreshToken) {
-          alert('로그인 정보가 만료되었습니다. 다시 로그인 해주세요!');
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
+          alert('로그인 정보 만료, 다시 로그인하세요!');
+          localStorage.clear();
           window.location.href = "/login/login.html";
           return;
         }
@@ -195,18 +205,18 @@
           success: function (res) {
             localStorage.setItem('token', res.accessToken);
             localStorage.setItem('refreshToken', res.refreshToken);
-            requestFn(res.accessToken); // 새 accessToken으로 재시도
+            localStorage.setItem('name', res.name || '');
+            requestFn(res.accessToken);
           },
           error: function () {
-            alert('로그인 정보가 만료되었습니다. 다시 로그인 해주세요!');
-            localStorage.removeItem('token');
-            localStorage.removeItem('refreshToken');
+            alert('로그인 정보 만료, 다시 로그인하세요!');
+            localStorage.clear();
             window.location.href = "/login/login.html";
           }
         });
       }
-
-      // ---- 질문 목록 조회 ----
+    
+      // 질문 목록 불러오기
       function loadQuestions() {
         $.ajax({
           url: 'https://be.netlab.kr/api/questions',
@@ -220,15 +230,18 @@
             } else {
               res.reverse().forEach(q => {
                 const isMine = (name && name === q.author);
+                const buttons = isAdmin || isMine
+                  ? `
+                    <button class="edit-btn" data-id="${q.id}" ${isAdmin ? 'style="display:none;"' : ''}>수정</button>
+                    <button class="delete-btn" data-id="${q.id}">삭제</button>
+                  `
+                  : '';
                 const item = $(`
                   <li data-id="${q.id}">
                     <div class="question-title">${q.title}</div>
                     <div class="question-meta">
                       작성자: ${q.author} | 작성일: ${q.createdAt ? q.createdAt.replace('T', ' ').slice(0,19) : ''}
-                      ${isMine ? `
-                        <button class="edit-btn" data-id="${q.id}">수정</button>
-                        <button class="delete-btn" data-id="${q.id}">삭제</button>
-                      ` : ''}
+                      ${buttons}
                     </div>
                   </li>
                 `);
@@ -241,9 +254,26 @@
           }
         });
       }
-      loadQuestions();
-
-      // ---- 질문 상세 모달 ----
+    
+      // 초기화: 관리자 체크 후 렌더링
+      if (token) {
+        checkAdmin(token, function () {
+          renderNav();
+          loadQuestions();
+        });
+      } else {
+        renderNav();
+        loadQuestions();
+      }
+    
+      // 로그아웃
+      $(document).on('click', '#logoutBtn', function () {
+        localStorage.clear();
+        alert('로그아웃 되었습니다');
+        location.href = '/index.html';
+      });
+    
+      // 질문 상세 모달
       $(document).on('click', '.question-list li', function (e) {
         if ($(e.target).hasClass('edit-btn') || $(e.target).hasClass('delete-btn')) return;
         const id = $(this).data('id');
@@ -270,8 +300,8 @@
       $('.modal-box').on('click', function(e) {
         e.stopPropagation();
       });
-
-      // ---- 삭제 버튼 클릭 (refresh 자동 적용) ----
+    
+      // 삭제 버튼 (refresh 자동 적용)
       $(document).on('click', '.delete-btn', function (e) {
         e.stopPropagation();
         if (!confirm('정말 삭제할까요?')) return;
@@ -297,8 +327,8 @@
         }
         deleteQuestion(token, false);
       });
-
-      // ---- 수정 버튼 클릭 (refresh 자동 적용) ----
+    
+      // 수정 버튼 (refresh 자동 적용)
       $(document).on('click', '.edit-btn', function (e) {
         e.stopPropagation();
         const id = $(this).data('id');
@@ -317,7 +347,7 @@
               </div>
             `);
             $('#modalBg').css('display', 'flex');
-
+    
             // 저장
             $('#saveEditBtn').off('click').on('click', function () {
               const newTitle = $('#editTitle').val().trim();
@@ -349,7 +379,7 @@
               }
               updateQuestion(token, false);
             });
-
+    
             // 취소
             $('#cancelEditBtn').off('click').on('click', function () {
               $('#modalBg').hide();
@@ -358,6 +388,7 @@
         });
       });
     });
-  </script>
+    </script>
+    
 </body>
 </html>
