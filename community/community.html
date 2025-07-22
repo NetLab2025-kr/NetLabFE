@@ -165,26 +165,28 @@
 
       // 네비 렌더링 (토큰 있어도 없어도 다 보여줌)
       function renderNav() {
-        nav.html(`
-          <a href="/index.html">홈</a>
-          <a href="/problems/list.html">문제목록</a>
-          <a href="/community/community.html">커뮤니티</a>
-          <a href="/login/login.html" id="loginLink">로그인</a>
-          <a href="/login/signUp.html">회원가입</a>
-          <a href="#" id="logoutBtn" style="display:none;">로그아웃</a>
-        `);
+      nav.html(`
+        <a href="/index.html">홈</a>
+        <a href="/problems/list.html">문제목록</a>
+        <a href="/community/community.html">커뮤니티</a>
+        <a href="/login/login.html" id="loginLink">로그인</a>
+        <a href="/login/signUp.html" id="signUpLink">회원가입</a>
+        <a href="#" id="logoutBtn" style="display:none;">로그아웃</a>
+      `);
 
-        if (token) {
-          $('#loginLink').hide();
-          $('#logoutBtn').show();
-          userInfo.text(name || '');
-          userInfo.show();
-        } else {
-          $('#loginLink').show();
-          $('#logoutBtn').hide();
-          userInfo.hide();
-        }
+      if (token) {
+        $('#loginLink').hide();
+        $('#signUpLink').hide();   // 회원가입 버튼 숨김
+        $('#logoutBtn').show();
+        userInfo.text(name || '');
+        userInfo.show();
+      } else {
+        $('#loginLink').show();
+        $('#signUpLink').show();   // 회원가입 버튼 보임
+        $('#logoutBtn').hide();
+        userInfo.hide();
       }
+    }
 
       // 관리자 체크
       function checkAdmin(token, cb) {
