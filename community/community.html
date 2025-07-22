@@ -301,32 +301,38 @@
         e.stopPropagation();
       });
     
-      // 삭제 버튼 (refresh 자동 적용)
-      $(document).on('click', '.delete-btn', function (e) {
-        e.stopPropagation();
-        if (!confirm('정말 삭제할까요?')) return;
-        const id = $(this).data('id');
-        function deleteQuestion(token, isRetry) {
-          $.ajax({
-            url: `https://be.netlab.kr/api/questions/${id}`,
-            method: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + token },
-            success: function () {
-              alert('삭제되었습니다.');
-              loadQuestions();
-              $('#modalBg').hide();
-            },
-            error: function (xhr) {
-              if (xhr.status === 401 && !isRetry) {
-                refreshAndRetry(newToken => deleteQuestion(newToken, true));
-              } else {
-                alert('삭제 실패: ' + (xhr.responseText || xhr.statusText));
-              }
+     // 삭제 버튼 (refresh 자동 적용)
+    $(document).on('click', '.delete-btn', function (e) {
+      e.stopPropagation();
+      if (!confirm('정말 삭제할까요?')) return;
+      const id = $(this).data('id');
+
+      function deleteQuestion(token, isRetry) {
+        // isAdmin 여부에 따라 URL 분기
+        const url = isAdmin
+          ? `https://be.netlab.kr/api/admin/questions/${id}`
+          : `https://be.netlab.kr/api/questions/${id}`;
+
+        $.ajax({
+          url: url,
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token },
+          success: function () {
+            alert('삭제되었습니다.');
+            loadQuestions();
+            $('#modalBg').hide();
+          },
+          error: function (xhr) {
+            if (xhr.status === 401 && !isRetry) {
+              refreshAndRetry(newToken => deleteQuestion(newToken, true));
+            } else {
+              alert('삭제 실패: ' + (xhr.responseText || xhr.statusText));
             }
-          });
-        }
-        deleteQuestion(token, false);
-      });
+          }
+        });
+      }
+      deleteQuestion(token, false);
+    });
     
       // 수정 버튼 (refresh 자동 적용)
       $(document).on('click', '.edit-btn', function (e) {
