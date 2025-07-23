@@ -245,16 +245,14 @@
               list.append('<li style="text-align:center;color:#aaa;">등록된 질문이 없습니다.</li>');
             } else {
               res.reverse().forEach(q => {
-                const isMine = (name && name === q.author);
-                const buttons = isAdmin || isMine
-                  ? `
-                    <button class="edit-btn" data-id="${q.id}" ${isAdmin ? 'style="display:none;"' : ''}>수정</button>
-                    <button class="delete-btn" data-id="${q.id}">삭제</button>
-                  `
-                  : '';
+                console.log(q);
+                const isNotice = q.notice === true;
+                const titlePrefix = isNotice ? '[공지] ' : '';
+                const titleColor = isNotice ? '#FF3337' : '#2563eb';
+
                 const item = $(`
-                  <li data-id="${q.id}">
-                    <div class="question-title">${q.title}</div>
+                  <li data-id="${q.id}">res.reverse().forEach(q => {
+                    <div class="question-title" style="color:${titleColor};">${titlePrefix}${q.title}</div>
                     <div class="question-meta">
                       작성자: ${q.author} | 작성일: ${q.createdAt ? q.createdAt.replace('T', ' ').slice(0,19) : ''}
                       ${buttons}
