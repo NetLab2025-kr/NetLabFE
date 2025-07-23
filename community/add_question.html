@@ -26,15 +26,13 @@
       z-index: 1000;
       box-shadow: 0 4px 16px rgba(61, 174, 250, 0.06);
     }
-    .navbar .welcome:hover {
-      opacity: 0.85;
-    }
-    .navbar .welcome a { 
+    .navbar .welcome:hover { opacity: 0.85; }
+    .navbar .welcome a {
       color: #fff;
       font-size: 22px;
       font-weight: 700;
       text-decoration: none;
-      letter-spacing: 0.5px; 
+      letter-spacing: 0.5px;
       text-shadow: 0 1px 2px #36a6ee44;
     }
     .navbar #nav-links a {
@@ -48,9 +46,7 @@
       background: transparent;
       transition: background 0.16s;
     }
-    .navbar #nav-links a:hover {
-      background: #379fde;
-    }
+    .navbar #nav-links a:hover { background: #379fde; }
     .navbar #user-name {
       color: #fff;
       font-weight: 600;
@@ -91,10 +87,7 @@
       border: 1.5px solid #3DAEFA;
       background: #f4faff;
     }
-    textarea {
-      height: 140px;
-      resize: vertical;
-    }
+    textarea { height: 140px; resize: vertical; }
     button {
       padding: 13px 38px;
       background: #3DAEFA;
@@ -108,16 +101,7 @@
       box-shadow: 0 2px 8px #3daefa18;
       margin-top: 2px;
     }
-    button:hover {
-      background: #3499d6;
-    }
-    @media (max-width: 700px) {
-      .navbar { padding: 0 12px; height: 54px;}
-      .navbar .welcome a { font-size: 15px;}
-      .container { padding: 20px 4vw 16px 4vw; margin-top: 80px;}
-      input, textarea { font-size: 14px; }
-      button { font-size: 15px; padding: 10px 18px;}
-    }
+    button:hover { background: #3499d6; }
   </style>
 </head>
 <body>
@@ -130,6 +114,10 @@
   </div>
   <div class="container">
     <h1>게시글 등록</h1>
+    <div id="postTypeGroup" style="margin-bottom: 20px; display: none; text-align: left;">
+      <label><input type="radio" name="postType" value="question" checked> 일반 글</label>
+      <label style="margin-left: 20px;"><input type="radio" name="postType" value="notice"> 공지사항</label>
+    </div>
     <input type="text" id="title" placeholder="제목을 입력하세요.">
     <textarea id="content" placeholder="질문 내용을 입력하세요."></textarea>
     <button id="submitBtn">등록하기</button>
@@ -141,6 +129,7 @@
       const nav = $('#nav-links');
       const userNameDiv = $('#user-name');
       const name = localStorage.getItem('name');
+      let isAdmin = false;
 
       function renderNav(loggedIn) {
         if (loggedIn) {
@@ -164,73 +153,79 @@
         }
       }
 
-      renderNav(!!token);
+      function checkAdmin(token, cb) {
+        $.ajax({
+          url: 'https://be.netlab.kr/api/auth/is-admin',
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + token },
+          success: function (res) {
+            isAdmin = res === true;
+            if (isAdmin) $('#postTypeGroup').show();
+            cb();
+          },
+          error: function () { cb(); }
+        });
+      }
+
+      if (token) checkAdmin(token, () => renderNav(true));
+      else renderNav(false);
 
       $(document).on('click', '#logoutBtn', function () {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('name');
+        localStorage.clear();
         alert('로그아웃 되었습니다');
         location.href = '/index.html';
       });
 
-      $('#title').keypress(function(e){
-        if(e.which === 13){
-          $('#submitBtn').click();
-        }
-      });
-
-      $('#content').keydown(function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          $('#submitBtn').click();
-        }
-      });
-
-      function registerQuestion(title, content, accessToken, retry) {
-        $.ajax({
-          url: 'https://be.netlab.kr/api/questions',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({ title, content }),
-          headers: accessToken ? { 'Authorization': 'Bearer ' + accessToken } : {},
-          success: function (res) {
-            alert("질문이 등록되었습니다!");
-            window.location.href = '/community/community.html';
-          },
-          error: function (xhr) {
-            if (xhr.status === 401 && refreshToken && !retry) {
-              $.ajax({
-                url: 'https://be.netlab.kr/api/auth/refresh',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ refreshToken }),
-                success: function (res) {
-                  localStorage.setItem('token', res.accessToken);
-                  localStorage.setItem('refreshToken', res.refreshToken);
-                  registerQuestion(title, content, res.accessToken, true);
-                },
-                error: function () {
-                  localStorage.removeItem('token');
-                  localStorage.removeItem('refreshToken');
-                  alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-                  window.location.href = "/login/login.html";
-                }
-              });
-            } else {
-              alert("등록 실패: " + (xhr.responseText || xhr.statusText));
-            }
-          }
-        });
-      }
-
       $('#submitBtn').click(function () {
         const title = $('#title').val().trim();
         const content = $('#content').val().trim();
+        const postType = $('input[name="postType"]:checked').val();
+
         if (!title || !content) {
           alert('제목과 내용을 모두 입력해주세요.');
           return;
         }
+
+        function registerQuestion(title, content, token, retry) {
+          const url = postType === 'notice'
+            ? 'https://be.netlab.kr/api/admin/notices'
+            : 'https://be.netlab.kr/api/questions';
+
+          $.ajax({
+            url: url,
+            method: 'POST',
+            contentType: 'application/json',
+            headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+            data: JSON.stringify({ title, content }),
+            success: function () {
+              alert(postType === 'notice' ? '공지사항이 등록되었습니다!' : '질문이 등록되었습니다!');
+              window.location.href = '/community/community.html';
+            },
+            error: function (xhr) {
+              if (xhr.status === 401 && refreshToken && !retry) {
+                $.ajax({
+                  url: 'https://be.netlab.kr/api/auth/refresh',
+                  method: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({ refreshToken }),
+                  success: function (res) {
+                    localStorage.setItem('token', res.accessToken);
+                    localStorage.setItem('refreshToken', res.refreshToken);
+                    registerQuestion(title, content, res.accessToken, true);
+                  },
+                  error: function () {
+                    localStorage.clear();
+                    alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+                    window.location.href = "/login/login.html";
+                  }
+                });
+              } else {
+                alert('등록 실패: ' + (xhr.responseText || xhr.statusText));
+              }
+            }
+          });
+        }
+
         registerQuestion(title, content, token, false);
       });
     });
