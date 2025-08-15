@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //전역 jsPlumb 세팅
   const instance = jsPlumb.newInstance({
-    Container: topology_inner
+    container: topology_inner
   });
 
   // ---------------------------------
