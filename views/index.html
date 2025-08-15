@@ -1,254 +1,204 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetLab</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-    <link rel="stylesheet" href="../assets/css/main_style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetLab</title>
 
-    <!-- 기존 의존성 (그대로 유지) -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/js/jsplumb.min.js"></script>
-    <script type="module" src="../PUBLIC/JS/main.js"></script>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="../assets/css/main_style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <style>
-      /* 간단한 네비바 스타일 (필요시 index.css로 이동 가능) */
-      .navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #eee}
-      .navbar .brand{font-weight:700;text-decoration:none;color:#111}
-      #nav-links a{margin-right:12px;text-decoration:none;color:#333}
-      .user-info{margin-left:8px;color:#666}
-    </style>
-  </head>
+  <!-- 기존 의존성 (그대로 유지) -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/js/jsplumb.min.js"></script>
+  <script type="module" src="../PUBLIC/JS/main.js"></script>
+</head>
 
-  <body>
-    <!-- 공통 네비바 -->
-    <div class="navbar">
-      <a class="brand" href="/index.html">NetLab</a>
-      <div class="right-group" style="display:flex;align-items:center;">
-        <div id="nav-links"></div>
-        <div class="user-info" id="user-info" style="display:none;"></div>
+<body>
+  <!-- ===== 네비바 전체 제거됨 ===== -->
+
+  <!-- 기존 페이지 UI -->
+  <div id="top-view">
+    <div id="top-bar">
+      <div id="tap">
+        <button class="tap" id="problem">Problem</button>
+        <button class="tap" id="cli">CLI</button>
+        <button class="tap" id="topology">Topology</button>
       </div>
-    </div>
 
-    <!-- 기존 페이지 UI -->
-    <div id="top-view">
-      <div id="top-bar">
-        <div id="tap">
-          <button class="tap" id="problem">Problem</button>
-          <button class="tap" id="cli">CLI</button>
-          <button class="tap" id="topology">Topology</button>
+      <div id="bar">
+        <!-- 문제 탭 -->
+        <div id="problem-box">
+          <div id="problem-head">
+            <h1 id="problem-title">Problem 1 - Routing</h1>
+            <h2 class="problem-level">easy</h2>
+          </div>
+          <div id="problem-content">로딩 중...</div>
         </div>
 
-        <div id="bar">
-          <!-- 문제 탭 -->
-          <div id="problem-box">
-            <div id="problem-head">
-              <h1 id="problem-title">Problem 1 - Routing</h1>
-              <h2 class="problem-level">easy</h2>
-            </div>
-            <div id="problem-content">로딩 중...</div>
+        <!-- topology 창 -->
+        <div id="Device-box">
+          <div id="device-change">
+            <button class="device_change" id="nd">Network Device</button>
+            <button class="device_change" id="ed">End Device</button>
+            <button class="device_change" id="cn">Connection</button>
           </div>
 
-          <!-- topology 창 (기존 그대로) -->
-          <div id="Device-box">
-            <div id="device-change">
-              <button class="device_change" id="nd">Network Device</button>
-              <button class="device_change" id="ed">End Device</button>
-              <button class="device_change" id="cn">Connection</button>
-            </div>
-
-            <div id="device-nd">
-              <button class="tools" id="router" data-type="router">
-                <img src="../assets/router.png" title="Router" draggable="false">
-              </button>
-              <button class="tools" id="switch" data-type="switch">
-                <img src="../assets/switch.png" title="Switch" draggable="false">
-              </button>
-              <button class="tools" id="hub" data-type="hub">
-                <img src="" title="Hub" draggable="false">
-              </button>
-            </div>
-
-            <div id="device-ed">
-              <button class="tools" id="pc">
-                <img src="" title="PC" draggable="false">
-              </button>
-              <button class="tools" id="labtop">
-                <img src="" title="Labtop" draggable="false">
-              </button>
-              <button class="tools" id="server">
-                <img src="" title="Server" draggable="false">
-              </button>
-            </div>
-
-            <div id="device-cn">
-              <button class="connections" id="console_line">
-                <img src="/assets/console.png" title="Console" draggable="false">
-              </button>
-              <button class="connections" id="straight_line">
-                <img src="/assets/direct.png" title="Copper Straight-Through" draggable="false">
-              </button>
-              <button class="connections" id="cross_line">
-                <img src="" title="Copper Cross-over" draggable="false">
-              </button>
-              <button class="connections" id="fiver_line">
-                <img src="" title="Fiber" draggable="false">
-              </button>
-              <button class="connections" id="serial_line">
-                <img src="/assets/serial.png" title="Serial DTE" draggable="false">
-              </button>
-            </div>
+          <div id="device-nd">
+            <button class="tools" id="router" data-type="router">
+              <img src="../assets/router.png" title="Router" draggable="false">
+            </button>
+            <button class="tools" id="switch" data-type="switch">
+              <img src="../assets/switch.png" title="Switch" draggable="false">
+            </button>
+            <button class="tools" id="hub" data-type="hub">
+              <img src="" title="Hub" draggable="false">
+            </button>
           </div>
 
-          <!-- CLI 창 -->
-          <div id="cli-container" style="display: none">
-            <div class="cli-box">
-              <div class="cli-output">
-                <div class="cli-input-line">
-                  <span class="cli-prompt">Router&gt;</span>
-                  <input class="cli-input" type="text" autocomplete="off">
-                </div>
+          <div id="device-ed">
+            <button class="tools" id="pc">
+              <img src="" title="PC" draggable="false">
+            </button>
+            <button class="tools" id="labtop">
+              <img src="" title="Labtop" draggable="false">
+            </button>
+            <button class="tools" id="server">
+              <img src="" title="Server" draggable="false">
+            </button>
+          </div>
+
+          <div id="device-cn">
+            <button class="connections" id="console_line">
+              <img src="/assets/console.png" title="Console" draggable="false">
+            </button>
+            <button class="connections" id="straight_line">
+              <img src="/assets/direct.png" title="Copper Straight-Through" draggable="false">
+            </button>
+            <button class="connections" id="cross_line">
+              <img src="" title="Copper Cross-over" draggable="false">
+            </button>
+            <button class="connections" id="fiver_line">
+              <img src="" title="Fiber" draggable="false">
+            </button>
+            <button class="connections" id="serial_line">
+              <img src="/assets/serial.png" title="Serial DTE" draggable="false">
+            </button>
+          </div>
+        </div>
+
+        <!-- CLI 창 -->
+        <div id="cli-container" style="display: none">
+          <div class="cli-box">
+            <div class="cli-output">
+              <div class="cli-input-line">
+                <span class="cli-prompt">Router&gt;</span>
+                <input class="cli-input" type="text" autocomplete="off">
               </div>
             </div>
           </div>
+        </div>
 
-          <div id="setting-box" style="display: none">
-            <div class="input" id="ip">
-              <p>IPv4</p>
-              <input type="text">
-            </div>
-            <div class="input" id="subnet">
-              <p>Subnet Mask</p>
-              <input type="text">
-            </div>
-            <div class="input" id="gateway">
-              <p>Default Gateway</p>
-              <input type="text">
-            </div>
+        <div id="setting-box" style="display: none">
+          <div class="input" id="ip">
+            <p>IPv4</p>
+            <input type="text">
+          </div>
+          <div class="input" id="subnet">
+            <p>Subnet Mask</p>
+            <input type="text">
+          </div>
+          <div class="input" id="gateway">
+            <p>Default Gateway</p>
+            <input type="text">
           </div>
         </div>
       </div>
-
-      <div id="background">
-        <div id="topology-frame">
-          <div id="topology-inner"></div>
-        </div>
-      </div>
     </div>
 
-    <div id="bottom-view">
-      <div id="time-about">
-        <div id="time-left">
-          <h5 id="time-shower">Time:  00:00:00</h5>
-          <button id="tap-updown">Tap Down</button>
-        </div>
-        <div id="time-right">
-          <button id="skip">skip</button>
-          <button id="back">back</button>
-        </div>
+    <div id="background">
+      <div id="topology-frame">
+        <div id="topology-inner"></div>
       </div>
     </div>
+  </div>
 
-    <!-- 공통 네비바 스크립트 + 문제 상세 로딩 -->
-    <script>
-      // ====== 네비바 렌더/토큰 처리 ======
-      (function () {
-        const accessToken = localStorage.getItem('token');
-        const refreshToken = localStorage.getItem('refreshToken');
-        const nav = $('#nav-links');
-        const userInfo = $('#user-info');
+  <div id="bottom-view">
+    <div id="time-about">
+      <div id="time-left">
+        <h5 id="time-shower">Time: 00:00:00</h5>
+        <button id="tap-updown">Tap Down</button>
+      </div>
+      <div id="time-right">
+        <button id="skip">skip</button>
+        <button id="back">back</button>
+      </div>
+    </div>
+  </div>
 
-        function renderNav(isAdmin, name) {
-          let links = '';
-          if (isAdmin) links += '<a href="/admin/index.html">관리자 메뉴</a>';
-          links += '<a href="/problems/list.html">문제목록</a>';
-          links += '<a href="/community/community.html">커뮤니티</a>';
-          links += accessToken || refreshToken
-            ? '<a href="#" id="logoutBtn">로그아웃</a>'
-            : '<a href="/login/login.html">로그인</a><a href="/login/signUp.html">회원가입</a>';
-          nav.html(links);
+  <!-- 토큰 유지 + 관리자 확인만 남김 -->
+  <script>
+    (function () {
+      const accessToken = localStorage.getItem('token');
+      const refreshToken = localStorage.getItem('refreshToken');
 
-          if (name) { userInfo.text(name); userInfo.show(); }
-          else { userInfo.hide(); }
-        }
-
-        function checkAdminAndRender(token, name) {
-          $.ajax({
-            url: "https://be.netlab.kr/api/auth/is-admin",
-            method: "GET",
-            headers: { "Authorization": "Bearer " + token },
-            success: function (isAdmin) { renderNav(isAdmin, name); },
-            error: function () {
-              // 비로그인 네비
-              renderNav(false, null);
-            }
-          });
-        }
-
-        function getStoredName() { return localStorage.getItem('name'); }
-        function setStoredName(n) { if (n) localStorage.setItem('name', n); }
-
-        if (accessToken) {
-          checkAdminAndRender(accessToken, getStoredName());
-        } else if (refreshToken) {
-          $.ajax({
-            url: 'https://be.netlab.kr/api/auth/refresh',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ refreshToken }),
-            success: function (res) {
-              localStorage.setItem('token', res.accessToken);
-              localStorage.setItem('refreshToken', res.refreshToken);
-              setStoredName(res.name);
-              checkAdminAndRender(res.accessToken, res.name);
-            },
-            error: function () {
-              renderNav(false, null);
-            }
-          });
-        } else {
-          renderNav(false, null);
-        }
-
-        $(document).on('click', '#logoutBtn', function (e) {
-          e.preventDefault();
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('name');
-          alert('로그아웃 되었습니다');
-          location.href = '/index.html';
-        });
-      })();
-
-      // ====== 문제 상세 로딩 ======
-      (function () {
-        const PROBLEM_DETAIL_API = id => `https://be.netlab.kr/api/submit/problems/${id}`;
-        const params = new URLSearchParams(location.search);
-        const id = params.get('id');
-        if (!id) { alert('문제 ID가 없습니다'); history.back(); return; }
-
-        const token = localStorage.getItem('token');
-
+      function checkAdmin(token) {
         $.ajax({
-          url: PROBLEM_DETAIL_API(id),
-          method: 'GET',
-          headers: token ? { 'Authorization': 'Bearer ' + token } : undefined,
-          success: function (p) {
-            $('#problem-title').text(p.title || `Problem ${id}`);
-            $('.problem-level').text(p.difficulty || '');
-            $('#problem-content').text(p.description || '내용 없음');
-          },
-          error: function (xhr) {
-            $('#problem-title').text('문제 로딩 실패');
-            $('#problem-content').text(xhr.responseText || xhr.statusText || '에러');
+          url: "https://be.netlab.kr/api/auth/is-admin",
+          method: "GET",
+          headers: { "Authorization": "Bearer " + token }
+        });
+      }
+
+      function setStoredName(n) { if (n) localStorage.setItem('name', n); }
+
+      if (accessToken) {
+        checkAdmin(accessToken);
+      } else if (refreshToken) {
+        $.ajax({
+          url: 'https://be.netlab.kr/api/auth/refresh',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ refreshToken }),
+          success: function (res) {
+            localStorage.setItem('token', res.accessToken);
+            localStorage.setItem('refreshToken', res.refreshToken);
+            setStoredName(res.name);
+            checkAdmin(res.accessToken);
           }
         });
-      })();
-    </script>
-  </body>
-</html>
+      }
+    })();
 
+    // ====== 문제 상세 로딩 ======
+    (function () {
+      const PROBLEM_DETAIL_API = id => `https://be.netlab.kr/api/submit/problems/${id}`;
+      const params = new URLSearchParams(location.search);
+      const id = params.get('id');
+      if (!id) { alert('문제 ID가 없습니다'); history.back(); return; }
+
+      const token = localStorage.getItem('token');
+
+      $.ajax({
+        url: PROBLEM_DETAIL_API(id),
+        method: 'GET',
+        headers: token ? { 'Authorization': 'Bearer ' + token } : undefined,
+        success: function (p) {
+          $('#problem-title').text(p.title || `Problem ${id}`);
+          $('.problem-level').text(p.difficulty || '');
+          $('#problem-content').text(p.description || '내용 없음');
+        },
+        error: function (xhr) {
+          $('#problem-title').text('문제 로딩 실패');
+          $('#problem-content').text(xhr.responseText || xhr.statusText || '에러');
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>
