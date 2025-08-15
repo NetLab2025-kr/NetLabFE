@@ -594,8 +594,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if(!existing) {
-                  if(tempLine) instance.deleteConnection(tempLine);
-                  if(tempTarget) tempTarget.remove();
+                  if(tempLine) {
+                    instance.deleteConnection(tempLine);
+                    console.log('임시 선 연결 해제');
+                  }
+                  if(tempTarget) {
+                    tempTarget.remove();
+                    console.log('임시 엔포 지워짐');
+                  }
 
                   instance.connect({
                     source: firstClicked,
@@ -621,6 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       function moveTempLine(e) {
         if (!tempTarget) return;
+
 
         const rect = topology_inner.getBoundingClientRect();
         const offsetX = tempTarget.offsetWidth / 2;
