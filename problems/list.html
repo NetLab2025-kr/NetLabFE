@@ -29,6 +29,7 @@
         url: 'https://be.netlab.kr/api/submit/problems',
         method: 'GET',
         success: function(res) {
+          console.log('문제 목록:', res);
           const $list = $('#problemList').empty();
           res.forEach(p => {
             const $li = $('<li class="problem-item">').attr('data-id', p.id);
