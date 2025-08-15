@@ -413,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let dragg_default_type = "";
   let scale = 1; //크기
   var firstClicked = null;
+  var tempLine = null;
   window.console_line = ["#03f8fc", "Bezier", "9999 0"];
   window.straight_line = ["#000000", "Straight", "9999 0"];
   window.cross_line = ["#000000", "Straight", "3 2"];
@@ -546,15 +547,48 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('cli-container').appendChild(cli);
 
       }
+
+      function moveTempLine(e) {
+        if(tempLine) {
+          const pos = instance.getOffset(document.getElementById("topology-inner"));
+          const x = e.pageX - pos.left;
+          const y = e.pageY - pos.top;
+
+
+          // 임시 선으 target 위치를 마우스로 이동
+          tempLine.setTarget({
+            x: x,
+            y: y
+          });
+        }
+      }
           
       var elements = document.querySelectorAll(".topology-wrapper");
 
       elements.forEach(function(el) {
         el.addEventListener("click", function() {
           if(document.body.dataset.connection) {
+            var connType = window[document.body.dataset.connection]; // 전역변수 참조
+            var strokeColor = connType[0]; // 색상
+            var connectorType = connType[1]; // 라인 타입
+            var dotline = connType[2]; // 실선 점선
+            
             if (!firstClicked) {
               firstClicked = el;
               el.classList.add("selected");
+
+              tempLine = instance.connect({
+                source: firstClicked,
+                target: firstClicked,
+                connector: connectorType,
+                paintStyle: { stroke: strokeColor, strokeWidth: 3 },
+                anchors: ["Continuous", "Continuous"],
+                overlays: []
+              });
+
+              // 마우스 커서 따라다님
+              document.addEventListener('mousemove', moveTempLine);
+              
             } else {
               if (firstClicked !== el) {
                 console.log(`firstClicked = ${firstClicked.id}, el = ${el.id}`);
@@ -564,10 +598,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if(!existing) {
-                  let connType = window[document.body.dataset.connection]; // 전역변수 참조
-                  let strokeColor = connType[0]; // 색상
-                  let connectorType = connType[1]; // 라인 타입
-                  let dotline = connType[2]; // 실선 점선
 
                   instance.connect({
                     source: firstClicked.id,
@@ -577,7 +607,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     anchor: "Center"
                   });
                 }
+                if(tempLine) instance.deleteConnection(tempLine);
                 firstClicked?.classList.remove("selected");
+                tempLine = null;
                 firstClicked = null;
                 document.body.dataset.connection = "";
                 return;
