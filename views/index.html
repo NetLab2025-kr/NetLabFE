@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSecSim-Project</title>
+
+    <link rel="stylesheet" href="../assets/css/main_style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/js/jsplumb.min.js"></script>
+    <script type="module" src="../JS/main.js"></script>
+  </head>
+  <body>
+    <div id="top-view">
+      <div id="top-bar">
+        <div id="tap">
+          <!-- 탭 전환 버튼 -->
+          <button class="tap" id="problem">Problem</button>
+          <button class="tap" id="cli">CLI</button>
+          <button class="tap" id="topology">Topology</button>
+        </div>
+
+        <div id="bar">
+          <!-- 문제 탭 -->
+          <div id="problem-box">
+            <div id="problem-head">
+              <h1 id="problem-title">Problem 1 - Routing</h1>
+              <h2 class="problem-level">easy</h2>
+            </div>
+            <div id="problem-content">로딩 중...</div>
+          </div>
+
+          <!-- topology 창 -->
+          <div id="Device-box">
+            <div id="device-change">
+              <button class="device_change" id="nd">Network Device</button>
+              <button class="device_change" id="ed">End Device</button>
+              <button class="device_change" id="cn">Connection</button>
+            </div>
+
+            <div id="device-nd">
+              <button class="tools" id="router" data-type="router">
+                <img src="../assets/router.png" title="Router" draggable="false">
+              </button>
+              <button class="tools" id="switch" data-type="switch">
+                <img src="../assets/switch.png" title="Switch" draggable="false">
+              </button>
+              <button class="tools" id="hub" data-type="hub">
+                <img src="" title="Hub" draggable="false">
+              </button>
+            </div>
+
+            <div id="device-ed">
+              <button class="tools" id="pc">
+                <img src="" title="PC" draggable="false">
+              </button>
+              <button class="tools" id="labtop">
+                <img src="" title="Labtop" draggable="false">
+              </button>
+              <button class="tools" id="server">
+                <img src="" title="Server" draggable="false">
+              </button>
+            </div>
+
+            <div id="device-cn">
+              <button class="connections" id="console_line">
+                <img src="/assets/console.png" title="Console" draggable="false">
+              </button>
+              <button class="connections" id="straight_line">
+                <img src="/assets/direct" title="Copper Straight-Through" draggable="false">
+              </button>
+              <button class="connections" id="cross_line">
+                <img src="" title="Copper Cross-over" draggable="false">
+              </button>
+              <button class="connections" id="fiver_line">
+                <img src="" title="Fiber" draggable="false">
+              </button>
+              <button class="connections" id="serial_line">
+                <img src="/assets/serial.png" title="Serial DTE" draggable="false">
+              </button>
+            </div>
+          </div>
+
+          <!-- CLI 창 -->
+          <div id="cli-container" style="display: none">
+            <div class="cli-box">
+              <!-- 입력한 명령어들 위에 뜨는 출력창 -->
+              <div class="cli-output">
+                <!-- 입력창 큰 틀 -->
+                <div class="cli-input-line">
+                  <!-- 상태(hostname, 권한 등) -->
+                  <span class="cli-prompt">Router&gt;</span>
+                  <!-- 입력창 -->
+                  <input class="cli-input" type="text" autocomplete="off">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="setting-box" style="display: none">
+            <div class="input" id="ip">
+              <p>IPv4</p>
+              <input type="text">
+            </div>
+            <div class="input" id="subnet">
+              <p>Subnet Mask</p>
+              <input type="text">
+            </div>
+            <div class="input" id="gateway">
+              <p>Default Gateway</p>
+              <input type="text">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="background">
+        <div id="topology-frame">
+          <div id="topology-inner"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="bottom-view">
+      <div id="time-about">
+        <div id="time-left">
+          <h5 id="time-shower">Time:  00:00:00</h5>
+          <button id="tap-updown">Tap Down</button>
+        </div>
+        <div id="time-right">
+          <button id="skip">skip</button>
+          <button id="back">back</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

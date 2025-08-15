@@ -1,0 +1,25 @@
+{
+  "name": "netlabfe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NetLab2025-kr/NetLabFE.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NetLab2025-kr/NetLabFE/issues"
+  },
+  "homepage": "https://github.com/NetLab2025-kr/NetLabFE#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "jsplumb": "^2.15.6",
+    "node": "^24.6.0",
+    "path": "^0.12.7"
+  }
+}
