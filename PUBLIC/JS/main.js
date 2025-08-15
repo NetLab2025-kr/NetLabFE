@@ -611,7 +611,6 @@ document.addEventListener('DOMContentLoaded', () => {
               
             } else {
               if (firstClicked !== el) {
-                console.log(`firstClicked = ${firstClicked.id}, el = ${el.id}`);
                 var existing = instance.getConnections().some(function(conn) {
                   return (conn.source.id === firstClicked.id && conn.target.id === el.id) ||
                          (conn.source.id === el.id && conn.target.id === firstClicked.id);
@@ -620,14 +619,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(!existing) {
                   console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
                   console.log(`elObject = ${el}, elid = ${el.id}`);
-                  instance.connect({
-                    source: firstClicked,
-                    target: el,
-                    connector: connectorType,
-                    paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                    anchor: ["Center", "Center"]
-                  });
-                  console.log('실선 연결 된건가?');
 
                   if(tempLine) {
                     instance.deleteConnection(tempLine);
@@ -640,6 +631,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     tempTarget = null;
                     console.log('임시 엔포 지워짐');
                   }
+
+                  instance.connect({
+                    source: firstClicked,
+                    target: el,
+                    connector: connectorType,
+                    paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
+                    anchor: ["Center", "Center"]
+                  });
+                  console.log('실선 연결 된건가?');
                 }
 
                 firstClicked?.classList.remove("selected");
@@ -651,6 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if(tempTarget) {
                   tempTarget.cleanupMouseMove();
+                  tempTarget.remove();
                   tempTarget = null;
                   console.log('임시 엔포 지워짐');
                 }
