@@ -404,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const topology_frame = document.getElementById('topology-frame');
   const topology_inner = document.getElementById('topology-inner');
   const buttons = bar.getElementsByClassName('tools');
+  const tempTarget = null;
 
   var selectedDeviceId = null;
   let current_names= new Map(); //현재 존재하는 토폴로지 {토폴로지 이름 : 토폴로지 객체}
@@ -563,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
               firstClicked = el;
               el.classList.add("selected");
 
-              const tempTarget = document.createElement('div');
+              tempTarget = document.createElement('div');
               tempTarget.style.width = "1px";
               tempTarget.style.height = "1px";
               tempTarget.style.position = "absolute";
@@ -615,6 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       function moveTempLine(e) {
+        if(!tempTarget) return;
         const offsetX = tempTarget.offsetWidth / 2;
         const offsetY = tempTarget.offsetHeight / 2;
 
