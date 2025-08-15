@@ -108,7 +108,7 @@
       $(document).on('click', '.problem-item', function () {
         const id = $(this).data('id');
         if (!confirm('문제를 풀러 가시겠습니까?')) return;
-        location.href = `/views/index.html?id=${encodeURIComponent(id)}`;
+        window.open(`/views/index.html?id=${encodeURIComponent(id)}`, '_blank', 'noopener,noreferrer');
       });
     });
   </script>
