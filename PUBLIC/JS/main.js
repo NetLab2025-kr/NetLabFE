@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //전역 jsPlumb 세팅
   const instance = jsPlumb.getInstance({
-    Container: "topology-inner"
+    Container: topology_inner
   });
 
   // ---------------------------------
@@ -575,7 +575,8 @@ document.addEventListener('DOMContentLoaded', () => {
               tempLine =  instance.connect({
                 source: firstClicked,
                 target: tempTarget,
-                connector: connectorType,
+                connector: [connectorType, connectorType],
+                paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
                 overlays: []
               });
 
@@ -591,20 +592,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if(!existing) {
-
                   instance.connect({
                     source: firstClicked.id,
                     target: el.id,
                     connector: connectorType,
                     paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                    anchor: "Center"
+                    anchor: ["Center", "Center"]
                   });
                 }
+
+                //임시 선 및 다른 요소 제거
                 if(tempLine) instance.deleteConnection(tempLine);
-                if(tempTarget) document.body.removeChild(tempTarget);
+                if(tempTarget) tempTarget.remove();
 
                 firstClicked?.classList.remove("selected");
                 tempLine = null;
+                tempTarget = null;
                 firstClicked = null;
                 document.removeEventListener('mousemove', moveTempLine);
                 document.body.dataset.connection = "";
@@ -616,13 +619,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       function moveTempLine(e) {
-        if(!tempTarget) return;
-        const offsetX = tempTarget.offsetWidth / 2;
-        const offsetY = tempTarget.offsetHeight / 2;
+        if (!tempLine || !tempTarget) return;
+        
+        const rect = topology_inner.getBoundingClientRect();
+        const x = e.pageX - rect.left;
+        const y = e.pageY - rect.top;
 
-        tempTarget.style.left = e.pageX - offsetX + "px";
-        tempTarget.style.top = e.pageY - offsetY + "px";
+        tempLine.setTarget({ x, y });
       }
+
       
 
       // 새 기기 선택 및 부팅 시퀀스 실행
