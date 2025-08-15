@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const topology_frame = document.getElementById('topology-frame');
   const topology_inner = document.getElementById('topology-inner');
   const buttons = bar.getElementsByClassName('tools');
-  const tempTarget = null;
+  let tempTarget = null;
 
   var selectedDeviceId = null;
   let current_names= new Map(); //현재 존재하는 토폴로지 {토폴로지 이름 : 토폴로지 객체}
