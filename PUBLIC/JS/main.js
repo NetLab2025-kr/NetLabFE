@@ -429,7 +429,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //전역 jsPlumb 세팅
   const instance = jsPlumb.newInstance({
-    container: topology_inner
+    container: topology_inner,
+    draggable: true
   });
 
   // ---------------------------------
@@ -532,8 +533,6 @@ document.addEventListener('DOMContentLoaded', () => {
       clone.style.top = `${iy - hh}px`;
 
       topology_inner.appendChild(clone);
-
-      jsPlumb.draggable(clone);
 
 
       // 현재 기기가 라우터나 스위치면 cli 생성 & 클릭시 cli 보이게
