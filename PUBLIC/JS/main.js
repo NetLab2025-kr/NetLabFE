@@ -642,25 +642,25 @@ document.addEventListener('DOMContentLoaded', () => {
                   });
                   console.log('실선 연결 된건가?');
                 }
-              }  
-            }
-            firstClicked?.classList.remove("selected");
+              }
+              firstClicked?.classList.remove("selected");
 
-            if(tempLine) {
-              instance.deleteConnection(tempLine);
-              tempLine = null;
-              console.log('임시 선 연결 해제');
-            }
-            if(tempTarget) {
-              tempTarget.cleanupMouseMove();
-              tempTarget.remove();
-              tempTarget = null;
-              console.log('임시 엔포 지워짐');
-            }
+              if(tempLine) {
+                instance.deleteConnection(tempLine);
+                tempLine = null;
+                console.log('임시 선 연결 해제');
+              }
+              if(tempTarget) {
+                tempTarget.cleanupMouseMove();
+                tempTarget.remove();
+                tempTarget = null;
+                console.log('임시 엔포 지워짐');
+              }
 
-            firstClicked = null;
-            document.body.dataset.connection = "";
-            return;
+              firstClicked = null;
+              document.body.dataset.connection = "";
+              return;
+            }
           }
         });
       });
