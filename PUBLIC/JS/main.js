@@ -599,10 +599,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(!existing) {
                   if(tempLine) {
                     instance.deleteConnection(tempLine);
+                    tempLine = null;
                     console.log('임시 선 연결 해제');
                   }
                   if(tempTarget) {
                     tempTarget.remove();
+                    tempTarget = null;
                     console.log('임시 엔포 지워짐');
                   }
 
@@ -636,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       function moveTempLine(e) {
         console.log('함수 들어옴');
-        if (!tempTarget) {
+        if (!tempTarget || !tempLine) {
           console.log('tempTarget 없음');
           return;
         }
