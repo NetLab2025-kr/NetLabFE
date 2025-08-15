@@ -620,18 +620,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
                   console.log(`elObject = ${el}, elid = ${el.id}`);
 
-                  if(tempLine) {
-                    instance.deleteConnection(tempLine);
-                    tempLine = null;
-                    console.log('임시 선 연결 해제');
-                  }
-                  if(tempTarget) {
-                    tempTarget.cleanupMouseMove();
-                    tempTarget.remove();
-                    tempTarget = null;
-                    console.log('임시 엔포 지워짐');
-                  }
-
                   instance.connect({
                     source: firstClicked,
                     target: el,
