@@ -1,4 +1,4 @@
-//import { createElement } from 'react';
+import { jsPlumb } from "https://cdn.jsdelivr.net/npm/@jsplumb/browser-ui@5.14.0/dist/js/jsplumb.es.js";
 import commands from './command_db.js';
 import default_config from './defaultConfiguration.js';
 
