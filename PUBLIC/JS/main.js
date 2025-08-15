@@ -547,7 +547,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // CLI 생성 및 #cli-container에 추가
         const cli = createCLIInterface(deviceId, dragg_default_name);
         document.getElementById('cli-container').appendChild(cli);
-
       }
 
           
@@ -637,7 +636,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     target: el,
                     connector: connectorType,
                     paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                    anchor: ["Center", "Center"]
+                    anchor: ["Center", "Center"],
+                    overlays: []
                   });
                   console.log('실선 연결 된건가?');
                 }
