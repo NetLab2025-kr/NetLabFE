@@ -565,11 +565,12 @@ document.addEventListener('DOMContentLoaded', () => {
               el.classList.add("selected");
 
               tempTarget = document.createElement('div');
-              tempTarget.style.width = "1px";
-              tempTarget.style.height = "1px";
+              tempTarget.style.width = "10px";
+              tempTarget.style.height = "10px";
               tempTarget.style.position = "absolute";
               tempTarget.style.pointerEvents = "none";
-              document.body.appendChild(tempTarget);
+              tempTarget.style.background = "red"; // 테스트용
+              topology_inner.appendChild(tempTarget);
 
               tempLine =  instance.connect({
                 source: firstClicked,
@@ -577,7 +578,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 connector: connectorType,
                 overlays: []
               });
-
 
               // 마우스 커서 따라다님
               document.addEventListener('mousemove', moveTempLine);
