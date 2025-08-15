@@ -9,7 +9,9 @@
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/js/jsplumb.min.js"></script>
-    <script type="module" src="../JS/main.js"></script>
+    <script type="module" src="../PUBLIC/JS/main.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   </head>
   <body>
     <div id="top-view">
@@ -135,4 +137,34 @@
       </div>
     </div>
   </body>
+  <script>
+    // 상세 API 경로 (필요하면 바꿔)
+    const PROBLEM_DETAIL_API = id => `https://be.netlab.kr/api/submit/problems/${id}`;
+  
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const id = params.get('id');
+      if (!id) { alert('문제 ID가 없습니다'); history.back(); return; }
+  
+      const token = localStorage.getItem('token');
+  
+      $.ajax({
+        url: PROBLEM_DETAIL_API(id),
+        method: 'GET',
+        headers: token ? { 'Authorization': 'Bearer ' + token } : undefined,
+        success: function (p) {
+          // 제목/난이도/본문 채우기
+          $('#problem-title').text(p.title || `Problem ${id}`);
+          $('.problem-level').text(p.difficulty || '');
+          // 본문이 텍스트라면 text(), HTML 렌더가 필요하면 서버에서 sanitize 후 html() 사용
+          $('#problem-content').text(p.description || '내용 없음');
+        },
+        error: function (xhr) {
+          $('#problem-title').text('문제 로딩 실패');
+          $('#problem-content').text(xhr.responseText || xhr.statusText || '에러');
+        }
+      });
+    })();
+  </script>
+  
 </html>

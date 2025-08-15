@@ -6,12 +6,23 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link rel="stylesheet" href="../assets/css/list.css">
-
+  <style>
+    body { font-family: Pretendard, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+    .navbar { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid #eee; }
+    .navbar .brand { font-weight:700; text-decoration:none; color:#111; }
+    #nav-links a { margin-right:12px; text-decoration:none; color:#333; }
+    .user-info { margin-left:8px; color:#666; }
+    .container { max-width:900px; margin:24px auto; padding:0 16px; }
+    #problemList { list-style:none; padding:0; margin:0; }
+    #problemList li { border:1px solid #eee; border-radius:12px; padding:14px; margin-bottom:12px; cursor:pointer; transition:background .15s; }
+    #problemList li:hover { background:#fafafa; }
+    .tags { color:#666; font-size:14px; margin-top:4px; }
+  </style>
 </head>
 <body>
   <div class="navbar">
     <a href="/index.html" class="brand">NetLab</a>
-    <div style="display: flex; align-items: center;">
+    <div style="display:flex; align-items:center;">
       <div id="nav-links"></div>
       <div class="user-info" id="user-info"></div>
     </div>
@@ -23,39 +34,37 @@
   </div>
 
   <script>
-    $(document).ready(function() {
-      const nav = $('#nav-links');
-      const userInfo = $('#user-info');
+    $(function () {
+      // ---- 토큰/유저명 ----
       const token = localStorage.getItem('token');
       const refreshToken = localStorage.getItem('refreshToken');
-      const name = localStorage.getItem('name');
+      const name = localStorage.getItem('name') || '';
+      const $nav = $('#nav-links');
+      const $userInfo = $('#user-info');
 
-      function renderNav() {
+      // ---- 네비 렌더 ----
+      function renderNav(loggedIn) {
         let html = `
+          <a href="/index.html">홈</a>
           <a href="/problems/list.html">문제목록</a>
           <a href="/community/community.html">커뮤니티</a>
         `;
-        if(token) {
+        if (loggedIn) {
           html += `<a href="#" id="logoutBtn">로그아웃</a>`;
-          userInfo.text(name || '');
-          userInfo.show();
+          $userInfo.text(name).show();
         } else {
           html += `
             <a href="/login/login.html">로그인</a>
             <a href="/login/signUp.html">회원가입</a>
           `;
-          userInfo.hide();
+          $userInfo.hide();
         }
-        nav.html(html);
+        $nav.html(html);
       }
 
-      function refreshAndRetry(requestFn) {
-        if (!refreshToken) {
-          alert('로그인 정보 만료, 다시 로그인하세요!');
-          localStorage.clear();
-          window.location.href = "/login/login.html";
-          return;
-        }
+      // ---- 토큰 갱신 ----
+      function refreshAndRender() {
+        if (!refreshToken) { renderNav(false); return; }
         $.ajax({
           url: 'https://be.netlab.kr/api/auth/refresh',
           method: 'POST',
@@ -64,51 +73,52 @@
           success: function (res) {
             localStorage.setItem('token', res.accessToken);
             localStorage.setItem('refreshToken', res.refreshToken);
-            localStorage.setItem('name', res.name || '');
-            renderNav();
+            if (res.name) localStorage.setItem('name', res.name);
+            renderNav(true);
           },
           error: function () {
-            alert('로그인 정보 만료, 다시 로그인하세요!');
             localStorage.clear();
-            window.location.href = "/login/login.html";
+            renderNav(false);
           }
         });
       }
 
-      if(token) {
-        renderNav();
-      } else if(refreshToken) {
-        refreshAndRetry(() => renderNav());
-      } else {
-        renderNav();
-      }
+      // 최초 네비 상태
+      if (token) renderNav(true); else refreshAndRender();
 
-      $(document).on('click', '#logoutBtn', function() {
+      // ---- 로그아웃 ----
+      $(document).on('click', '#logoutBtn', function (e) {
+        e.preventDefault();
         localStorage.clear();
         alert('로그아웃 되었습니다');
-        location.reload();
+        location.href = '/index.html';
       });
 
-      // 문제 목록 불러오기
+      // ---- 문제 목록 불러오기 ----
       $.ajax({
-        url: 'https://be.netlab.kr/api/submit/problems', // 유저용 문제 조회 API 주소
+        url: 'https://be.netlab.kr/api/submit/problems',
         method: 'GET',
         success: function(res) {
-          const list = $('#problemList');
-          list.empty();
+          const $list = $('#problemList').empty();
           res.forEach(p => {
-            list.append(`
-              <li>
-                <div><strong>ID: ${p.id} - ${p.title} (${p.difficulty})</strong></div>
-                <div class="description">${p.description || ''}</div>
-                <div class="tags">태그: ${p.tags}</div>
-              </li>
-            `);
+            // XSS 방지: text()로 채움
+            const $li = $('<li class="problem-item">').attr('data-id', p.id);
+            $li.append($('<div>').append($('<strong>').text(`ID: ${p.id} - ${p.title} (${p.difficulty})`)));
+            $li.append($('<div class="tags">').text(`태그: ${p.tags}`));
+            $list.append($li);
           });
         },
         error: function() {
           alert('문제 목록을 불러오지 못했습니다.');
         }
+      });
+
+      // ---- 문제 클릭 → 확인 → 풀이 페이지로 이동 ----
+      $(document).on('click', '.problem-item', function () {
+        const id = $(this).data('id');
+        if (!confirm('문제를 풀러 가시겠습니까?')) return;
+        // 도착 페이지에서 id로 상세 API 호출해 “로딩 중…” 채우기
+        location.href = `/views/index.html?id=${encodeURIComponent(id)}`;
       });
     });
   </script>
