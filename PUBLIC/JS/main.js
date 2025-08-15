@@ -573,7 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
               tempLine =  instance.connect({
                 source: firstClicked,
                 target: tempTarget,
-                connector: [connectorType, connectorType],
+                connector: connectorType,
                 overlays: []
               });
 
