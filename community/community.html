@@ -29,272 +29,254 @@
       <div id="modalInner"></div>
     </div>
   </div>
-  <script>
-    $(document).ready(function () {
-      const userInfo = $('#user-info');
-      const name = localStorage.getItem('name');
-      const token = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
-      const nav = $('#nav-links');
-      let isAdmin = false;
+  
+    
+</body>
+<script>
+  $(function () {
+    // ===== 공통 상태 =====
+    const userInfo = $('#user-info');
+    const name = localStorage.getItem('name') || '';
+    let token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refreshToken');
+    const nav = $('#nav-links');
+    let isAdmin = false;
 
-      // 네비 렌더링 (토큰 있어도 없어도 다 보여줌)
-      function renderNav() {
-    nav.html(`
-      <a href="/index.html">홈</a>
-      <a href="/problems/list.html">문제목록</a>
-      <a href="/community/community.html">커뮤니티</a>
-      <a href="/login/login.html" id="loginLink">로그인</a>
-      <a href="/login/signUp.html" id="signUpLink">회원가입</a>
-      <a href="#" id="logoutBtn" style="display:none;">로그아웃</a>
-    `);
+    // 안전한 문자열 보정
+    const safeText = s => (s ?? '').toString();
 
-    if (token) {
-      $('#loginLink').hide();
-      $('#signUpLink').hide();   // 회원가입 버튼 숨김
-      $('#logoutBtn').show();
-      userInfo.text(name || '');
-      userInfo.show();
-    } else {
-      $('#loginLink').show();
-      $('#signUpLink').show();   // 회원가입 버튼 보임
-      $('#logoutBtn').hide();
-      userInfo.hide();
-    }
-  }
+    // ===== 네비 =====
+    function renderNav() {
+      nav.html(`
+        <a href="/index.html">홈</a>
+        <a href="/problems/list.html">문제목록</a>
+        <a href="/community/community.html">커뮤니티</a>
+        <a href="/login/login.html" id="loginLink">로그인</a>
+        <a href="/login/signUp.html" id="signUpLink">회원가입</a>
+        <a href="#" id="logoutBtn" style="display:none;">로그아웃</a>
+      `);
 
-      // 관리자 체크
-      function checkAdmin(token, cb) {
-        $.ajax({
-          url: 'https://be.netlab.kr/api/auth/is-admin',
-          method: 'GET',
-          headers: { 'Authorization': 'Bearer ' + token },
-          success: function (res) {
-            isAdmin = res === true;
-            cb();
-          },
-          error: function () {
-            isAdmin = false;
-            cb();
-          }
-        });
-      }
-
-      // refresh 토큰으로 재시도
-      function refreshAndRetry(requestFn) {
-        if (!refreshToken) {
-          alert('로그인 정보 만료, 다시 로그인하세요!');
-          localStorage.clear();
-          window.location.href = "/login/login.html";
-          return;
-        }
-        $.ajax({
-          url: 'https://be.netlab.kr/api/auth/refresh',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({ refreshToken }),
-          success: function (res) {
-            localStorage.setItem('token', res.accessToken);
-            localStorage.setItem('refreshToken', res.refreshToken);
-            localStorage.setItem('name', res.name || '');
-            requestFn(res.accessToken);
-          },
-          error: function () {
-            alert('로그인 정보 만료, 다시 로그인하세요!');
-            localStorage.clear();
-            window.location.href = "/login/login.html";
-          }
-        });
-      }
-
-      // 질문 목록 불러오기
-      function loadQuestions() {
-        $.ajax({
-          url: 'https://be.netlab.kr/api/questions',
-          method: 'GET',
-          dataType: 'json',
-          success: function (res) {
-            const list = $('#questionList');
-            list.empty();
-
-            if (res.length === 0) {
-              list.append('<li style="text-align:center;color:#aaa;">등록된 질문이 없습니다.</li>');
-            } else {
-              res.reverse().forEach(q => {
-                const isNotice = q.notice === true;
-                const titlePrefix = isNotice ? '[공지] ' : '';
-                const titleColor = isNotice ? '#FF3337' : '#2563eb';
-
-                // 수정, 삭제 버튼
-                let buttons = '';
-                if (token && (isAdmin || q.author === name)) {
-                  buttons = `
-                    <button class="edit-btn" data-id="${q.id}">수정</button>
-                    <button class="delete-btn" data-id="${q.id}">삭제</button>
-                  `;
-                }
-
-                const item = $(`
-                  <li data-id="${q.id}">
-                    <div class="question-title" style="color:${titleColor};">${titlePrefix}${q.title}</div>
-                    <div class="question-meta">
-                      작성자: ${q.author} | 작성일: ${q.createdAt ? q.createdAt.replace('T', ' ').slice(0,19) : ''}
-                      ${buttons}
-                    </div>
-                  </li>
-                `);
-                list.append(item);
-              });
-            }
-          },
-          error: function (xhr) {
-            alert('질문 목록 불러오기 실패: ' + xhr.statusText);
-          }
-        });
-      }
-
-
-      // 초기화: 관리자 체크 후 렌더링
       if (token) {
-        checkAdmin(token, function () {
-          renderNav();
-          loadQuestions();
-        });
+        $('#loginLink,#signUpLink').hide();
+        $('#logoutBtn').show();
+        userInfo.text(name).show();
       } else {
-        renderNav();
-        loadQuestions();
+        $('#loginLink,#signUpLink').show();
+        $('#logoutBtn').hide();
+        userInfo.hide();
+      }
+    }
+
+    function checkAdmin(tk, cb) {
+      $.ajax({
+        url: 'https://be.netlab.kr/api/auth/is-admin',
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + tk },
+        complete: function (xhr) {
+          isAdmin = (xhr.status === 200 && xhr.responseJSON === true);
+          cb && cb();
+        }
+      });
+    }
+
+    function refreshAndThen(doWork) {
+      if (!refreshToken) {
+        alert('로그인 정보가 만료되었습니다. 다시 로그인해주세요.');
+        localStorage.clear();
+        location.href = '/login/login.html';
+        return;
+      }
+      $.ajax({
+        url: 'https://be.netlab.kr/api/auth/refresh',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ refreshToken }),
+        success: function (res) {
+          token = res.accessToken;
+          localStorage.setItem('token', res.accessToken);
+          localStorage.setItem('refreshToken', res.refreshToken);
+          if (res.name) localStorage.setItem('name', res.name);
+          doWork && doWork();
+        },
+        error: function () {
+          alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+          localStorage.clear();
+          location.href = '/login/login.html';
+        }
+      });
+    }
+
+    // ===== 목록 렌더링 (모두 text()/val() 사용) =====
+    function renderItem($ul, q, canEdit) {
+      const $li  = $('<li>').attr('data-id', q.id);
+      const $ttl = $('<div>').addClass('question-title')
+                   .text((q.notice ? '[공지] ' : '') + safeText(q.title))
+                   .css('color', q.notice ? '#FF3337' : '#2563eb');
+
+      const meta = `작성자: ${safeText(q.author)} | 작성일: ${q.createdAt ? q.createdAt.replace('T',' ').slice(0,19) : ''}`;
+      const $meta = $('<div>').addClass('question-meta').text(meta);
+
+      if (canEdit) {
+        const $edit = $('<button>').addClass('edit-btn').attr('data-id', q.id).text('수정');
+        const $del  = $('<button>').addClass('delete-btn').attr('data-id', q.id).text('삭제');
+        $meta.append(' ', $edit, ' ', $del);
       }
 
-      // 로그아웃
-      $(document).on('click', '#logoutBtn', function () {
-        localStorage.clear();
-        alert('로그아웃 되었습니다');
-        location.href = '/index.html';
-      });
+      $li.append($ttl, $meta);
+      $ul.append($li);
+    }
 
-      // 질문 상세 모달
-      $(document).on('click', '.question-list li', function (e) {
-        if ($(e.target).hasClass('edit-btn') || $(e.target).hasClass('delete-btn')) return;
-        const id = $(this).data('id');
+    function loadQuestions() {
+      $.ajax({
+        url: 'https://be.netlab.kr/api/questions',
+        method: 'GET',
+        dataType: 'json',
+        success: function (res) {
+          const $list = $('#questionList').empty();
+          if (!res || res.length === 0) {
+            $list.append($('<li>').css({textAlign:'center', color:'#aaa'}).text('등록된 질문이 없습니다.'));
+            return;
+          }
+          res.slice().reverse().forEach(q => {
+            const canEdit = !!token && (isAdmin || q.author === name);
+            renderItem($list, q, canEdit);
+          });
+        },
+        error: () => alert('질문 목록 불러오기 실패')
+      });
+    }
+
+    // ===== 상세 모달 (내용도 text로 넣음) =====
+    $(document).on('click', '.question-list li', function (e) {
+      if ($(e.target).is('.edit-btn,.delete-btn')) return;
+      const id = $(this).data('id');
+
+      $.ajax({
+        url: `https://be.netlab.kr/api/questions/${id}`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (q) {
+          const $box = $('#modalInner').empty();
+          $('<div>').addClass('modal-title').text(safeText(q.title)).appendTo($box);
+          const meta = `작성자: ${safeText(q.author)} | 작성일: ${q.createdAt ? q.createdAt.replace('T',' ').slice(0,19) : ''}`;
+          $('<div>').addClass('modal-meta').text(meta).appendTo($box);
+          $('<div>').addClass('modal-content').text(safeText(q.content)).appendTo($box);
+          $('#modalBg').css('display', 'flex');
+        },
+        error: () => alert('상세 조회 실패')
+      });
+    });
+    $('#closeModal, #modalBg').on('click', function (e) {
+      if (e.target === this) $('#modalBg').hide();
+    });
+    $('.modal-box').on('click', e => e.stopPropagation());
+
+    // ===== 삭제 =====
+    $(document).on('click', '.delete-btn', function (e) {
+      e.stopPropagation();
+      const id = $(this).data('id');
+      if (!confirm('정말 삭제할까요?')) return;
+
+      const doDelete = () => {
+        const url = isAdmin
+          ? `https://be.netlab.kr/api/admin/questions/${id}`
+          : `https://be.netlab.kr/api/questions/${id}`;
+
         $.ajax({
-          url: `https://be.netlab.kr/api/questions/${id}`,
-          method: 'GET',
-          dataType: 'json',
-          success: function (q) {
-            $('#modalInner').html(`
-              <div class="modal-title">${q.title}</div>
-              <div class="modal-meta">작성자: ${q.author} | 작성일: ${q.createdAt ? q.createdAt.replace('T', ' ').slice(0,19) : ''}</div>
-              <div class="modal-content">${q.content}</div>
-            `);
-            $('#modalBg').css('display', 'flex');
+          url, method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token },
+          success: function () {
+            alert('삭제되었습니다.');
+            $('#modalBg').hide();
+            loadQuestions();
           },
           error: function (xhr) {
-            alert('상세 조회 실패: ' + xhr.statusText);
+            if (xhr.status === 401) refreshAndThen(doDelete);
+            else alert('삭제 실패');
           }
         });
-      });
-      $('#closeModal, #modalBg').on('click', function (e) {
-        if (e.target === this) $('#modalBg').hide();
-      });
-      $('.modal-box').on('click', function(e) {
-        e.stopPropagation();
-      });
+      };
+      if (!token) return refreshAndThen(doDelete);
+      doDelete();
+    });
 
-      // 삭제 버튼 (refresh 자동 적용)
-      $(document).on('click', '.delete-btn', function (e) {
-        e.stopPropagation();
-        if (!confirm('정말 삭제할까요?')) return;
-        const id = $(this).data('id');
+    // ===== 수정 =====
+    $(document).on('click', '.edit-btn', function (e) {
+      e.stopPropagation();
+      const id = $(this).data('id');
 
-        function deleteQuestion(token, isRetry) {
-          // isAdmin 여부에 따라 URL 분기
-          const url = isAdmin
-            ? `https://be.netlab.kr/api/admin/questions/${id}`
-            : `https://be.netlab.kr/api/questions/${id}`;
+      $.ajax({
+        url: `https://be.netlab.kr/api/questions/${id}`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (q) {
+          const $box = $('#modalInner').empty();
+          $('<input>').attr({type:'text', id:'editTitle'})
+                      .addClass('modal-title-edit')
+                      .val(q.title || '')
+                      .appendTo($box);
 
-          $.ajax({
-            url: url,
-            method: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + token },
-            success: function () {
-              alert('삭제되었습니다.');
-              loadQuestions();
-              $('#modalBg').hide();
-            },
-            error: function (xhr) {
-              if (xhr.status === 401 && !isRetry) {
-                refreshAndRetry(newToken => deleteQuestion(newToken, true));
-              } else {
-                alert('삭제 실패: ' + (xhr.responseText || xhr.statusText));
-              }
-            }
+          const meta = `작성자: ${safeText(q.author)} | 작성일: ${q.createdAt ? q.createdAt.replace('T',' ').slice(0,19) : ''}`;
+          $('<div>').addClass('modal-meta').text(meta).appendTo($box);
+
+          $('<textarea>').attr('id','editContent')
+                         .addClass('modal-content-edit')
+                         .val(q.content || '')
+                         .appendTo($box);
+
+          const $btns = $('<div>').addClass('modal-btn-group').appendTo($box);
+          $('<button>').addClass('modal-btn-save').attr('id','saveEditBtn').text('저장').appendTo($btns);
+          $('<button>').addClass('modal-btn-cancel').attr('id','cancelEditBtn').text('취소').appendTo($btns);
+
+          $('#modalBg').css('display','flex');
+
+          $('#cancelEditBtn').off('click').on('click', () => $('#modalBg').hide());
+          $('#saveEditBtn').off('click').on('click', function () {
+            const newTitle = $('#editTitle').val().trim();
+            const newContent = $('#editContent').val().trim();
+            if (!newTitle || !newContent) { alert('제목/내용을 입력하세요.'); return; }
+
+            const doUpdate = () => {
+              $.ajax({
+                url: `https://be.netlab.kr/api/questions/${id}`,
+                method: 'PUT',
+                contentType: 'application/json',
+                headers: { 'Authorization': 'Bearer ' + token },
+                data: JSON.stringify({ title: newTitle, content: newContent }),
+                success: function () {
+                  alert('수정 완료!');
+                  $('#modalBg').hide();
+                  loadQuestions();
+                },
+                error: function (xhr) {
+                  if (xhr.status === 401) refreshAndThen(doUpdate);
+                  else alert('수정 실패');
+                }
+              });
+            };
+            if (!token) return refreshAndThen(doUpdate);
+            doUpdate();
           });
-        }
-        deleteQuestion(token, false);
-      });
-
-      // 수정 버튼 (refresh 자동 적용)
-      $(document).on('click', '.edit-btn', function (e) {
-        e.stopPropagation();
-        const id = $(this).data('id');
-        $.ajax({
-          url: `https://be.netlab.kr/api/questions/${id}`,
-          method: 'GET',
-          dataType: 'json',
-          success: function (q) {
-            $('#modalInner').html(`
-              <input type="text" id="editTitle" class="modal-title-edit" value="${q.title.replace(/"/g, '&quot;')}">
-              <div class="modal-meta">작성자: ${q.author} | 작성일: ${q.createdAt ? q.createdAt.replace('T', ' ').slice(0,19) : ''}</div>
-              <textarea id="editContent" class="modal-content-edit">${q.content.replace(/</g, '&lt;')}</textarea>
-              <div class="modal-btn-group">
-                <button class="modal-btn-save" id="saveEditBtn">저장</button>
-                <button class="modal-btn-cancel" id="cancelEditBtn">취소</button>
-              </div>
-            `);
-            $('#modalBg').css('display', 'flex');
-
-            // 저장
-            $('#saveEditBtn').off('click').on('click', function () {
-              const newTitle = $('#editTitle').val().trim();
-              const newContent = $('#editContent').val().trim();
-              if (!newTitle || !newContent) {
-                alert('제목과 내용을 모두 입력하세요.');
-                return;
-              }
-              function updateQuestion(token, isRetry) {
-                $.ajax({
-                  url: `https://be.netlab.kr/api/questions/${id}`,
-                  method: 'PUT',
-                  contentType: 'application/json',
-                  headers: { 'Authorization': 'Bearer ' + token },
-                  data: JSON.stringify({ title: newTitle, content: newContent }),
-                  success: function () {
-                    alert('수정 완료!');
-                    $('#modalBg').hide();
-                    loadQuestions();
-                  },
-                  error: function (xhr) {
-                    if (xhr.status === 401 && !isRetry) {
-                      refreshAndRetry(newToken => updateQuestion(newToken, true));
-                    } else {
-                      alert('수정 실패: ' + (xhr.responseText || xhr.statusText));
-                    }
-                  }
-                });
-              }
-              updateQuestion(token, false);
-            });
-
-            // 취소
-            $('#cancelEditBtn').off('click').on('click', function () {
-              $('#modalBg').hide();
-            });
-          }
-        });
+        },
+        error: () => alert('글 정보를 불러오지 못했습니다.')
       });
     });
 
-    </script>
-    
-</body>
+    // ===== 초기화 =====
+    if (token) {
+      checkAdmin(token, () => { renderNav(); loadQuestions(); });
+    } else {
+      renderNav();
+      loadQuestions();
+    }
+
+    // 로그아웃
+    $(document).on('click', '#logoutBtn', function () {
+      localStorage.clear();
+      alert('로그아웃 되었습니다');
+      location.href = '/index.html';
+    });
+  });
+</script>
+
 </html>
