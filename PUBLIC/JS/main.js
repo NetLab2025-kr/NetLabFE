@@ -618,6 +618,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if(!existing) {
+                  console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
+                  console.log(`elObject = ${el}, elid = ${el.id}`);
                   instance.connect({
                     source: firstClicked,
                     target: el,
@@ -634,6 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   if(tempTarget) {
                     tempTarget.cleanupMouseMove();
+                    tempTarget.remove();
                     tempTarget = null;
                     console.log('임시 엔포 지워짐');
                   }
