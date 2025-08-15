@@ -533,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       topology_inner.appendChild(clone);
 
-      instance.draggable(clone);
+      jsPlumb.draggable(clone);
 
 
       // 현재 기기가 라우터나 스위치면 cli 생성 & 클릭시 cli 보이게
