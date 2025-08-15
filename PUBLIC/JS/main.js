@@ -566,6 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
               el.classList.add("selected");
 
               tempTarget = document.createElement('div');
+              console.log('임시 엔포 생성');
               tempTarget.style.width = "10px";
               tempTarget.style.height = "10px";
               tempTarget.style.position = "absolute";
@@ -581,9 +582,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 anchor: ["Center", "Center"],
                 overlays: []
               });
+              console.log('임시 선 연결');
 
               // 마우스 커서 따라다님
               document.addEventListener('mousemove', moveTempLine);
+              console.log('마우스 이벤트 등록');
               
             } else {
               if (firstClicked !== el) {
@@ -610,11 +613,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
                     anchor: ["Center", "Center"]
                   });
+                  console.log('실선 연결 된건가?');
                 }
 
                 firstClicked?.classList.remove("selected");
+                instance.deleteConnection(tempLine);
+                console.log('이중 연결 해제');
+
                 tempLine = null;
                 tempTarget = null;
+                tempTarget.remove();
+                console.log('이중 엔포 삭제');
+                
                 firstClicked = null;
                 document.removeEventListener('mousemove', moveTempLine);
                 document.body.dataset.connection = "";
@@ -626,7 +636,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       function moveTempLine(e) {
-        if (!tempTarget) return;
+        console.log('함수 들어옴');
+        if (!tempTarget) {
+          console.log('tempTarget 없음');
+          return;
+        }
 
 
         const rect = topology_inner.getBoundingClientRect();
