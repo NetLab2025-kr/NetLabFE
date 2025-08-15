@@ -574,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
               tempLine =  instance.connect({
                 source: firstClicked,
                 target: tempTarget,
-                connector: [connectorType, connectorType],
+                connector: connectorType,
                 paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
                 overlays: []
               });
@@ -618,14 +618,20 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       function moveTempLine(e) {
-        if (!tempLine || !tempTarget) return;
-        
-        const rect = topology_inner.getBoundingClientRect();
-        const x = e.pageX - rect.left;
-        const y = e.pageY - rect.top;
+        if (!tempTarget) return;
 
-        tempLine.setTarget({ x, y });
+        const rect = topology_inner.getBoundingClientRect();
+        const offsetX = tempTarget.offsetWidth / 2;
+        const offsetY = tempTarget.offsetHeight / 2;
+
+        // 마우스 좌표에 맞춰 위치 변경
+        tempTarget.style.left = (e.clientX - rect.left - offsetX) + "px";
+        tempTarget.style.top  = (e.clientY - rect.top - offsetY) + "px";
+
+        // jsPlumb에 "이거 위치 바뀌었으니 다시 계산해" 요청
+        instance.revalidate(tempTarget);
       }
+
 
       
 
