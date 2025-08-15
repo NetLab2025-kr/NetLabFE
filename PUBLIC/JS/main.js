@@ -1,4 +1,4 @@
-import { jsPlumb } from './assets/js/jsPlumb.browser-ui.es.js';
+import { jsPlumb } from '../../SCRIPT/jsplumb.browser-ui.es.js';
 import commands from './command_db.js';
 import default_config from './defaultConfiguration.js';
 
