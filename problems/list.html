@@ -23,94 +23,33 @@
   </div>
 
   <script>
-    $(document).ready(function() {
-      const nav = $('#nav-links');
-      const userInfo = $('#user-info');
-      const token = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
-      const name = localStorage.getItem('name');
-
-      function renderNav() {
-        let html = `
-          <a href="/problems/list.html">문제목록</a>
-          <a href="/community/community.html">커뮤니티</a>
-        `;
-        if(token) {
-          html += `<a href="#" id="logoutBtn">로그아웃</a>`;
-          userInfo.text(name || '');
-          userInfo.show();
-        } else {
-          html += `
-            <a href="/login/login.html">로그인</a>
-            <a href="/login/signUp.html">회원가입</a>
-          `;
-          userInfo.hide();
-        }
-        nav.html(html);
-      }
-
-      function refreshAndRetry(requestFn) {
-        if (!refreshToken) {
-          alert('로그인 정보 만료, 다시 로그인하세요!');
-          localStorage.clear();
-          window.location.href = "/login/login.html";
-          return;
-        }
-        $.ajax({
-          url: 'https://be.netlab.kr/api/auth/refresh',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({ refreshToken }),
-          success: function (res) {
-            localStorage.setItem('token', res.accessToken);
-            localStorage.setItem('refreshToken', res.refreshToken);
-            localStorage.setItem('name', res.name || '');
-            renderNav();
-          },
-          error: function () {
-            alert('로그인 정보 만료, 다시 로그인하세요!');
-            localStorage.clear();
-            window.location.href = "/login/login.html";
-          }
-        });
-      }
-
-      if(token) {
-        renderNav();
-      } else if(refreshToken) {
-        refreshAndRetry(() => renderNav());
-      } else {
-        renderNav();
-      }
-
-      $(document).on('click', '#logoutBtn', function() {
-        localStorage.clear();
-        alert('로그아웃 되었습니다');
-        location.reload();
-      });
-
-      // 문제 목록 불러오기
+    $(function () {
+      // 문제 목록 불러오기(그대로)
       $.ajax({
-        url: 'https://be.netlab.kr/api/submit/problems', // 유저용 문제 조회 API 주소
+        url: 'https://be.netlab.kr/api/submit/problems',
         method: 'GET',
         success: function(res) {
-          const list = $('#problemList');
-          list.empty();
+          const $list = $('#problemList').empty();
           res.forEach(p => {
-            list.append(`
-              <li>
-                <div><strong>ID: ${p.id} - ${p.title} (${p.difficulty})</strong></div>
-                <div class="description">${p.description || ''}</div>
-                <div class="tags">태그: ${p.tags}</div>
-              </li>
-            `);
+            const $li = $('<li class="problem-item">').attr('data-id', p.id);
+            $li.append($('<div>').append($('<strong>').text(`ID: ${p.id} - ${p.title} (${p.difficulty})`)));
+            $li.append($('<div class="tags">').text(`태그: ${p.tags}`));
+            $list.append($li);
           });
         },
-        error: function() {
-          alert('문제 목록을 불러오지 못했습니다.');
-        }
+        error: function() { alert('문제 목록을 불러오지 못했습니다.'); }
+      });
+  
+      // 클릭 → 확인 → id만 붙여 이동
+      $(document).on('click', '.problem-item', function () {
+        const id = $(this).data('id');
+        if (!confirm('문제를 풀러 가시겠습니까?')) return;
+        location.href = `/views/index.html?id=${encodeURIComponent(id)}`;
       });
     });
   </script>
+  
+
+  
 </body>
 </html>
