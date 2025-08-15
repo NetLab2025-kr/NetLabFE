@@ -576,6 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 target: tempTarget,
                 connector: connectorType,
                 paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
+                anchor: ["Center", "Center"],
                 overlays: []
               });
 
