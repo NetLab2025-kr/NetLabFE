@@ -548,20 +548,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       }
 
-      function moveTempLine(e) {
-        if(tempLine) {
-          const pos = instance.getOffset(document.getElementById("topology-inner"));
-          const x = e.pageX - pos.left;
-          const y = e.pageY - pos.top;
-
-
-          // 임시 선으 target 위치를 마우스로 이동
-          tempLine.setTarget({
-            x: x,
-            y: y
-          });
-        }
-      }
           
       var elements = document.querySelectorAll(".topology-wrapper");
 
@@ -577,14 +563,20 @@ document.addEventListener('DOMContentLoaded', () => {
               firstClicked = el;
               el.classList.add("selected");
 
-              tempLine = instance.connect({
+              const tempTarget = document.createElement('div');
+              tempTarget.style.width = "1px";
+              tempTarget.style.height = "1px";
+              tempTarget.style.position = "absolute";
+              tempTarget.style.pointerEvents = "none";
+              document.body.appendChild(tempTarget);
+
+              tempLine =  instance.connect({
                 source: firstClicked,
-                target: firstClicked,
-                connector: connectorType,
-                paintStyle: { stroke: strokeColor, strokeWidth: 3 },
-                anchors: ["Continuous", "Continuous"],
+                target: tempTarget,
+                connector: ["Continuous", "Continuous"],
                 overlays: []
               });
+
 
               // 마우스 커서 따라다님
               document.addEventListener('mousemove', moveTempLine);
@@ -608,9 +600,12 @@ document.addEventListener('DOMContentLoaded', () => {
                   });
                 }
                 if(tempLine) instance.deleteConnection(tempLine);
+                if(tempTarget) document.body.removeChild(tempTarget);
+
                 firstClicked?.classList.remove("selected");
                 tempLine = null;
                 firstClicked = null;
+                document.removeEventListener('mousemove', moveTempLine);
                 document.body.dataset.connection = "";
                 return;
               }  
@@ -618,6 +613,14 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       });
+
+      function moveTempLine(e) {
+        const offsetX = tempTarget.offsetWidth / 2;
+        const offsetY = tempTarget.offsetHeight / 2;
+
+        tempTarget.style.left = e.pageX - offsetX + "px";
+        tempTarget.style.top = e.pageY - offsetY + "px";
+      }
       
 
       // 새 기기 선택 및 부팅 시퀀스 실행
