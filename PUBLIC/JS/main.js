@@ -622,11 +622,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 tempLine = null;
                 tempTarget = null;
-                tempTarget.remove();
-                console.log('이중 엔포 삭제');
-                
+
                 firstClicked = null;
                 document.removeEventListener('mousemove', moveTempLine);
+                console.log('마우스 이벤트 해제');
                 document.body.dataset.connection = "";
                 return;
               }  
