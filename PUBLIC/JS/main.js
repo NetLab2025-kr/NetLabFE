@@ -592,6 +592,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if(!existing) {
+                  if(tempLine) instance.deleteConnection(tempLine);
+                  if(tempTarget) tempTarget.remove();
+
                   instance.connect({
                     source: firstClicked.id,
                     target: el.id,
@@ -600,10 +603,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     anchor: ["Center", "Center"]
                   });
                 }
-
-                //임시 선 및 다른 요소 제거
-                if(tempLine) instance.deleteConnection(tempLine);
-                if(tempTarget) tempTarget.remove();
 
                 firstClicked?.classList.remove("selected");
                 tempLine = null;
