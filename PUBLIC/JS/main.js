@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const STEP = 0.1;
 
   //전역 jsPlumb 세팅
-  const instance = jsPlumb.getInstance({
+  const instance = jsPlumb.newInstance({
     Container: topology_inner
   });
 
