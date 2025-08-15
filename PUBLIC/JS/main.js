@@ -562,6 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (!firstClicked) {
               firstClicked = el;
+              console.log(`[TEST]${firstClicked.id}`);
               el.classList.add("selected");
 
               tempTarget = document.createElement('div');
