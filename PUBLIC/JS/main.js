@@ -641,6 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   console.log(`${firstClicked.id} ${el.id}`);
                   let sourceEP = instance.getEndpoints(firstClicked)?.[0];
                   if(!sourceEP) {
+                    console.log(`${firstClicked.id}에 엔포 생성`);
                     sourceEP = instance.addEndpoint(firstClicked, {
                       anchors: "Center",
                       isSource: true,
@@ -650,6 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   
                   let targetEP = instance.getEndpoints(el)?.[0];
                   if(!targetEP) {
+                    console.log(`${el.id}에 엔포 생성`);
                     targetEP = instance.addEndpoint(el, {
                       anchors: "Center",
                       isSource: true,
