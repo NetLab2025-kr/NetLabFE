@@ -200,6 +200,42 @@ class PC{
   
 }
 
+class Hub{
+  constructor(data){
+    this.data = data;
+    this.lastConfiguration = '';
+    this.stepDelay = 1000;
+  }
+
+
+
+
+}
+
+class Labtop{
+  constructor(data){
+    this.data = data;
+    this.lastConfiguration = '';
+    this.stepDelay = 1000;
+  }
+
+
+
+  
+}
+
+class Server{
+  constructor(data){
+    this.data = data;
+    this.lastConfiguration = '';
+    this.stepDelay = 1000;
+  }
+
+
+
+  
+}
+
 const Links = [
   //{from:'장비1 이름',f_interface:'인터페이스 이름',to:'장비2 이름',t_interface:'인터페이스 이름'}
 ]; //링크 저장
@@ -629,6 +665,12 @@ document.addEventListener('DOMContentLoaded', () => {
         obj = new Switch(structuredClone(default_config.Switch));
       }else if(dragg_default_name=="pc"){
         obj = new PC(structuredClone(default_config.PC));
+      }else if(dragg_default_name=="hub"){
+        obj = new Hub(structuredClone(default_config.Hub));
+      }else if(dragg_default_name=="labtop"){
+        obj = new Labtop(structuredClone(default_config.Laptop));
+      }else if(dragg_default_name=="server"){
+        obj = new Server(structuredClone(default_config.Server));
       }
       
       
