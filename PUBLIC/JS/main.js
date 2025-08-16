@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               //마우스 커서 따라다님
               const moveHandler = (e) => {
-                console.log('함수 들어옴');
+                //console.log('함수 들어옴');
                 if (!tempTarget || !tempLine) {
                   console.log('tempTarget이나 temlLine 없음');
                   return;
@@ -633,12 +633,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log('연결 전 임시 엔포 지워짐');
                   }
 
-                  console.log("typeof firstClicked =", typeof firstClicked, firstClicked);
-                  console.log("typeof el =", typeof el, el);
-
-                  console.log("firstClicked instanceof HTMLElement =", firstClicked instanceof HTMLElement);
-                  console.log("el instanceof HTMLElement =", el instanceof HTMLElement);
-
                   console.log(`${firstClicked.id} ${el.id}`);
                   console.log(`firstClicked는 ${firstClicked.id}`);
 
@@ -677,8 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     anchors: ["Center", "Center"],
                     overlays: []
                   });
-                  console.log('실선 연결 된건가?');
-                  console.log(instance.getManagedElements());
+                  //console.log('실선 연결 된건가?');
                   
                   instance.revalidate(firstClicked);
                   instance.revalidate(el);
