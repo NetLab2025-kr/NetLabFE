@@ -640,8 +640,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                   console.log(`${firstClicked.id} ${el.id}`);
                   console.log(`firstClicked는 ${firstClicked.id}`);
-                  let sourceEP = instance.getEndpoints(firstClicked);
                   instance.manage(firstClicked);
+                  let sourceEP = instance.getEndpoints(firstClicked);
                   if (!sourceEP || sourceEP.length === 0) {
                     console.log(`${firstClicked.id}에 엔포 생성`);
                     sourceEP = instance.addEndpoint(firstClicked, {
@@ -655,8 +655,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                   // target
                   console.log(`el은${el.id}`);
-                  let targetEP = instance.getEndpoints(el);
                   instance.manage(el);
+                  let targetEP = instance.getEndpoints(el);
                   if (!targetEP || targetEP.length === 0) {
                     console.log(`${el.id}에 엔포 생성`);
                     targetEP = instance.addEndpoint(el, {
