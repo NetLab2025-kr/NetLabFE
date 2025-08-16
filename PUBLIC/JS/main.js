@@ -650,6 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let deviceId;
       do {
         deviceId = `${dragg_default_name}${idx++}`;
+        console.log(`${dragg_default_name}의 id가 생성되었습니다.`);
       } while(current_names.has(deviceId));
 
       clone.id = deviceId;
