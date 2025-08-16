@@ -534,8 +534,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       topology_inner.appendChild(clone);
 
-      instance.manage(clone, { draggable: true });
-
 
       // 현재 기기가 라우터나 스위치면 cli 생성 & 클릭시 cli 보이게
       if ((dragg_default_type === "router" || dragg_default_type === "switch") && !document.body.dataset.connection) {
