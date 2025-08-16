@@ -533,6 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clone.style.top = `${iy - hh}px`;
 
       topology_inner.appendChild(clone);
+      Links[clone.id] = [];
 
       instance.draggable(clone);
 
@@ -675,6 +676,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   
                   instance.revalidate(firstClicked);
                   instance.revalidate(el);
+
+                  Links[firstClicked.id].push(el.id);
+                  Links[el.id].push(firstClicked.id);
                 }
                 firstClicked?.classList.remove("selected");
 
