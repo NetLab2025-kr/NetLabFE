@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 target: tempTarget,
                 connector: connectorType,
                 paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                anchor: ["Center", "Center"],
+                anchors: ["Center", "Center"],
                 overlays: []
               });
               console.log('임시 선 연결');
@@ -637,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     target: el,
                     connector: connectorType,
                     paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                    anchor: ["Center", "Center"],
+                    anchors: ["Center", "Center"],
                     overlays: []
                   });
                   console.log('실선 연결 된건가?');
