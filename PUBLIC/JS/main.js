@@ -562,7 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.console_line = ["#03f8fc", "Bezier", "9999 0"];
   window.straight_line = ["#000000", "Straight", "9999 0"];
   window.cross_line = ["#000000", "Straight", "3 2"];
-  window.fiver_line = ["#fcb103", "Straight", "9999 0"];
+  window.fiber_line = ["#fcb103", "Straight", "9999 0"];
   window.serial_line = ["#fc0303", "Flowchart", "9999 0"];
   document.body.dataset.connection = "";
 
