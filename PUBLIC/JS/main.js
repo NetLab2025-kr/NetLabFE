@@ -650,10 +650,11 @@ document.addEventListener('DOMContentLoaded', () => {
       let deviceId;
       do {
         deviceId = `${dragg_default_name}${idx++}`;
-        console.log(`${dragg_default_name}의 id가 생성되었습니다.`);
+        console.log(`${dragg_default_name}의 id: ${idx}가 생성되었습니다.`);
       } while(current_names.has(deviceId));
 
       clone.id = deviceId;
+      console.log(`${clone.id}`);
       let obj = null;
 
       if(dragg_default_name == "router"){ //스위치나 다른 객체도 추가 필요 [바꿔]
