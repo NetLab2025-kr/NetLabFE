@@ -638,18 +638,24 @@ document.addEventListener('DOMContentLoaded', () => {
                   // console.log("firstClicked instanceof HTMLElement =", firstClicked instanceof HTMLElement);
                   // console.log("el instanceof HTMLElement =", el instanceof HTMLElement);
 
-                  const sourceEP = instance.addEndpoint(firstClicked, {
-                    anchors: "Center",
-                    isSource: true,
-                    isTarget: true
-                  });
-
-                  const targetEP = instance.addEndpoint(el, {
-                    anchors: "Center",
-                    isSource: true,
-                    isTarget: true
-                  });
-
+                  console.log(`${firstClicked.id} ${el.id}`);
+                  let sourceEP = instance.getEndpoints(firstClicked)?.[0];
+                  if(!sourceEP) {
+                    targetEP = instance.addEndpoint(firstClicked, {
+                      anchors: "Center",
+                      isSource: true,
+                      isTarget: true
+                    });
+                  }
+                  
+                  let targetEP = instance.getEndpoints(el)?.[0];
+                  if(!targetEP) {
+                    targetEP = instance.addEndpoint(el, {
+                      anchors: "Center",
+                      isSource: true,
+                      isTarget: true
+                    });
+                  }
 
                   instance.connect({
                     source: sourceEP,
