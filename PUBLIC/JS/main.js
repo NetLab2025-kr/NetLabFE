@@ -633,8 +633,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
 
                   instance.connect({
-                    source: firstClicked.id,
-                    target: el.id,
+                    source: String(firstClicked.getAttribute("id")),
+                    target: String(el.getAttribute("id")),
                     connector: connectorType,
                     paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
                     anchors: ["Center", "Center"],
