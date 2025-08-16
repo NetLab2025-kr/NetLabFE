@@ -639,24 +639,29 @@ document.addEventListener('DOMContentLoaded', () => {
                   // console.log("el instanceof HTMLElement =", el instanceof HTMLElement);
 
                   console.log(`${firstClicked.id} ${el.id}`);
-                  let sourceEP = instance.getEndpoints(firstClicked)?.[0];
-                  if(!sourceEP) {
+                  let sourceEP = instance.getEndpoints(firstClicked);
+                  if (!sourceEP || sourceEP.length === 0) {
                     console.log(`${firstClicked.id}에 엔포 생성`);
                     sourceEP = instance.addEndpoint(firstClicked, {
                       anchors: "Center",
                       isSource: true,
                       isTarget: true
                     });
+                  } else {
+                    sourceEP = sourceEP[0];
                   }
-                  
-                  let targetEP = instance.getEndpoints(el)?.[0];
-                  if(!targetEP) {
+
+                  // target
+                  let targetEP = instance.getEndpoints(el);
+                  if (!targetEP || targetEP.length === 0) {
                     console.log(`${el.id}에 엔포 생성`);
                     targetEP = instance.addEndpoint(el, {
                       anchors: "Center",
                       isSource: true,
                       isTarget: true
                     });
+                  } else {
+                    targetEP = targetEP[0];
                   }
 
                   instance.connect({
