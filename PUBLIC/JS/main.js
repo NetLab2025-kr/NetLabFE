@@ -567,11 +567,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
               tempTarget = document.createElement('div');
               console.log('임시 엔포 생성');
-              tempTarget.style.width = "10px";
-              tempTarget.style.height = "10px";
+              tempTarget.style.width = "0px";
+              tempTarget.style.height = "0px";
               tempTarget.style.position = "absolute";
               tempTarget.style.pointerEvents = "none";
-              tempTarget.style.background = "red"; // 테스트용
               topology_inner.appendChild(tempTarget);
 
               tempLine =  instance.connect({
