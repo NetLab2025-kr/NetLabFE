@@ -665,8 +665,10 @@ document.addEventListener('DOMContentLoaded', () => {
         current_names.set(deviceId, obj);
       }else if(dragg_default_name=="switch"){
         obj = new Switch(structuredClone(default_config.Switch));
+        current_names.set(deviceId, obj);
       }else if(dragg_default_name=="pc"){
         obj = new PC(structuredClone(default_config.PC));
+        current_names.set(deviceId, obj);
       }else if(dragg_default_name=="hub"){
         obj = new Hub(structuredClone(default_config.Hub));
       }else if(dragg_default_name=="labtop"){
