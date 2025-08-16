@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
               topology_inner.appendChild(tempTarget);
 
               tempLine =  instance.connect({
-                source: firstClicked.id,
+                source: firstClicked,
                 target: tempTarget,
                 connector: connectorType,
                 paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
@@ -640,8 +640,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
                   instance.connect({
-                    source: firstClicked.id,
-                    target: el.id,
+                    source: firstClicked,
+                    target: el,
                     connector: connectorType,
                     paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
                     anchors: ["Center", "Center"],
@@ -649,10 +649,10 @@ document.addEventListener('DOMContentLoaded', () => {
                   });
                   console.log('실선 연결 된건가?');
                   console.log(instance.getManagedElements());
-
+                  
+                  instance.revalidate(firstClicked);
+                  instance.revalidate(el);
                 }
-                instance.revalidate(firstClicked);
-                instance.revalidate(el);
                 firstClicked?.classList.remove("selected");
 
                 if(tempLine) {
