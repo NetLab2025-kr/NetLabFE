@@ -642,6 +642,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   });
                   console.log('실선 연결 된건가?');
                 }
+                instance.revalidate(firstClicked);
+                instance.revalidate(el);
                 firstClicked?.classList.remove("selected");
 
                 if(tempLine) {
