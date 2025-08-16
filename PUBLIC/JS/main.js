@@ -632,6 +632,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log('연결 전 임시 엔포 지워짐');
                   }
 
+                  console.log("typeof firstClicked =", typeof firstClicked, firstClicked);
+                  console.log("typeof el =", typeof el, el);
+
+                  console.log("firstClicked instanceof HTMLElement =", firstClicked instanceof HTMLElement);
+                  console.log("el instanceof HTMLElement =", el instanceof HTMLElement);
+
+
                   instance.connect({
                     source: String(firstClicked.getAttribute("id")),
                     target: String(el.getAttribute("id")),
