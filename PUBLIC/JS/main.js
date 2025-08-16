@@ -623,13 +623,13 @@ document.addEventListener('DOMContentLoaded', () => {
                   if(tempLine) {
                     instance.deleteConnection(tempLine);
                     tempLine = null;
-                    console.log('임시 선 연결 해제');
+                    console.log('연결 전 임시 선 연결 해제');
                   }
                   if(tempTarget) {
                     tempTarget.cleanupMouseMove();
                     tempTarget.remove();
                     tempTarget = null;
-                    console.log('임시 엔포 지워짐');
+                    console.log('연결 전 임시 엔포 지워짐');
                   }
 
                   instance.connect({
@@ -647,13 +647,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(tempLine) {
                   instance.deleteConnection(tempLine);
                   tempLine = null;
-                  console.log('임시 선 연결 해제');
+                  console.log('연결 후 임시 선 연결 해제');
                 }
                 if(tempTarget) {
                   tempTarget.cleanupMouseMove();
                   tempTarget.remove();
                   tempTarget = null;
-                  console.log('임시 엔포 지워짐');
+                  console.log('연결 후 임시 엔포 지워짐');
                 }
 
                 firstClicked = null;
