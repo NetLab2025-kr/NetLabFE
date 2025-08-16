@@ -551,6 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
       var elements = document.querySelectorAll(".topology-wrapper");
 
       elements.forEach(function(el) {
+        instance.draggable(el);
         el.addEventListener("click", function() {
           if(document.body.dataset.connection) {
             var connType = window[document.body.dataset.connection]; // 전역변수 참조
