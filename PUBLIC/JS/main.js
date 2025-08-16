@@ -638,22 +638,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   // console.log("firstClicked instanceof HTMLElement =", firstClicked instanceof HTMLElement);
                   // console.log("el instanceof HTMLElement =", el instanceof HTMLElement);
 
-                  const sourceEP = instance.addEndpoint(firstClicked, {
-                    anchors: "Center",
-                    isSource: true,
-                    isTarget: true
-                  });
-
-                  const targetEP = instance.addEndpoint(el, {
-                    anchors: "Center",
-                    isSource: true,
-                    isTarget: true
-                  });
-
-
                   instance.connect({
-                    source: sourceEP,
-                    target: targetEP,
+                    source: firstClicked,
+                    target: el,
                     connector: connectorType,
                     paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
                     anchors: ["Center", "Center"],
