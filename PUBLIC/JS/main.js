@@ -798,7 +798,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     sourceEP = instance.addEndpoint(firstClicked, {
                       anchors: "Center",
                       isSource: true,
-                      isTarget: true
+                      isTarget: true,
+                      maxConnections: -1   // 연결 제한 없음
                     });
                   } else {
                     sourceEP = sourceEP[0];
@@ -812,7 +813,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     targetEP = instance.addEndpoint(el, {
                       anchors: "Center",
                       isSource: true,
-                      isTarget: true
+                      isTarget: true,
+                      maxConnections: -1   // 연결 제한 없음
                     });
                   } else {
                     targetEP = targetEP[0];
