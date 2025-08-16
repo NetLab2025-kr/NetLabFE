@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   console.log(`${firstClicked.id} ${el.id}`);
                   let sourceEP = instance.getEndpoints(firstClicked)?.[0];
                   if(!sourceEP) {
-                    targetEP = instance.addEndpoint(firstClicked, {
+                    sourceEP = instance.addEndpoint(firstClicked, {
                       anchors: "Center",
                       isSource: true,
                       isTarget: true
