@@ -677,6 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       
       obj.data.hostname = deviceId;
+      console.log("current_names keys:", Array.from(current_names.keys()));
 
 
       // 위치 보정
