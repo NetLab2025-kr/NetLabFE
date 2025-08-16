@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
               topology_inner.appendChild(tempTarget);
 
               tempLine =  instance.connect({
-                source: firstClicked,
+                source: firstClicked.id,
                 target: tempTarget,
                 connector: connectorType,
                 paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
@@ -640,8 +640,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
                   instance.connect({
-                    source: String(firstClicked.getAttribute("id")),
-                    target: String(el.getAttribute("id")),
+                    source: firstClicked.id,
+                    target: el.id,
                     connector: connectorType,
                     paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
                     anchors: ["Center", "Center"],
