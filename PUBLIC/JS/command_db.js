@@ -17,6 +17,20 @@ function clear_arr(array){
     return true;
 }
 
+function ipToInt(ip) {
+    return ip.split('.').reduce((acc, oct) => (acc << 8) + parseInt(oct, 10), 0) >>> 0;
+}
+
+function isIPInNetwork(ip, mask, networkAddr) {
+    const ipNum = ipToInt(ip);
+    const maskNum = ipToInt(mask);
+    const netNum = ipToInt(networkAddr);
+
+    return (ipNum & maskNum) === (netNum & maskNum);
+}
+
+
+
 const commands = {
     ['no']:{
         commandName:'no',
@@ -28,18 +42,21 @@ const commands = {
                 
                 run:function({config}){
                     const current_interface = config.CLI_Category.split(':')[1];
+                    console.log(current_interface);
                     config.Interface[current_interface].shutdown = false;
 
                     const Table_obj = {
                         destination: config.Interface[current_interface].ip_address,
                         mask: config.Interface[current_interface].subnet_mask,
-                        next_hop: '', 
+                        next_hop: '0.0.0.0', 
                         interface: current_interface,
                         source: "Directly connected",
                         code:"C",
                         etc:'',
                         metric: ''
                     };
+
+                    console.log(Table_obj);
 
                     config.Datas.routingTable.push(Table_obj);
                     return {action:'none'};
@@ -309,15 +326,29 @@ const commands = {
                         output += `Gateway of last resort is not set\n\n`;
                     }
 
+                    /*
 
-                    for(const data in datas){
+                    const Table_obj = {
+                        destination: config.Interface[current_interface].ip_address,
+                        mask: config.Interface[current_interface].subnet_mask,
+                        next_hop: '', 
+                        interface: current_interface,
+                        source: "Directly connected",
+                        code:"C",
+                        etc:'',
+                        metric: ''
+                    };
+                    
+                    */
+
+                    for(const data of datas){
                         output += String(data.code).padEnd(8,' ');
                         let prefix = 0;
-
-                        for(const octet in String(data.mask).split('.')){
-                            let binary = parseInt(octet).toString(2);
+                        for(const octet of String(data.mask).split('.')){
+                            let binary = parseInt(octet, 10).toString(2);
                             prefix += binary.split('1').length - 1;
                         }
+                        console.log(`data is ${data}`);
                         output += `${data.destination}/${prefix} is ${data.source}, ${data.interface} (${data.etc})[${data.metric}]\n`;
                     }
 
@@ -331,7 +362,7 @@ const commands = {
         commandName:'interface',
         description:'Select an interface to configure',
         options:{
-            ['gigabitethernet[slot/port]']:{
+            ['gigabitEthernet[slot/port]']:{
                 name:'gigabitEthernet',
                 description:'GigabitEthernet IEEE 802.3z',
                 run:function({config,commandLine}){
@@ -592,6 +623,9 @@ const commands = {
                     else if(config.CLI_Category.split(':')[0] === "interface"){
                         config.CLI_Category = "global config";
                     }
+                    else if(config.CLI_Category.split(':')[0] === "router"){
+                        config.CLI_Category = "global config";
+                    }
 
                     return {action:'none'};
                 }
@@ -739,8 +773,27 @@ const commands = {
             ['LINE']:{
                 name:'LINE',
                 description:'Routing Information',
-                run:function({config,commandLine}){
-                    console.log('아직 구현 안함;;;');
+                run:function({config,commandLine,object}){
+                    const current_Protocol = config.CLI_Category.split(':')[1];
+
+                    if(current_Protocol == "rip"){
+                        const target_ip_add = commandLine.split(' ')[1];
+
+                        for(let ifaceName in config.Interface){
+                            let iface = config.Interface[ifaceName];
+                            if(!iface.shutdown && isIPInNetwork(iface.ip_address,iface.subnet_mask,target_ip_add)){
+                                iface.ripEnabled = true;
+                            }
+                        }
+
+                        if(!config.Route.rip.intervalExist){
+                            setInterval(() => {
+                                object.sendRipUpdate();
+                            }, 30000);
+                        }
+
+                        return {action:'none'};
+                    }
                 }
             }
         }
@@ -753,8 +806,11 @@ const commands = {
             ['LINE']:{
                 name:'LINE',
                 description:'other network',
-                run:function({config,commandLine}){
-                    
+                run:function({commandLine,object}){
+                    const destIP = commandLine.split(' ')[1];
+                    object.sendPacket(destIP,{ msg: "none" });
+
+                    return {action:'none'};
                 }
             }
         }

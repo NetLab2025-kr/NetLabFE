@@ -1,4 +1,3 @@
-//import * as jsPlumb from '../../SCRIPT/jsplumb.browser-ui.es.js';
 import commands from './command_db.js';
 import default_config from './defaultConfiguration.js';
 
@@ -11,52 +10,66 @@ class Router{
     this.stepDelay = 1000;
   }
 
+  ipToInt(ip) {
+    return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet), 0) >>> 0;
+  }
+
+  isIPInNetwork(ip, mask, networkAddr) {
+    const ipNum = this.ipToInt(ip);
+    const maskNum = this.ipToInt(mask);
+    const netNum = this.ipToInt(networkAddr);
+
+    return (ipNum & maskNum) === (netNum & maskNum);
+  }
+
   checkNextHopAlive(nextHop) {
-    // 라우팅 테이블에서 nextHop이 directly connected인지 찾기
-    const connectedRoute = this.data.Datas.routingTable.find(obj =>
-        obj.code === 'C' && obj.destination === nextHop
-    );
+      if (!nextHop || nextHop === "0.0.0.0") return true; // 직접 연결망이면 살아있다고 판단
 
-    if (!connectedRoute) return false;
+      const connectedRoute = this.data.Datas.routingTable.find(obj =>
+          obj.code === 'C' && this.isIPInNetwork(nextHop, obj.mask, obj.destination)
+      );
 
-    // 해당 route의 interface 상태 확인
-    const ifaceName = connectedRoute.interface;
-    const iface = this.data.Interface[ifaceName];
+      if (!connectedRoute) return false;
 
-    if (!iface) return false;
+      const iface = this.data.Interface[connectedRoute.interface];
+      if (!iface) return false;
 
-    // shutdown 상태면 false
-    if (iface.shutdown === true) return false;
-
-    return true;
+      return iface.shutdown === false;
   }
 
 
   findNextHop(destination) {
-    const destInt = this.ipToInt(destination);
+      const destInt = this.ipToInt(destination);
 
-    let bestMatch = null;
-    let longestPrefix = -1; 
+      let bestMatch = null;
+      let longestPrefix = -1; 
 
-    for (let route of this.data.Datas.routingTable) {
-        const netInt = this.ipToInt(route.destination);
-        const maskInt = this.ipToInt(route.mask);
+      for (let route of this.data.Datas.routingTable) {
+          const netInt = this.ipToInt(route.destination);
+          const maskInt = this.ipToInt(route.mask);
 
-        if ((destInt & maskInt) === (netInt & maskInt)) {
-            const prefixLength = this.maskToPrefix(maskInt);
+          if ((destInt & maskInt) === (netInt & maskInt)) {
+            console.log('step1');
+              const prefixLength = this.maskToPrefix(maskInt);
 
-            // 다음 홉이 살아있거나, 직접 연결망이면
-            if (this.checkNextHopAlive(route.nextHop) || route.nextHop === "0.0.0.0") {
-                if (prefixLength > longestPrefix) {
-                    longestPrefix = prefixLength;
-                    bestMatch = route.nextHop;
-                }
-            }
-        }
-    }
-    return bestMatch;
+              const alive = this.checkNextHopAlive(route.nexthop);
+              if (alive || route.next_hop === "0.0.0.0") {
+                console.log('step2');
+                  if (prefixLength > longestPrefix) {
+                    console.log('step3');
+                      longestPrefix = prefixLength;
+                      console.log(route);
+                      bestMatch = route.next_hop;
+                  }
+              }
+          }
+      }
+      return bestMatch;
   }
 
+
+
+// IP 문자열 → 32비트 정수
 
   // IP 문자열 → 32비트 정수
   ipToInt(ip) {
@@ -77,6 +90,7 @@ class Router{
   findRouterByIp(ip) {
     return this.network.find(router => router.hasIp(ip));
   }
+
 
   // 내 인터페이스 IP인지 확인 (기존 isLocalIP 함수)
   hasIp(ip) {
@@ -119,7 +133,14 @@ class Router{
 
     await new Promise(r => setTimeout(r, this.stepDelay));
 
-    // 내 IP 중 하나와 목적지 IP 비교 (직접 연결된 IP 중 하나일 경우)
+    // RIP 패킷 처리
+    if (packet.data?.type === "RIP") {
+      console.log(`[${this.data.hostname}] RIP 업데이트 수신`);
+      this.updateRoutingTableFromRip(packet.data.table, packet.from);
+      return { status: "rip_update_processed" };
+    }
+
+    // 일반 데이터 패킷 처리
     if (this.hasIp(packet.to)) {
       console.log(`[${this.data.hostname}] 목적지 도착. 패킷 처리 완료.`);
       return { status: "processed", data: packet.data };
@@ -129,6 +150,53 @@ class Router{
     return this.sendPacket(packet.to, packet.data);
   }
 
+  async sendRipUpdate() {
+    const ripPayload = {
+      type: "RIP",
+      table: this.data.routingTable.map(route => ({
+        network: route.network,
+        mask: route.mask,
+        metric: route.metric
+      }))
+    };
+
+    // 직접 연결된 이웃에게만 전송
+    for (const neighborIp of this.getDirectlyConnectedNeighbors()) {
+      console.log(`[${this.data.hostname}] → RIP 업데이트 전송 (${neighborIp})`);
+      await this.sendPacket(neighborIp, ripPayload);
+    }
+  }
+
+  getDirectlyConnectedNeighbors() {
+    return this.data.interfaces
+      .filter(intf => intf.connectedTo) // 연결된 인터페이스만
+      .map(intf => intf.connectedTo.ip);
+  }
+
+  
+}
+
+class Switch{
+  constructor(data){
+    this.data = data;
+    this.lastConfiguration = '';
+    this.stepDelay = 1000;
+  }
+
+  
+
+  
+};
+
+class PC{
+  constructor(data){
+    this.data = data;
+    this.lastConfiguration = '';
+    this.stepDelay = 1000;
+  }
+
+  
+
   
 }
 
@@ -137,46 +205,76 @@ const Links = [
 ]; //링크 저장
 
 const commandMap = {
-  'user': [
-    "enable",
-  ],
-  'previlige': [
-    "configure^terminal",
-    "show",
-    "show^running-config",
-    "show^ip interface brief",
-    "show^ip route", 
-    "exit",
-  ],
-  'global config': [
-    "line^con 0",
-    "line^vty 0 4", 
-    "line",
-    "router",
-    "no^router rip",
-    "router^rip",
-    "ip^route",  
-    "no^ip route",
-    "interface^gigabitEthernet[slot/port]",
-    "interface^fastEthernet[slot/port]", 
-    "interface^vlan[num]",
-    "interface",
-    "exit"
-  ],
-  'interface': [
-    "ip^address",
-    "no^ip^address",
-    "shutdown",
-    "no^shutdown",
-    "description",
-    "no^description",
-    "exit"
-  ],
-  'router': [
-    "network",
-    "no^network",
-    "exit",
-  ],
+  'Router':{
+    'user': [
+      "enable",
+    ],
+    'previlige': [
+      "configure^terminal",
+      "show^running-config",
+      "show^ip interface brief",
+      "show^ip route", 
+      "exit",
+      "ping",
+    ],
+    'global config': [
+      "line^con 0",
+      "line^vty 0 4", 
+      "line",
+      "router",
+      "no^router rip",
+      "router^rip",
+      "ip^route",  
+      "no^ip route",
+      "interface^gigabitEthernet[slot/port]",
+      "interface^fastEthernet[slot/port]", 
+      "interface^vlan[num]",
+      "interface",
+      "exit"
+    ],
+    'interface': [
+      "ip^address",
+      "no^ip^address",
+      "shutdown",
+      "no^shutdown",
+      "description",
+      "no^description",
+      "exit"
+    ],
+    'router': [
+      "network",
+      "no^network",
+      "exit",
+    ],
+  },
+
+  'Switch':{
+    'user':[
+      "enable"
+    ],
+
+    'previlige':[
+      "configure^terminal",
+      "show^running-config",
+      "show^ip interface brief",
+      "exit",
+    ],
+
+    'global config': [
+      "line^con 0",
+      "line^vty 0 4", 
+      "interface^gigabitEthernet[slot/port]",
+      "interface^fastEthernet[slot/port]", 
+      "interface^vlan[num]",
+      "exit"
+    ],
+
+    'interface': [
+      "shutdown",
+      "no^shutdown",
+      "exit"
+    ],
+  },
 }
 // 인터페이스 타입 별칭 맵핑
 
@@ -186,6 +284,16 @@ function normalize(str) {
 
 // 매개변수를 받는 명령어들의 정보
 const commandsWithParameters = {
+  'ip^address':{
+    minParams:2,
+    description:'ip address [address] [mask]'
+  },
+
+  'ping':{
+    minParams:1,
+    description:'ping [address]',
+  },
+
   'ip^route': { 
     minParams: 3,  
     description: 'ip route [destination] [mask] [gateway]'
@@ -517,6 +625,10 @@ document.addEventListener('DOMContentLoaded', () => {
         obj.network = Routers;
 
         current_names.set(deviceId, obj);
+      }else if(dragg_default_name=="switch"){
+        obj = new Switch(structuredClone(default_config.Switch));
+      }else if(dragg_default_name=="PC"){
+        obj = new PC(structuredClone(default_config.PC));
       }
       
       
@@ -767,7 +879,8 @@ document.addEventListener('DOMContentLoaded', () => {
           current_category = config.CLI_Category;
         }
 
-        const command_mapper = commandMap[current_category];
+        const device_category = config.category;
+        const command_mapper = commandMap[device_category][current_category];
         console.log(inputVal);
         var DetailedCommand = improvedIsValidAbbreviation(inputVal,command_mapper);
         if(!DetailedCommand){
@@ -796,6 +909,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if(Neededparams.includes('commandLine')){
           params['commandLine'] = inputVal;
+        }
+
+        if(Neededparams.includes('object')){
+          params['object'] = current_names.get(selectedDeviceId);
         }
         
         const returnValue = run_func(params);
@@ -1004,6 +1121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     '<span class="boot-message">\t   --- System Configuration Dialog ---</span>'
   ];
 
+  //ip 설정 탭 만드는 함수 - 미완
   function createIpSetting() {
     const setBox = document.createElement('div');
     setBox.className = "setting-box";
