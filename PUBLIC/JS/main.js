@@ -626,7 +626,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log('연결 전 임시 선 연결 해제');
                   }
                   if(tempTarget) {
-                    tempTarget.cleanupMouseMove();
+                    if(typeof tempTarget.cleanupMouseMove === "function") {
+                      tempTarget.cleanupMouseMove();
+                    }
                     tempTarget.remove();
                     tempTarget = null;
                     console.log('연결 전 임시 엔포 지워짐');
@@ -690,7 +692,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   console.log('연결 후 임시 선 연결 해제');
                 }
                 if(tempTarget) {
-                  tempTarget.cleanupMouseMove();
+                  if(typeof tempTarget.cleanupMouseMove === "function") {
+                      tempTarget.cleanupMouseMove();
+                  }
                   tempTarget.remove();
                   tempTarget = null;
                   console.log('연결 후 임시 엔포 지워짐');
