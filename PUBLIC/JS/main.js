@@ -627,7 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
         current_names.set(deviceId, obj);
       }else if(dragg_default_name=="switch"){
         obj = new Switch(structuredClone(default_config.Switch));
-      }else if(dragg_default_name=="PC"){
+      }else if(dragg_default_name=="pc"){
         obj = new PC(structuredClone(default_config.PC));
       }
       
