@@ -565,49 +565,49 @@ document.addEventListener('DOMContentLoaded', () => {
               console.log(`[TEST]${firstClicked.id}`);
               el.classList.add("selected");
 
-              tempTarget = document.createElement('div');
-              console.log('임시 엔포 생성');
-              tempTarget.style.width = "10px";
-              tempTarget.style.height = "10px";
-              tempTarget.style.position = "absolute";
-              tempTarget.style.pointerEvents = "none";
-              tempTarget.style.background = "red"; // 테스트용
-              topology_inner.appendChild(tempTarget);
+              // tempTarget = document.createElement('div');
+              // console.log('임시 엔포 생성');
+              // tempTarget.style.width = "10px";
+              // tempTarget.style.height = "10px";
+              // tempTarget.style.position = "absolute";
+              // tempTarget.style.pointerEvents = "none";
+              // tempTarget.style.background = "red"; // 테스트용
+              // topology_inner.appendChild(tempTarget);
 
-              tempLine =  instance.connect({
-                source: firstClicked,
-                target: tempTarget,
-                connector: connectorType,
-                paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                anchors: ["Center", "Center"],
-                overlays: []
-              });
-              console.log('임시 선 연결');
+              // tempLine =  instance.connect({
+              //   source: firstClicked,
+              //   target: tempTarget,
+              //   connector: connectorType,
+              //   paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
+              //   anchors: ["Center", "Center"],
+              //   overlays: []
+              // });
+              // console.log('임시 선 연결');
 
               // 마우스 커서 따라다님
-              const moveHandler = (e) => {
-                console.log('함수 들어옴');
-                if (!tempTarget || !tempLine) {
-                  console.log('tempTarget 없음');
-                  return;
-                }
-                const rect = topology_inner.getBoundingClientRect();
-                const offsetX = tempTarget.offsetWidth / 2;
-                const offsetY = tempTarget.offsetHeight / 2;
+              // const moveHandler = (e) => {
+              //   console.log('함수 들어옴');
+              //   if (!tempTarget || !tempLine) {
+              //     console.log('tempTarget 없음');
+              //     return;
+              //   }
+              //   const rect = topology_inner.getBoundingClientRect();
+              //   const offsetX = tempTarget.offsetWidth / 2;
+              //   const offsetY = tempTarget.offsetHeight / 2;
 
-                // 마우스 좌표에 맞춰 위치 변경
-                tempTarget.style.left = (e.clientX - rect.left - offsetX) + "px";
-                tempTarget.style.top  = (e.clientY - rect.top - offsetY) + "px";
+              //   // 마우스 좌표에 맞춰 위치 변경
+              //   tempTarget.style.left = (e.clientX - rect.left - offsetX) + "px";
+              //   tempTarget.style.top  = (e.clientY - rect.top - offsetY) + "px";
 
-                // jsPlumb에 "이거 위치 바뀌었으니 다시 계산해" 요청
-                instance.revalidate(tempTarget);
-              };
-              document.addEventListener('mousemove', moveHandler);
-              console.log('마우스 이벤트 등록');
+              //   // jsPlumb에 "이거 위치 바뀌었으니 다시 계산해" 요청
+              //   instance.revalidate(tempTarget);
+              // };
+              // document.addEventListener('mousemove', moveHandler);
+              // console.log('마우스 이벤트 등록');
 
-              tempTarget.cleanupMouseMove = () => {
-                document.removeEventListener('mousemove', moveHandler);
-              };
+              // tempTarget.cleanupMouseMove = () => {
+              //   document.removeEventListener('mousemove', moveHandler);
+              // };
               
             } else {
               if (firstClicked !== el) {
@@ -617,67 +617,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if(!existing) {
-                  console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
-                  console.log(`elObject = ${el}, elid = ${el.id}`);
+                  // console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
+                  // console.log(`elObject = ${el}, elid = ${el.id}`);
 
-                  if(tempLine) {
-                    instance.deleteConnection(tempLine);
-                    tempLine = null;
-                    console.log('연결 전 임시 선 연결 해제');
-                  }
-                  if(tempTarget) {
-                    tempTarget.cleanupMouseMove();
-                    tempTarget.remove();
-                    tempTarget = null;
-                    console.log('연결 전 임시 엔포 지워짐');
-                  }
+                  // if(tempLine) {
+                  //   instance.deleteConnection(tempLine);
+                  //   tempLine = null;
+                  //   console.log('연결 전 임시 선 연결 해제');
+                  // }
+                  // if(tempTarget) {
+                  //   tempTarget.cleanupMouseMove();
+                  //   tempTarget.remove();
+                  //   tempTarget = null;
+                  //   console.log('연결 전 임시 엔포 지워짐');
+                  // }
 
-                  console.log("typeof firstClicked =", typeof firstClicked, firstClicked);
-                  console.log("typeof el =", typeof el, el);
+                  // console.log("typeof firstClicked =", typeof firstClicked, firstClicked);
+                  // console.log("typeof el =", typeof el, el);
 
-                  console.log("firstClicked instanceof HTMLElement =", firstClicked instanceof HTMLElement);
-                  console.log("el instanceof HTMLElement =", el instanceof HTMLElement);
-
-                  const targetEndpoint = instance.addEndpoint(el, {
-                    anchors: "Center",
-                    isSource: true,
-                    isTarget: true
-                  });
-
-                  const sourceEndpoint = instance.addEndpoint(firstClicked, {
-                    anchors: "Center",
-                    isSource: true,
-                    isTarget: true
-                  });
+                  // console.log("firstClicked instanceof HTMLElement =", firstClicked instanceof HTMLElement);
+                  // console.log("el instanceof HTMLElement =", el instanceof HTMLElement);
 
 
                   instance.connect({
-                    source: sourceEndpoint,
-                    target: targetEndpoint,
+                    source: firstClicked,
+                    target: el,
                     connector: connectorType,
                     paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
                     anchors: ["Center", "Center"],
                     overlays: []
                   });
                   console.log('실선 연결 된건가?');
-                  console.log(instance.getManagedElements());
-
-                  instance.revalidate(firstClicked);
-                  instance.revalidate(el);
+                  // console.log(instance.getManagedElements());
+                  
+                  // instance.revalidate(firstClicked);
+                  // instance.revalidate(el);
                 }
                 firstClicked?.classList.remove("selected");
 
-                if(tempLine) {
-                  instance.deleteConnection(tempLine);
-                  tempLine = null;
-                  console.log('연결 후 임시 선 연결 해제');
-                }
-                if(tempTarget) {
-                  tempTarget.cleanupMouseMove();
-                  tempTarget.remove();
-                  tempTarget = null;
-                  console.log('연결 후 임시 엔포 지워짐');
-                }
+                // if(tempLine) {
+                //   instance.deleteConnection(tempLine);
+                //   tempLine = null;
+                //   console.log('연결 후 임시 선 연결 해제');
+                // }
+                // if(tempTarget) {
+                //   tempTarget.cleanupMouseMove();
+                //   tempTarget.remove();
+                //   tempTarget = null;
+                //   console.log('연결 후 임시 엔포 지워짐');
+                // }
 
                 firstClicked = null;
                 document.body.dataset.connection = "";
