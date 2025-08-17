@@ -727,8 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
             var connectorType = connType[1]; // 라인 타입
             var dotline = connType[2]; // 실선 점선
 
-            const IntContainer = document.createElement('div');
-            IntContainer.id = "IntContainer";
+            const IntContainer = document.getElementById('IntContainer');
             
             if (!firstClicked) {
               const interfacekind = current_names.get(el.id);
@@ -763,7 +762,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (!selectedBox) selectedBox = clickBox;
               });
-              topology_inner.appendChild(IntContainer);
               selectDevicePort(el.id);
 
               selectedBox.addEventListener('click', () => {
@@ -833,26 +831,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     ports = interfacekind.data.Interface;
                   }
 
+                  let selectedBox = null;
                   Object.keys(ports).forEach(port => {
                     const IntBox = document.createElement('div');
                     IntBox.className = "IntBox";
                     IntBox.dataset.target = el.id;
 
+                    const clickBox = document.createElement('div');
+                    clickBox.className = "clickBox";
+
                     const IntP = document.createElement('p');
                     IntP.innerText = port;
 
-                    IntBox.appendChild(IntP);
+                    clickBox.appendChild(IntP);
+                    IntBox.appendChild(clickBox);
                     IntContainer.appendChild(IntBox);
-                  });
-                  document.getElementById("topology-inner").appendChild(IntContainer);
 
-                  const selectedBox =  document.querySelector(`.IntBox[data-target="${el.id}"]`);
-                  selectedBox.style.left = e.clientX + "px";
-                  selectedBox.style.top = e.clientY + "px";
+                    IntBox.style.left = e.clientX + "px";
+                    IntBox.style.top = e.clientY + "px";
+
+                    if (!selectedBox) selectedBox = clickBox;
+                  });
+                  topology_inner.appendChild(IntContainer);
                   selectDevicePort(el.id);
 
                   
-                  document.querySelectorAll(`${selectedBox} .IntBox`).addEventListener('click', () => {
+                  selectedBox.addEventListener('click', () => {
                     console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
                     console.log(`elObject = ${el}, elid = ${el.id}`);
 
