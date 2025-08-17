@@ -732,12 +732,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (!firstClicked) {
               const interfacekind = current_names.get(el.id);
-              console.log(interfacekind);
-              let values = "";
-              if(interfacekind["NetworkAdapter"]) {
-                values = "NetworkAdapter";
-              } else if(interfacekind["Interface"]) {
-                values = "Interface";
+              let ports = null;
+
+              if(interfacekind.data.NetworkAdapter) {
+                ports = interfacekind.data.NetworkAdapter;
+              } else if(interfacekind.data.Interface) {
+                ports = interfacekind.data.Interface;
               }
 
               console.log("interfacekind:", interfacekind);
@@ -745,7 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
               console.log("interfacekind[values]:", interfacekind[values]);
 
 
-              Object.keys(interfacekind[values]).forEach(port => {
+              Object.keys(ports).forEach(port => {
                 const IntBox = document.createElement('div');
                 IntBox.className = "IntBox";
 
@@ -824,14 +824,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if(!existing) {
                   const interfacekind = current_names.get(el.id);
-                  let values = "";
-                  if(interfacekind["NetworkAdapter"]) {
-                    values = "NetworkAdapter";
-                  } else if(interfacekind["Interface"]) {
-                    values = "Interface";
+                  let ports = null;
+
+                  if(interfacekind.data.NetworkAdapter) {
+                    ports = interfacekind.data.NetworkAdapte;
+                  } else if(interfacekind.data.Interface) {
+                    ports = interfacekind.data.Interface;
                   }
 
-                  Object.keys(interfacekind[values]).forEach(port => {
+                  Object.keys(ports).forEach(port => {
                     const IntBox = document.createElement('div');
                     IntBox.className = "IntBox";
                     const IntP = document.createElement('p');
