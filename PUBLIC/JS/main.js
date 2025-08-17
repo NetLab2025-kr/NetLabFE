@@ -727,7 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
             var connectorType = connType[1]; // 라인 타입
             var dotline = connType[2]; // 실선 점선
 
-            const IntContainer = createElement('div')
+            const IntContainer = createElement('div');
             IntContainer.id = "IntContainer";
             
             if (!firstClicked) {
