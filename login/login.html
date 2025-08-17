@@ -1,93 +1,59 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>NetLab 로그인</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+
+  <!-- 폰트 & jQuery -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link rel="stylesheet" href="../assets/css/login.css">
+  <script src="../PUBLIC/JS/navbar.js"></script>
 
-  </head>
+  <!-- 스타일 -->
+  <link rel="stylesheet" href="../assets/css/login.css" />
+
+  <!-- 공통 네비바 스크립트 (네비바 렌더/자동 재발급 포함) -->
+  <script src="/PUBLIC/js/navbar.js"></script>
+</head>
 <body>
-
+  <!-- 네비바: 공통 js가 이 영역을 제어 -->
   <div class="navbar">
     <a class="brand" href="/index.html">NetLab</a>
     <div id="nav-links"></div>
+    <div class="user-info" id="user-info" style="display:none;"></div>
   </div>
 
   <div class="main">
     <div class="login-box">
       <h2>로그인</h2>
-      <input type="text" id="userId" placeholder="아이디">
-      <input type="password" id="password" placeholder="비밀번호">
+      <input type="text" id="userId" placeholder="아이디" />
+      <input type="password" id="password" placeholder="비밀번호" />
       <button id="loginBtn">로그인</button>
       <div class="signup-link">
-        아직 회원이 아니신가요? 
+        아직 회원이 아니신가요?
         <a href="/login/signUp.html">회원가입</a>
       </div>
     </div>
   </div>
 
   <script>
-    $(document).ready(function () {
-      const accessToken = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
-      const nav = $('#nav-links');
-      function renderNav() {
-        nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
-      }
-      function checkAdminAndRender(token) {
-        $.ajax({
-          url: "https://be.netlab.kr/api/auth/is-admin",
-          method: "GET",
-          headers: { "Authorization": "Bearer " + token },
-          success: function () { renderNav(); },
-          error: function () { renderNav(); }
-        });
-      }
-      if (accessToken) {
-        checkAdminAndRender(accessToken);
-      } else if (refreshToken) {
-        $.ajax({
-          url: 'https://be.netlab.kr/api/auth/refresh',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({ refreshToken }),
-          success: function (res) {
-            localStorage.setItem('token', res.accessToken);
-            localStorage.setItem('refreshToken', res.refreshToken);
-            localStorage.setItem('name', res.name); // ★ 추가!
-            checkAdminAndRender(res.accessToken);
-          },
-          error: function () {
-            nav.html('<a href="/index.html">홈</a><a href="/login/signUp.html">회원가입</a>');
-          }
-        });
-      } else {
-        nav.html('<a href="/index.html">홈</a><a href="/login/signUp.html">회원가입</a>');
-      }
-      $(document).on('click', '#logoutBtn', function () {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('name'); // ★ 추가!
-        alert('로그아웃 되었습니다');
-        location.href = '/index.html';
-      });
-      $('#loginBtn').click(function () {
-        const userId = $('#userId').val();
-        const password = $('#password').val();
+    $(function () {
+      $('#loginBtn').on('click', function () {
+        const userId = $('#userId').val().trim();
+        const password = $('#password').val().trim();
         if (!userId || !password) {
-          return alert('아이디와 비밀번호를 입력하세요.');
+          alert('아이디와 비밀번호를 입력하세요.');
+          return;
         }
         $.ajax({
           url: 'https://be.netlab.kr/api/auth/login',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({ userId, password }),
-          success: function (response) {
-            localStorage.setItem('token', response.accessToken);
-            localStorage.setItem('refreshToken', response.refreshToken);
-            localStorage.setItem('name', response.name); // ★ 추가!
+          success: function (res) {
+            localStorage.setItem('token', res.accessToken);
+            localStorage.setItem('refreshToken', res.refreshToken);
+            localStorage.setItem('name', res.name);
             alert('로그인 성공!');
             window.location.href = '/index.html';
           },
@@ -96,14 +62,12 @@
           }
         });
       });
-      // 엔터키 치면 전송
-      $('input').keypress(function(e){
-        if(e.which === 13){
-          $('#loginBtn').click();
-        }
+
+      // 엔터로 로그인
+      $('input').on('keypress', function (e) {
+        if (e.which === 13) $('#loginBtn').click();
       });
     });
   </script>
-  
 </body>
 </html>
