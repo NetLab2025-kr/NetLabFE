@@ -3,9 +3,10 @@ window.NetLab = (function () {
   const API = 'https://be.netlab.kr/api';
   let triedRefreshOnce = false;
 
-  const $nav = () => $('#nav-links');
+  const $nav  = () => $('#nav-links');
   const $user = () => $('#user-info');
 
+  /* ---------- UI ---------- */
   function renderGuest() {
     $nav().html(
       '<a href="/problems/list.html">문제목록</a>' +
@@ -26,7 +27,7 @@ window.NetLab = (function () {
     if (name) { $user().text(name).show(); } else { $user().hide(); }
   }
 
-  // 선제 만료 체크(5초 여유)
+  /* ---------- 토큰 유틸 ---------- */
   function isExpired(token, leewaySec = 5) {
     try {
       const p = JSON.parse(atob(token.split('.')[1]));
@@ -36,12 +37,13 @@ window.NetLab = (function () {
     } catch { return true; }
   }
 
-  function getToken() { return localStorage.getItem('token'); }
-  function getRefresh() { return localStorage.getItem('refreshToken'); }
-  function getName() { return localStorage.getItem('name'); }
+  const getToken   = () => localStorage.getItem('token');
+  const getRefresh = () => localStorage.getItem('refreshToken');
+  const getName    = () => localStorage.getItem('name');
+
   function setCred(at, rt, name) {
-    if (at) localStorage.setItem('token', at);
-    if (rt) localStorage.setItem('refreshToken', rt);
+    if (at)  localStorage.setItem('token', at);
+    if (rt)  localStorage.setItem('refreshToken', rt);
     if (name) localStorage.setItem('name', name);
   }
   function clearCred() {
@@ -50,6 +52,7 @@ window.NetLab = (function () {
     localStorage.removeItem('name');
   }
 
+  /* ---------- API ---------- */
   function refreshTokens() {
     const rt = getRefresh();
     if (!rt) return $.Deferred().reject().promise();
@@ -59,7 +62,9 @@ window.NetLab = (function () {
       contentType: 'application/json',
       data: JSON.stringify({ refreshToken: rt })
     }).then(res => {
-      if (!res || !res.accessToken || !res.refreshToken) return $.Deferred().reject().promise();
+      if (!res || !res.accessToken || !res.refreshToken) {
+        return $.Deferred().reject().promise();
+      }
       setCred(res.accessToken, res.refreshToken, res.name);
       return res;
     });
@@ -78,8 +83,9 @@ window.NetLab = (function () {
       const status = jqXHR.status;
       if ((status === 401 || status === 403) && getRefresh() && !triedRefreshOnce) {
         triedRefreshOnce = true;
-        return refreshTokens().then(r => callIsAdmin(r.accessToken, r.name || name))
-                             .fail(() => { clearCred(); renderGuest(); });
+        return refreshTokens()
+          .then(r => callIsAdmin(r.accessToken, r.name || name))
+          .fail(() => { clearCred(); renderGuest(); });
       } else {
         renderGuest();
         return $.Deferred().reject().promise();
@@ -87,10 +93,10 @@ window.NetLab = (function () {
     });
   }
 
-  // 모든 페이지에서 호출
+  /* ---------- 초기화 ---------- */
   function initNavbar() {
-    // 1) partial 삽입 후 로직 실행
-    $('#navbar').load('/partials/navbar.html', function () {
+    // partial 주입 후 실행
+    $('#navbar').load('/PUBLIC/partials/navbar.html', function () {
       const at = getToken();
       const rt = getRefresh();
 
@@ -119,9 +125,6 @@ window.NetLab = (function () {
       });
     });
   }
-
-  // jQuery 전역 401 처리(선택): API 호출이 많으면 활용
-  // $.ajaxPrefilter(function(options, originalOptions, jqXHR) { ... });
 
   return { initNavbar };
 })();
