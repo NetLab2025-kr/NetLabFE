@@ -758,6 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 IntBox.appendChild(clickBox);
                 IntContainer.appendChild(IntBox);
               });
+              topology_inner.appendChild(IntContainer);
 
               const selectedBox =  document.querySelector(`.IntBox[data-target="${el.id}"]`);
               selectedBox.style.left = e.clientX + "px";
