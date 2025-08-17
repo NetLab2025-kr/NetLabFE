@@ -66,12 +66,11 @@
   }
 
   #IntContainer {
-    display: flex;
     width: 130px;
     height: auto;
     background-color: white;
     position: absolute;
-    z-index: 9999;
+    z-index: 3000;
   }
 
   .IntBox {
