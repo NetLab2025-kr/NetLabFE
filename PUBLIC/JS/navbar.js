@@ -76,7 +76,7 @@ window.NetLab = (function () {
       method: 'GET',
       headers: { "Authorization": "Bearer " + token }
     }).then(res => {
-      const isAdmin = (typeof res === 'boolean') ? res : !!res?.isAdmin;
+      const isAdmin = (typeof res === 'boolean') ? res : !!(res && res.isAdmin);
       renderNav(isAdmin, name);
       return isAdmin;
     }).fail(jqXHR => {
@@ -95,36 +95,37 @@ window.NetLab = (function () {
 
   /* ---------- 초기화 ---------- */
   function initNavbar() {
-    // partial 주입 후 실행
-    $('#navbar').load('/PUBLIC/partials/navbar.html', function () {
-      const at = getToken();
-      const rt = getRefresh();
+    // 기존 마크업(.navbar / #nav-links / #user-info)을 그대로 사용
+    const at = getToken();
+    const rt = getRefresh();
 
-      if (at) {
-        if (isExpired(at) && rt) {
-          refreshTokens()
-            .then(r => callIsAdmin(r.accessToken, r.name || getName()))
-            .fail(renderGuest);
-        } else {
-          callIsAdmin(at, getName()).fail(renderGuest);
-        }
-      } else if (rt) {
+    if (at) {
+      if (isExpired(at) && rt) {
         refreshTokens()
-          .then(r => callIsAdmin(r.accessToken, r.name))
+          .then(r => callIsAdmin(r.accessToken, r.name || getName()))
           .fail(renderGuest);
       } else {
-        renderGuest();
+        callIsAdmin(at, getName()).fail(renderGuest);
       }
+    } else if (rt) {
+      refreshTokens()
+        .then(r => callIsAdmin(r.accessToken, r.name))
+        .fail(renderGuest);
+    } else {
+      renderGuest();
+    }
 
-      // 로그아웃
-      $(document).on('click', '#logoutBtn', function (e) {
-        e.preventDefault();
-        clearCred();
-        alert('로그아웃 되었습니다');
-        location.reload();
-      });
+    // 위임 바인딩: 렌더 후 생기는 버튼에도 동작
+    $(document).on('click', '#logoutBtn', function (e) {
+      e.preventDefault();
+      clearCred();
+      alert('로그아웃 되었습니다');
+      location.reload();
     });
   }
 
   return { initNavbar };
 })();
+
+// DOM 준비되면 자동 실행
+$(function(){ NetLab.initNavbar(); });
