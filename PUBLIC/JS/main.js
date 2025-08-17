@@ -759,10 +759,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 IntContainer.appendChild(IntBox);
               });
 
-              selectDevicePort(el.id);
               const selectedBox =  document.querySelector(`.IntBox[data-target="${el.id}"]`);
               selectedBox.style.left = e.clientX + "px";
               selectedBox.style.top = e.clientY + "px";
+              selectDevicePort(el.id);
 
               document.querySelectorAll(`${selectedBox} .IntBox`).addEventListener('click', () => {
                 firstClicked = el;
