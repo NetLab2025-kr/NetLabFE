@@ -19,9 +19,18 @@ body {
     margin: 0;
 }
 
+/* 여기만 교체! (보라/파랑 계열 레이어 그라데이션) */
 body {
     font-family: 'Pretendard', sans-serif;
-    background: linear-gradient(180deg, #f8fafb 0%, #f3f8ff 100%);
+    background:
+        /* 좌상단에서 퍼지는 연보라 */
+        radial-gradient(1200px 600px at 8% -15%, #ece8ff 0%, rgba(236, 232, 255, 0) 60%),
+        /* 우측에서 퍼지는 연하늘 */
+        radial-gradient(900px 520px at 100% 28%, #e3f1ff 0%, rgba(227, 241, 255, 0) 62%),
+        /* 좌하단에서 아주 옅은 라일락 */
+        radial-gradient(1000px 560px at -10% 100%, #f4ecff 0%, rgba(244, 236, 255, 0) 55%),
+        /* 베이스 톤 */
+        #f6f8ff;
     color: var(--ink);
 }
 
@@ -54,7 +63,8 @@ h1::after {
     height: 3px;
     border-radius: 3px;
     margin: 10px auto 0;
-    background: linear-gradient(90deg, var(--brand), #7bc8ff);
+    /* 파랑→인디고 느낌으로 미묘하게 보정 */
+    background: linear-gradient(90deg, #5b8cff, #9abfff);
     opacity: .85;
 }
 
@@ -149,8 +159,6 @@ h1::after {
 .question-title.notice {
     color: #b91c1c;
 }
-
-/* 공지 강조용 (JS에서 notice 시 class 추가 가능) */
 
 .question-meta {
     font-size: 13px;
