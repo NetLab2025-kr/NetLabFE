@@ -740,6 +740,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 ports = interfacekind.data.Interface;
               }
 
+              const existingBox = document.querySelector(`.IntBox[data-target="${el.id}"]`);
+              if (existingBox) existingBox.remove();
+
               console.log("interfacekind:", interfacekind);
 
               let selectedBox = null;
@@ -758,18 +761,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                   clickBox.appendChild(IntP);
                   IntBox.appendChild(clickBox);
-                  IntContainer.appendChild(IntBox);
-
-                  IntBox.style.left = e.clientX + "px";
-                  IntBox.style.top = e.clientY + "px";
                 }
               });
+
               IntBox.style.left = e.clientX + "px";
               IntBox.style.top = e.clientY + "px";
               IntContainer.appendChild(IntBox);
 
               selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
-              topology_inner.appendChild(IntContainer);
               selectDevicePort(el.id);
 
               selectedBox.forEach(box => {
@@ -842,6 +841,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     ports = interfacekind.data.Interface;
                   }
 
+                  const existingBox = document.querySelector(`.IntBox[data-target="${el.id}"]`);
+                  if (existingBox) existingBox.remove();
+
                   let selectedBox = null;
 
                   const IntBox = document.createElement('div');
@@ -864,7 +866,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   IntContainer.appendChild(IntBox);
                   
                   selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
-                  topology_inner.appendChild(IntContainer);
                   selectDevicePort(el.id);
 
                   
