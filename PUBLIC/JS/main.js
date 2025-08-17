@@ -762,6 +762,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 IntBox.style.top = e.clientY + "px";
               });
               topology_inner.appendChild(IntContainer);
+
+              const selectedBox =  document.querySelector(`.IntBox[data-target="${el.id}"]`);
               selectDevicePort(el.id);
 
               document.querySelectorAll(`${selectedBox} .IntBox`).addEventListener('click', () => {
