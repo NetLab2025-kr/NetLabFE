@@ -729,6 +729,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const IntContainer = document.getElementById('IntContainer');
             IntContainer.style.display = "flex";
+
+            const moveHandler = (e) => {
+              //console.log('함수 들어옴');
+              if (!tempTarget || !tempLine) {
+                console.log('tempTarget이나 temlLine 없음');
+                return;
+              }
+              const rect = topology_inner.getBoundingClientRect();
+              const offsetX = tempTarget.offsetWidth / 2;
+              const offsetY = tempTarget.offsetHeight / 2;
+
+              // 마우스 좌표에 맞춰 위치 변경
+              tempTarget.style.left = (e.clientX - rect.left - offsetX) + "px";
+              tempTarget.style.top  = (e.clientY - rect.top - offsetY) + "px";
+
+              // jsPlumb에 "이거 위치 바뀌었으니 다시 계산해" 요청
+              instance.revalidate(tempTarget);
+            };
             
             if (!firstClicked) {
               const interfacekind = current_names.get(el.id);
@@ -752,16 +770,14 @@ document.addEventListener('DOMContentLoaded', () => {
               IntBox.dataset.target = el.id;
 
               Object.keys(ports).forEach(port => {
-                if(!document.querySelector(`IntBox[data-target=${el.id}]`)) {
-                  const clickBox = document.createElement('div');
-                  clickBox.className = "clickBox";
+                const clickBox = document.createElement('div');
+                clickBox.className = "clickBox";
 
-                  const IntP = document.createElement('p');
-                  IntP.innerText = port;
+                const IntP = document.createElement('p');
+                IntP.innerText = port;
 
-                  clickBox.appendChild(IntP);
-                  IntBox.appendChild(clickBox);
-                }
+                clickBox.appendChild(IntP);
+                IntBox.appendChild(clickBox);
               });
 
               IntBox.style.left = e.clientX + "px";
@@ -770,6 +786,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
               selectDevicePort(el.id);
+              
 
               selectedBox.forEach(box => {
                 box.addEventListener('click', () => {
@@ -796,24 +813,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   });
                   console.log('임시 선 연결');
 
-                  //마우스 커서 따라다님
-                  const moveHandler = (e) => {
-                    //console.log('함수 들어옴');
-                    if (!tempTarget || !tempLine) {
-                      console.log('tempTarget이나 temlLine 없음');
-                      return;
-                    }
-                    const rect = topology_inner.getBoundingClientRect();
-                    const offsetX = tempTarget.offsetWidth / 2;
-                    const offsetY = tempTarget.offsetHeight / 2;
-
-                    // 마우스 좌표에 맞춰 위치 변경
-                    tempTarget.style.left = (e.clientX - rect.left - offsetX) + "px";
-                    tempTarget.style.top  = (e.clientY - rect.top - offsetY) + "px";
-
-                    // jsPlumb에 "이거 위치 바뀌었으니 다시 계산해" 요청
-                    instance.revalidate(tempTarget);
-                  };
                   document.addEventListener('mousemove', moveHandler);
                   console.log('마우스 이벤트 등록');
 
@@ -833,6 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if(!existing) {
+                  document.removeEventListener('mousemove', moveHandler);
                   console.log(firstClicked.id);
                   console.log(el.id);
                   const interfacekind = current_names.get(el.id);
@@ -944,10 +944,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                       IntContainer.style.display = "none";
                       endEvent = true;
+                      console.log('이벤트 끝');
                     });
                   });
                 }
                 if(endEvent) {
+                  console.log('이벤트 끝나서 들어옴');
                   firstClicked?.classList.remove("selected");
 
                   if(tempLine) {
