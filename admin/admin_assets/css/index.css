@@ -1,16 +1,20 @@
 /* 메인 홈 전용 스타일 (전역 style.css 위에 덮어씌움) */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   font-family: 'Pretendard', sans-serif;
   margin: 0;
   /* 기존 단색 대신 은은한 블루-보라 그라데이션 */
-  background: linear-gradient(135deg, #f0f7ff, #f9f5ff);
+  background: linear-gradient(135deg, #dbeafe, #e9d5ff);
   color: #222;
 }
 
 /* 네비바 여백 확보 */
-.has-navbar { padding-top: 64px; }
+.has-navbar {
+  padding-top: 64px;
+}
 
 /* 메인 컨테이너 */
 .container {
@@ -49,7 +53,10 @@ h1 {
   transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
   color: #222;
 }
-.menu-item:visited { color: #222; }
+
+.menu-item:visited {
+  color: #222;
+}
 
 .menu-item:hover {
   transform: translateY(-4px);
@@ -65,6 +72,7 @@ h1 {
   color: #2563eb;
   margin-bottom: 6px;
 }
+
 .mi-sub {
   display: block;
   font-size: 13px;
@@ -73,9 +81,25 @@ h1 {
 
 /* 모바일 대응 */
 @media (max-width: 700px) {
-  .container { margin-top: 56px; }
-  h1 { font-size: 24px; }
-  .menu { gap: 14px; grid-template-columns: 1fr; }
-  .menu-item { border-radius: 14px; padding: 16px; }
-  .mi-title { font-size: 16px; }
+  .container {
+    margin-top: 56px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .menu {
+    gap: 14px;
+    grid-template-columns: 1fr;
+  }
+
+  .menu-item {
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .mi-title {
+    font-size: 16px;
+  }
 }
