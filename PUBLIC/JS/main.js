@@ -732,6 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (!firstClicked) {
               const interfacekind = current_names.get(el.id);
+              console.log(interfacekind);
               let values = "";
               if(interfacekind["NetworkAdapter"]) {
                 values = "NetworkAdapter";
@@ -744,7 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 IntBox.className = "IntBox";
 
                 const clickBox = document.createElement('div');
-                clickBox.class = "clickBox";
+                clickBox.className = "clickBox";
 
                 const IntP = document.createElement('p');
                 IntP.innerText = port;
