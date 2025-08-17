@@ -1,81 +1,81 @@
-/* 관리자 홈 전용 스타일 (전역 style.css 위에 덮어씀) */
+/* 메인 홈 전용 스타일 (전역 style.css 위에 덮어씌움) */
 * { box-sizing: border-box; }
 
 body {
   font-family: 'Pretendard', sans-serif;
   margin: 0;
-  background: linear-gradient(135deg, #f9fbff, #f0f6ff);
+  /* 기존 단색 대신 은은한 블루-보라 그라데이션 */
+  background: linear-gradient(135deg, #f0f7ff, #f9f5ff);
   color: #222;
 }
 
-/* 네비바 여백 확보 (전역 .has-navbar와 일치) */
+/* 네비바 여백 확보 */
 .has-navbar { padding-top: 64px; }
 
-/* 카드 컨테이너 */
-.container{
+/* 메인 컨테이너 */
+.container {
   max-width: 1000px;
   margin: 72px auto 40px;
   padding: 0 20px;
 }
 
-h1{
+h1 {
   margin: 0 0 18px;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 800;
   color: #23272f;
-  letter-spacing: -.2px;
+  letter-spacing: -0.2px;
+  text-align: center;
 }
 
-/* 메뉴: 카드형 그리드 */
-.menu{
+/* 카드/메뉴 공통 스타일 */
+.menu {
   list-style: none;
   margin: 16px 0 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 
-/* a의 보라색 방문색 제거 + 버튼화 */
-.menu-item{
+.menu-item {
   display: block;
-  width: 100%;
   text-decoration: none;
   background: #fff;
   border: 1.5px solid #dbeafe;
   border-radius: 16px;
-  padding: 18px 18px 16px;
-  box-shadow: 0 6px 18px rgba(61,174,250,.08);
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(61, 174, 250, 0.08);
   transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
   color: #222;
 }
-.menu-item:visited{ color:#222; }
+.menu-item:visited { color: #222; }
 
-.menu-item:hover{
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(61,174,250,.16);
+.menu-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(61, 174, 250, 0.16);
   border-color: #cfe2ff;
   background: #fbfeff;
 }
 
-.mi-title{
-  display:block;
+.mi-title {
+  display: block;
   font-size: 18px;
   font-weight: 800;
   color: #2563eb;
   margin-bottom: 6px;
 }
-.mi-sub{
-  display:block;
+.mi-sub {
+  display: block;
   font-size: 13px;
   color: #67788c;
 }
 
-/* 모바일 */
-@media (max-width: 700px){
-  .container{ margin-top: 56px; }
-  h1{ font-size: 22px; }
-  .menu{ gap: 12px; grid-template-columns: 1fr; }
-  .menu-item{ border-radius: 14px; padding: 16px; }
-  .mi-title{ font-size: 16px; }
+/* 모바일 대응 */
+@media (max-width: 700px) {
+  .container { margin-top: 56px; }
+  h1 { font-size: 24px; }
+  .menu { gap: 14px; grid-template-columns: 1fr; }
+  .menu-item { border-radius: 14px; padding: 16px; }
+  .mi-title { font-size: 16px; }
 }
