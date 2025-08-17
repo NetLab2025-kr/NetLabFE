@@ -746,6 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
               Object.keys(ports).forEach(port => {
                 const IntBox = document.createElement('div');
                 IntBox.className = "IntBox";
+                IntBox.dataset.target = el.id;
 
                 const clickBox = document.createElement('div');
                 clickBox.className = "clickBox";
@@ -758,10 +759,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 IntContainer.appendChild(IntBox);
               });
 
+              selectDevicePort(el.id);
               const selectedBox =  document.querySelector(`.IntBox[data-target="${el.id}"]`);
               selectedBox.style.left = e.clientX + "px";
               selectedBox.style.top = e.clientY + "px";
-              selectDevicePort(el.id);
 
               document.querySelectorAll(`${selectedBox} .IntBox`).addEventListener('click', () => {
                 firstClicked = el;
@@ -833,6 +834,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   Object.keys(ports).forEach(port => {
                     const IntBox = document.createElement('div');
                     IntBox.className = "IntBox";
+                    IntBox.dataset.target = el.id;
+
                     const IntP = document.createElement('p');
                     IntP.innerText = port;
 
