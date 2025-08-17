@@ -8,56 +8,7 @@ body {
     background: #f8fafb;
 }
 
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: #3DAEFA;
-    padding: 0 36px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 1000;
-    box-shadow: 0 4px 16px rgba(61, 174, 250, 0.06);
-}
 
-.navbar .welcome:hover {
-    opacity: 0.85;
-}
-
-.navbar .welcome a {
-    color: #fff;
-    font-size: 22px;
-    font-weight: 700;
-    text-decoration: none;
-    letter-spacing: 0.5px;
-    text-shadow: 0 1px 2px #36a6ee44;
-}
-
-.navbar #nav-links a {
-    color: #fff;
-    text-decoration: none;
-    margin-left: 26px;
-    font-size: 16px;
-    font-weight: 500;
-    padding: 8px 14px;
-    border-radius: 7px;
-    background: transparent;
-    transition: background 0.16s;
-}
-
-.navbar #nav-links a:hover {
-    background: #379fde;
-}
-
-.navbar .user-info {
-    color: #fff;
-    font-weight: 600;
-    margin-left: 18px;
-    display: none;
-}
 
 .container {
     max-width: 800px;

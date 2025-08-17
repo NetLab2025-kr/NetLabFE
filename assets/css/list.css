@@ -18,53 +18,6 @@ body {
   color: #1f2937;
 }
 
-/* NAVBAR */
-.navbar {
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  background: linear-gradient(135deg, #34b3ff, #3DAEFA 45%, #2b86ff);
-  color: #fff;
-  z-index: 1000;
-  box-shadow: 0 6px 22px rgba(41, 125, 255, .18);
-  backdrop-filter: saturate(1.2) blur(4px);
-}
-
-.navbar .brand {
-  font-weight: 900;
-  letter-spacing: .2px;
-  text-decoration: none;
-  color: #fff;
-  font-size: 20px;
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-#nav-links a {
-  color: #fff;
-  text-decoration: none;
-  margin-left: 22px;
-  font-weight: 600;
-  font-size: 15px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  transition: background .15s ease, transform .08s ease;
-}
-
-#nav-links a:hover {
-  background: rgba(255, 255, 255, .16);
-  transform: translateY(-1px);
-}
 
 .user-info {
   color: #fff;
@@ -289,10 +242,6 @@ body {
 
 /* MOBILE */
 @media (max-width: 720px) {
-  .navbar {
-    height: 56px;
-    padding: 0 14px;
-  }
 
   .page-hero {
     padding: 20px 12px 6px;

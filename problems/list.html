@@ -5,15 +5,13 @@
   <title>문제 목록 - NetLab</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <!-- 새로 다듬은 스타일 -->
   <link rel="stylesheet" href="../assets/css/list.css" />
+  <link rel="stylesheet" href="../assets/css/style.css">
 
   <script src="../PUBLIC/JS/navbarAndToken.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-  <!-- NAVBAR -->
   <div class="navbar">
     <a href="/index.html" class="brand">NetLab</a>
     <div class="nav-right">
@@ -22,7 +20,6 @@
     </div>
   </div>
 
-  <!-- 헤더 영역 -->
   <header class="page-hero">
     <div class="hero-inner">
       <h1>문제 목록</h1>
@@ -30,9 +27,7 @@
     </div>
   </header>
 
-  <!-- 컨테이너 -->
   <div class="container">
-    <!-- 유틸바(검색/필터) : 필요 없으면 지워도 됨 -->
     <div class="toolbar">
       <input id="searchInput" type="search" placeholder="제목 또는 태그로 검색" />
       <select id="difficultyFilter" aria-label="난이도 필터">
@@ -43,7 +38,6 @@
       </select>
     </div>
 
-    <!-- 목록 -->
     <ul id="problemList" class="problem-list"></ul>
 
     <!-- 로딩 스켈레톤 -->
