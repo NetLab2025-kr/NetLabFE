@@ -759,9 +759,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 IntBox.appendChild(clickBox);
 
               });
-                IntContainer.style.left = e.clientX + "px";
-                IntContainer.style.top = e.clientY + "px";
-                IntContainer.appendChild(IntBox);
+              IntContainer.style.left = e.clientX + "px";
+              IntContainer.style.top = e.clientY + "px";
+              IntContainer.appendChild(IntBox);
 
               selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
               topology_inner.appendChild(IntContainer);
