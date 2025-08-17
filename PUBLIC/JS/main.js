@@ -742,12 +742,11 @@ document.addEventListener('DOMContentLoaded', () => {
               console.log("interfacekind:", interfacekind);
 
               let selectedBox = null;
+              const IntBox = document.createElement('div');
+              IntBox.className = "IntBox";
+              IntBox.dataset.target = el.id;
               Object.keys(ports).forEach(port => {
                 if(!document.querySelector(`IntBox[data-target=${el.id}]`)) {
-                  const IntBox = document.createElement('div');
-                  IntBox.className = "IntBox";
-                  IntBox.dataset.target = el.id;
-
                   const clickBox = document.createElement('div');
                   clickBox.className = "clickBox";
 
