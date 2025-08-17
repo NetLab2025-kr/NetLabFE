@@ -762,6 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (!selectedBox) selectedBox = clickBox;
               });
+              IntContainer.style.display = "flex";
               selectDevicePort(el.id);
 
               selectedBox.addEventListener('click', () => {
@@ -812,7 +813,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   document.removeEventListener('mousemove', moveHandler);
                 };
 
-                selectedBox.style.display = "none";
+                IntContainer.style.display = "none";
               });
             } else {
               if (firstClicked !== el) {
