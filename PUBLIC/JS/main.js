@@ -763,58 +763,61 @@ document.addEventListener('DOMContentLoaded', () => {
                   if (!selectedBox) selectedBox = clickBox;
                 }
               });
-              IntContainer.style.display = "flex";
+              selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
+              topology_inner.appendChild(IntContainer);
               selectDevicePort(el.id);
 
-              selectedBox.addEventListener('click', () => {
-                firstClicked = el;
-                console.log(`[TEST]${firstClicked.id}`);
-                el.classList.add("selected");
+              selectedBox.forEach(box => {
+                box.addEventListener('click', () => {
+                  firstClicked = el;
+                  console.log(`[TEST]${firstClicked.id}`);
+                  el.classList.add("selected");
 
-                tempTarget = document.createElement('div');
-                console.log('임시 엔포 생성');
-                tempTarget.style.width = "0px";
-                tempTarget.style.height = "0px";
-                tempTarget.style.position = "absolute";
-                tempTarget.style.pointerEvents = "none";
-                topology_inner.appendChild(tempTarget);
+                  tempTarget = document.createElement('div');
+                  console.log('임시 엔포 생성');
+                  tempTarget.style.width = "0px";
+                  tempTarget.style.height = "0px";
+                  tempTarget.style.position = "absolute";
+                  tempTarget.style.pointerEvents = "none";
+                  topology_inner.appendChild(tempTarget);
 
-                tempLine =  instance.connect({
-                  source: firstClicked,
-                  target: tempTarget,
-                  connector: connectorType,
-                  paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                  anchors: ["Center", "Center"],
-                  overlays: []
+                  tempLine =  instance.connect({
+                    source: firstClicked,
+                    target: tempTarget,
+                    connector: connectorType,
+                    paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
+                    anchors: ["Center", "Center"],
+                    overlays: []
+                  });
+                  console.log('임시 선 연결');
+
+                  //마우스 커서 따라다님
+                  const moveHandler = (e) => {
+                    //console.log('함수 들어옴');
+                    if (!tempTarget || !tempLine) {
+                      console.log('tempTarget이나 temlLine 없음');
+                      return;
+                    }
+                    const rect = topology_inner.getBoundingClientRect();
+                    const offsetX = tempTarget.offsetWidth / 2;
+                    const offsetY = tempTarget.offsetHeight / 2;
+
+                    // 마우스 좌표에 맞춰 위치 변경
+                    tempTarget.style.left = (e.clientX - rect.left - offsetX) + "px";
+                    tempTarget.style.top  = (e.clientY - rect.top - offsetY) + "px";
+
+                    // jsPlumb에 "이거 위치 바뀌었으니 다시 계산해" 요청
+                    instance.revalidate(tempTarget);
+                  };
+                  document.addEventListener('mousemove', moveHandler);
+                  console.log('마우스 이벤트 등록');
+
+                  tempTarget.cleanupMouseMove = () => {
+                    document.removeEventListener('mousemove', moveHandler);
+                  };
+
+                  IntContainer.style.display = "none";
                 });
-                console.log('임시 선 연결');
-
-                //마우스 커서 따라다님
-                const moveHandler = (e) => {
-                  //console.log('함수 들어옴');
-                  if (!tempTarget || !tempLine) {
-                    console.log('tempTarget이나 temlLine 없음');
-                    return;
-                  }
-                  const rect = topology_inner.getBoundingClientRect();
-                  const offsetX = tempTarget.offsetWidth / 2;
-                  const offsetY = tempTarget.offsetHeight / 2;
-
-                  // 마우스 좌표에 맞춰 위치 변경
-                  tempTarget.style.left = (e.clientX - rect.left - offsetX) + "px";
-                  tempTarget.style.top  = (e.clientY - rect.top - offsetY) + "px";
-
-                  // jsPlumb에 "이거 위치 바뀌었으니 다시 계산해" 요청
-                  instance.revalidate(tempTarget);
-                };
-                document.addEventListener('mousemove', moveHandler);
-                console.log('마우스 이벤트 등록');
-
-                tempTarget.cleanupMouseMove = () => {
-                  document.removeEventListener('mousemove', moveHandler);
-                };
-
-                IntContainer.style.display = "none";
               });
             } else {
               if (firstClicked !== el) {
