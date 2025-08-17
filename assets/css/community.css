@@ -24,11 +24,11 @@ body {
     font-family: 'Pretendard', sans-serif;
     background:
         /* 좌상단에서 퍼지는 연보라 */
-        radial-gradient(1200px 600px at 8% -15%, #ece8ff 0%, rgba(236, 232, 255, 0) 60%),
+        radial-gradient(1200px 600px at 8% -15%, #d3cbfa 0%, rgba(236, 232, 255, 0) 60%),
         /* 우측에서 퍼지는 연하늘 */
-        radial-gradient(900px 520px at 100% 28%, #e3f1ff 0%, rgba(227, 241, 255, 0) 62%),
+        radial-gradient(900px 520px at 100% 28%, #c7e3fe 0%, rgba(227, 241, 255, 0) 62%),
         /* 좌하단에서 아주 옅은 라일락 */
-        radial-gradient(1000px 560px at -10% 100%, #f4ecff 0%, rgba(244, 236, 255, 0) 55%),
+        radial-gradient(1000px 560px at -10% 100%, #e0cff9 0%, rgba(244, 236, 255, 0) 55%),
         /* 베이스 톤 */
         #f6f8ff;
     color: var(--ink);
