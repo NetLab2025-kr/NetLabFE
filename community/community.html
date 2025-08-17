@@ -3,33 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <title>커뮤니티 - 질문 목록</title>
+
+  <!-- 폰트 / jQuery -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- 페이지 전용 CSS -->
   <link rel="stylesheet" href="../assets/css/community.css">
-  <script src="/PUBLIC/JS/navbarAndToken.js"></script>
+  <!-- 전역 네비바/공통 스타일 -->
   <link rel="stylesheet" href="../assets/css/style.css">
 
-
+  <!-- 네비바 렌더/토큰 관리 -->
+  <script src="/PUBLIC/JS/navbarAndToken.js"></script>
 </head>
-<body>
+<body class="has-navbar">
+  <!-- NAVBAR -->
   <div class="navbar">
     <a href="/index.html" class="brand">NetLab</a>
-    <div style="display:flex;align-items:center;gap:18px;">
+    <div class="right-group" style="display:flex;align-items:center;gap:18px;">
       <div id="nav-links"></div>
       <div class="user-info" id="user-info" style="display:none;"></div>
     </div>
   </div>
 
+  <!-- CONTENT -->
   <div class="container">
     <h1>커뮤니티</h1>
     <button class="ask-btn" onclick="location.href='/community/add_question.html'">글 등록하기</button>
     <ul class="question-list" id="questionList"></ul>
   </div>
 
-  <!-- 모달(상세/수정) -->
+  <!-- MODAL -->
   <div class="modal-bg" id="modalBg">
     <div class="modal-box">
-      <button class="close-btn" id="closeModal">&times;</button>
+      <button class="close-btn" id="closeModal" aria-label="닫기">&times;</button>
       <div id="modalInner"></div>
     </div>
   </div>
@@ -38,9 +45,9 @@
     $(function () {
       const API = 'https://be.netlab.kr/api';
 
-      /* ---------------- 공통 상태 조회(네비 렌더 결과 기반) ---------------- */
-      const navEl   = document.getElementById('nav-links');
-      const userEl  = document.getElementById('user-info');
+      /* ---------------- 네비 상태 참조 ---------------- */
+      const navEl  = document.getElementById('nav-links');
+      const userEl = document.getElementById('user-info');
 
       function getIsAdminFromNav() {
         if (!navEl) return false;
@@ -48,15 +55,11 @@
           .some(a => a.textContent && a.textContent.includes('관리자 메뉴'));
       }
       function getUserNameFromNav() {
-        // navbar.js가 #user-info에 로그인 이름을 채움(없으면 숨김)
         return (userEl && userEl.textContent) ? userEl.textContent.trim() : '';
       }
 
-      // 네비가 동적으로 바뀌므로 관찰해서 목록 버튼 등 갱신 필요 시 쓸 수 있음
-      const mo = new MutationObserver(() => {
-        // 필요 시 상태 변화에 따른 UI 변경 넣기
-        // ex) 관리자 버튼 노출 토글 등 (지금 페이지는 목록 렌더 때마다 계산하므로 생략)
-      });
+      // 네비가 동적으로 바뀔 수 있어 관찰만 연결(현재는 별도 처리 없음)
+      const mo = new MutationObserver(() => {});
       if (navEl) mo.observe(navEl, { childList: true, subtree: true, characterData: true });
 
       /* ---------------- 유틸 ---------------- */
@@ -65,8 +68,12 @@
       /* ---------------- 목록 렌더 ---------------- */
       function renderItem($ul, q, canEdit) {
         const $li  = $('<li>').attr('data-id', q.id);
-        const $ttl = $('<div>').addClass('question-title')
-          .text((q.notice ? '[공지] ' : '') + safeText(q.title))
+
+        // 공지면 말머리 + 빨강, 아니면 기본 파랑
+        const titleText = (q.notice ? '[공지] ' : '') + safeText(q.title);
+        const $ttl = $('<div>')
+          .addClass('question-title' + (q.notice ? ' notice' : ''))
+          .text(titleText)
           .css('color', q.notice ? '#FF3337' : '#2563eb');
 
         const meta = `작성자: ${safeText(q.author)} | 작성일: ${q.createdAt ? q.createdAt.replace('T',' ').slice(0,19) : ''}`;
@@ -96,7 +103,7 @@
             const currentName = getUserNameFromNav();
             const isAdmin     = getIsAdminFromNav();
 
-            // 최신 글이 위로 오게
+            // 최신 글 위로
             res.slice().reverse().forEach(q => {
               const canEdit = !!currentName && (isAdmin || q.author === currentName);
               renderItem($list, q, canEdit);
@@ -108,7 +115,7 @@
 
       /* ---------------- 상세 모달 ---------------- */
       $(document).on('click', '.question-list li', function (e) {
-        if ($(e.target).is('.edit-btn,.delete-btn')) return; // 버튼 클릭은 별도 처리
+        if ($(e.target).is('.edit-btn,.delete-btn')) return; // 버튼은 별도 처리
         const id = $(this).data('id');
 
         $.ajax({
@@ -117,15 +124,25 @@
           dataType: 'json',
           success: function (q) {
             const $box = $('#modalInner').empty();
-            $('<div>').addClass('modal-title').text(safeText(q.title)).appendTo($box);
+
+            // 공지면 제목 앞에 [공지] 붙이고 빨간색
+            const titleText = (q.notice ? '[공지] ' : '') + safeText(q.title);
+            const $title = $('<div>').addClass('modal-title').text(titleText);
+            if (q.notice) $title.css('color', '#FF3337');
+            $box.append($title);
+
             const meta = `작성자: ${safeText(q.author)} | 작성일: ${q.createdAt ? q.createdAt.replace('T',' ').slice(0,19) : ''}`;
             $('<div>').addClass('modal-meta').text(meta).appendTo($box);
+
             $('<div>').addClass('modal-content').text(safeText(q.content)).appendTo($box);
+
             $('#modalBg').css('display', 'flex');
           },
           error: () => alert('상세 조회 실패')
         });
       });
+
+      // 모달 닫기
       $('#closeModal, #modalBg').on('click', function (e) {
         if (e.target === this) $('#modalBg').hide();
       });
@@ -138,7 +155,7 @@
         if (!confirm('정말 삭제할까요?')) return;
 
         const isAdmin = getIsAdminFromNav();
-        const token   = localStorage.getItem('token'); // navbar.js가 최신 토큰 유지
+        const token   = localStorage.getItem('token');
         if (!token) {
           alert('로그인이 필요합니다.');
           return location.href = '/login/login.html';
@@ -177,18 +194,21 @@
           dataType: 'json',
           success: function (q) {
             const $box = $('#modalInner').empty();
-            $('<input>').attr({type:'text', id:'editTitle'})
-                        .addClass('modal-title-edit')
-                        .val(q.title || '')
-                        .appendTo($box);
+
+            $('<input>')
+              .attr({type:'text', id:'editTitle'})
+              .addClass('modal-title-edit')
+              .val(q.title || '')
+              .appendTo($box);
 
             const meta = `작성자: ${safeText(q.author)} | 작성일: ${q.createdAt ? q.createdAt.replace('T',' ').slice(0,19) : ''}`;
             $('<div>').addClass('modal-meta').text(meta).appendTo($box);
 
-            $('<textarea>').attr('id','editContent')
-                           .addClass('modal-content-edit')
-                           .val(q.content || '')
-                           .appendTo($box);
+            $('<textarea>')
+              .attr('id','editContent')
+              .addClass('modal-content-edit')
+              .val(q.content || '')
+              .appendTo($box);
 
             const $btns = $('<div>').addClass('modal-btn-group').appendTo($box);
             $('<button>').addClass('modal-btn-save').attr('id','saveEditBtn').text('저장').appendTo($btns);
