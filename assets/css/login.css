@@ -2,6 +2,9 @@
           box-sizing: border-box;
       }
 
+      input {
+        display: inline;
+      }
       body {
           font-family: 'Pretendard', sans-serif;
           margin: 0;
