@@ -1572,4 +1572,3 @@ document.addEventListener('DOMContentLoaded', () => {
 // --------------------------------------------------------------
 
 //commit test
-//아니 왜 커밋 안되지;;
