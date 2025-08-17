@@ -2,9 +2,7 @@
           box-sizing: border-box;
       }
 
-      input {
-        display: inline;
-      }
+
       body {
           font-family: 'Pretendard', sans-serif;
           margin: 0;
@@ -85,7 +83,7 @@
       }
 
       input {
-          display: block;
+          display: inline;
           width: 100%;
           padding: 13px;
           margin: 12px 0 0 0;

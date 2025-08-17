@@ -7,9 +7,7 @@ body {
     margin: 0;
     background: #f8fafb;
 }
-input {
-    display: inline;
-}
+
 .navbar {
     position: fixed;
     top: 0;
@@ -84,7 +82,7 @@ input {
 }
 
 input {
-    display: block;
+    display: inline;
     width: 100%;
     padding: 13px;
     margin: 12px 0 0 0;
