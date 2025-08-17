@@ -33,12 +33,12 @@
 
   <script>
 
-    const userId    = $('#userId').val();       
-    const password  = $('#password').val();     
+    const userId = $('#userId').val();       
+    const password = $('#password').val();     
     const password2 = $('#password2').val();    
-    const email     = $('#email').val();        
-    const name      = $('#name').val();  
-    
+    const email = $('#email').val();        
+    const name = $('#name').val();  
+
     // 엔터키로 회원가입 실행
     $(document).ready(function(){
       $('input').keypress(function(e){
@@ -49,6 +49,13 @@
     });
   
     function signUp() {
+      console.log(userId)
+      console.log(password)
+      console.log(password2)
+      console.log(email)
+      console.log(name)
+
+
       $.ajax({
         url: 'https://be.netlab.kr/api/auth/signup',
         type: 'POST',
