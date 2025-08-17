@@ -742,7 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               console.log("interfacekind:", interfacekind);
 
-
+              let selectedBox = null;
               Object.keys(ports).forEach(port => {
                 const IntBox = document.createElement('div');
                 IntBox.className = "IntBox";
@@ -760,13 +760,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 IntBox.style.left = e.clientX + "px";
                 IntBox.style.top = e.clientY + "px";
+
+                if (!selectedBox) selectedBox = clickBox;
               });
               topology_inner.appendChild(IntContainer);
-
-              const selectedBox =  document.querySelector(`.IntBox[data-target="${el.id}"]`);
               selectDevicePort(el.id);
 
-              document.querySelectorAll(`${selectedBox} .IntBox`).addEventListener('click', () => {
+              selectedBox.addEventListener('click', () => {
                 firstClicked = el;
                 console.log(`[TEST]${firstClicked.id}`);
                 el.classList.add("selected");
