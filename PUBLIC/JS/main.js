@@ -1,7 +1,7 @@
 import commands from './command_db.js';
 import default_config from './defaultConfiguration.js';
 
-const Routers = [];
+const Routers = {};
 
 class Router{
   constructor(data){
@@ -59,7 +59,7 @@ class Router{
                     console.log('step3');
                       longestPrefix = prefixLength;
                       console.log(route);
-                      bestMatch = route.next_hop;
+                      bestMatch = {nextHop:route.next_hop,interface:route.interface};
                   }
               }
           }
@@ -88,7 +88,25 @@ class Router{
 
    // 패킷 전송 (실시간 시뮬레이션)
   findRouterByIp(ip) {
-    return this.network.find(router => router.hasIp(ip));
+    const myLink = Links[this.data.hostname];
+
+    if(ip == "0.0.0.0"){
+
+    }
+    
+    for(let DeviceName of myLink){
+      console.log(DeviceName);
+      const obj = this.network[DeviceName];
+      const obj_interfaces = obj.data.Interface;
+
+      for(let target in obj_interfaces){
+        if(obj_interfaces[target].ip_address == ip){
+          return obj;
+        }
+      }
+    }
+
+    return false;
   }
 
 
@@ -659,7 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if(dragg_default_name == "router"){ //스위치나 다른 객체도 추가 필요 [바꿔]
         obj = new Router(structuredClone(default_config.Router));
-        Routers.push(obj);
+        Routers[deviceId] = obj;
         obj.network = Routers;
 
         current_names.set(deviceId, obj);
@@ -1570,5 +1588,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // --------------------------------------------------------------
-
-//commit test
