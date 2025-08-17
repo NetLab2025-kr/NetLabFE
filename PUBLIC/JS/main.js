@@ -774,7 +774,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               selectedBox.forEach(box => {
                 box.addEventListener('click', () => {
-                  console.log(`${box.getElementsByTagName('p')} clicked`);
+                  console.log(`${box.getElementsByTagName('p')[0].innerText} clicked`);
                   firstClicked = el;
                   console.log(`[TEST]${firstClicked.id}`);
                   el.classList.add("selected");
