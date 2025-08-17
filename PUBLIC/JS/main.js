@@ -825,7 +825,6 @@ document.addEventListener('DOMContentLoaded', () => {
               });
             } else {
               if (firstClicked !== el) {
-                let endEvent = false;
                 var existing = instance.getConnections().some(function(conn) {
                   return (conn.source.id === firstClicked.id && conn.target.id === el.id) ||
                          (conn.source.id === el.id && conn.target.id === firstClicked.id);
