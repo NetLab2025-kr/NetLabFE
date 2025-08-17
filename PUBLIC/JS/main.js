@@ -826,6 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
               });
             } else {
               if (firstClicked !== el) {
+                let endEvent = false;
                 var existing = instance.getConnections().some(function(conn) {
                   return (conn.source.id === firstClicked.id && conn.target.id === el.id) ||
                          (conn.source.id === el.id && conn.target.id === firstClicked.id);
@@ -942,28 +943,31 @@ document.addEventListener('DOMContentLoaded', () => {
                       Links[el.id]["port"].push(e.currentTarget);
 
                       IntContainer.style.display = "none";
+                      endEvent = true;
                     });
                   });
                 }
-                firstClicked?.classList.remove("selected");
+                if(endEvent) {
+                  firstClicked?.classList.remove("selected");
 
-                if(tempLine) {
-                  instance.deleteConnection(tempLine);
-                  tempLine = null;
-                  console.log('연결 후 임시 선 연결 해제');
-                }
-                if(tempTarget) {
-                  if(typeof tempTarget.cleanupMouseMove === "function") {
-                      tempTarget.cleanupMouseMove();
+                  if(tempLine) {
+                    instance.deleteConnection(tempLine);
+                    tempLine = null;
+                    console.log('연결 후 임시 선 연결 해제');
                   }
-                  tempTarget.remove();
-                  tempTarget = null;
-                  console.log('연결 후 임시 엔포 지워짐');
-                }
+                  if(tempTarget) {
+                    if(typeof tempTarget.cleanupMouseMove === "function") {
+                        tempTarget.cleanupMouseMove();
+                    }
+                    tempTarget.remove();
+                    tempTarget = null;
+                    console.log('연결 후 임시 엔포 지워짐');
+                  }
 
-                firstClicked = null;
-                document.body.dataset.connection = "";
-                return;
+                  firstClicked = null;
+                  document.body.dataset.connection = "";
+                  return;
+                }
               }
             }
           }
