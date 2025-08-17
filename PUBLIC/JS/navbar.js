@@ -1,4 +1,3 @@
-<script>
 // 전역 네임스페이스
 window.NetLab = (function () {
   const API = 'https://be.netlab.kr/api';
@@ -126,4 +125,3 @@ window.NetLab = (function () {
 
   return { initNavbar };
 })();
-</script>
