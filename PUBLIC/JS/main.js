@@ -743,24 +743,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
               let selectedBox = null;
               Object.keys(ports).forEach(port => {
-                const IntBox = document.createElement('div');
-                IntBox.className = "IntBox";
-                IntBox.dataset.target = el.id;
+                if(!document.querySelector(`IntBox[data-target=${el.id}]`)) {
+                  const IntBox = document.createElement('div');
+                  IntBox.className = "IntBox";
+                  IntBox.dataset.target = el.id;
 
-                const clickBox = document.createElement('div');
-                clickBox.className = "clickBox";
+                  const clickBox = document.createElement('div');
+                  clickBox.className = "clickBox";
 
-                const IntP = document.createElement('p');
-                IntP.innerText = port;
+                  const IntP = document.createElement('p');
+                  IntP.innerText = port;
 
-                clickBox.appendChild(IntP);
-                IntBox.appendChild(clickBox);
-                IntContainer.appendChild(IntBox);
+                  clickBox.appendChild(IntP);
+                  IntBox.appendChild(clickBox);
+                  IntContainer.appendChild(IntBox);
 
-                IntBox.style.left = e.clientX + "px";
-                IntBox.style.top = e.clientY + "px";
+                  IntBox.style.left = e.clientX + "px";
+                  IntBox.style.top = e.clientY + "px";
 
-                if (!selectedBox) selectedBox = clickBox;
+                  if (!selectedBox) selectedBox = clickBox;
+                }
               });
               IntContainer.style.display = "flex";
               selectDevicePort(el.id);
