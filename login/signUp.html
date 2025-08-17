@@ -39,38 +39,33 @@
         }
       });
     });
-
-    // 회원가입 처리
+  
     function signUp() {
-      const userId = $('#userId').val();
-      const password = $('#password').val();
+      const userId    = $('#userId').val();
+      const password  = $('#password').val();
       const password2 = $('#password2').val();
-      const name = $('#name').val();
-      
-
-      if (!userId || !password || !name) {
-        alert('모든 항목을 입력해주세요.');
-        return;
-      }
-      if (password !== password2) {
-        alert('비밀번호가 일치하지 않습니다.');
-        return;
-      }
-
+      const name      = $('#name').val();
+  
       $.ajax({
         url: 'https://be.netlab.kr/api/auth/signup',
         type: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ userId, password, name }),
-        success: function() {
+        data: JSON.stringify({
+          userId,
+          password,
+          confirmPassword: password2,   //서버에서
+          name
+        }),
+        success: function () {
           alert('회원가입 성공! 로그인 페이지로 이동합니다.');
           window.location.href = '/login/login.html';
         },
-        error: function(xhr) {
+        error: function (xhr) {
           alert('회원가입 실패: ' + xhr.responseText);
         }
       });
     }
   </script>
+  
 </body>
 </html>
