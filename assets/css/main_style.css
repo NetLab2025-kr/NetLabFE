@@ -67,8 +67,9 @@
 
   #IntContainer {
     width: 130px;
+    height: auto;
     background-color: white;
-    position: relative;
+    position: absolute;
   }
 
   .IntBox {
@@ -77,7 +78,7 @@
     height: 99%;
     flex-direction: column;
     background-color: gray;
-    position: absolute;
+    position: relative;
   }
 
   .clickBox {
