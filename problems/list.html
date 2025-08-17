@@ -137,6 +137,7 @@
         const dNow = ($(this).attr('data-difficulty') || '').toUpperCase();
 
         const textMatch = !q || title.includes(q) || tags.includes(q);
+        const diffMatch = !diff || dNow === diff || (diff === 'MEDIUM' && dNow === 'NORMAL');
 
         $(this).toggle(textMatch && diffMatch);
       });
