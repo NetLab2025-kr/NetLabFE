@@ -1,30 +1,25 @@
 /* ===== NAVBAR (Global) ===== */
 body.has-navbar {
-  padding-top: 64px;
+  padding-top: 64px; /* 네비바 높이만큼 컨텐츠 내려앉게 */
 }
-
-/* 네비바 높이 만큼 컨텐츠 내려앉게 */
 
 .navbar {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px;
   background: linear-gradient(135deg, #34b3ff, #3DAEFA 45%, #2b86ff);
   color: #fff;
-  z-index: 2100;
-  /* 다른 고정요소보다 위 */
-  box-shadow: 0 6px 22px rgba(41, 125, 255, .18);
+  z-index: 2100; /* 다른 고정요소보다 위 */
+  box-shadow: 0 6px 22px rgba(41,125,255,.18);
   -webkit-backdrop-filter: saturate(1.2) blur(4px);
   backdrop-filter: saturate(1.2) blur(4px);
 }
 
+/* 브랜드는 줄어들지 않게 고정 */
 .navbar .brand {
+  flex: 0 0 auto;
   font-weight: 800;
   letter-spacing: .2px;
   text-decoration: none;
@@ -32,10 +27,25 @@ body.has-navbar {
   font-size: 18px;
 }
 
+/* 오른쪽 그룹: HTML에서 right-group 또는 nav-right 둘 다 인식 */
+.right-group,
 .nav-right {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: nowrap;   /* 줄바꿈 방지 */
+  min-width: 0;        /* 내부 요소 ellipsis 허용 */
+  flex: 1 1 auto;      /* 남은 공간 사용 */
+  justify-content: flex-end;
+}
+
+/* 링크 묶음도 한 줄 유지 */
+#nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 #nav-links a {
@@ -47,17 +57,31 @@ body.has-navbar {
   padding: 8px 12px;
   border-radius: 10px;
   transition: background .15s ease, transform .08s ease;
+  white-space: nowrap; /* 링크 텍스트 줄바꿈 방지 */
 }
 
 #nav-links a:hover {
-  background: rgba(255, 255, 255, .16);
+  background: rgba(255,255,255,.16);
   transform: translateY(-1px);
 }
 
+/* 닉네임: 한 줄 유지 + 길면 말줄임 */
 .user-info {
-  display: inline;
+  display: inline-block;
+  max-width: 240px;     /* 필요 시 조정 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: #fff;
   font-weight: 700;
   opacity: .95;
-  
+  margin-left: 6px;
+}
+
+/* 반응형: 공간 줄어들 때 닉네임 최대폭 축소 */
+@media (max-width: 700px) {
+  .navbar { padding: 0 14px; height: 54px; }
+  .navbar .brand { font-size: 16px; }
+  #nav-links a { margin-left: 10px; font-size: 13px; padding: 6px 8px; }
+  .user-info { max-width: 140px; font-size: 13px; }
 }
