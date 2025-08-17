@@ -832,6 +832,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if(!existing) {
+                  console.log(firstClicked.id);
+                  console.log(el.id);
                   const interfacekind = current_names.get(el.id);
                   let ports = null;
 
