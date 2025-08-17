@@ -824,6 +824,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
               });
             } else {
+              if(endEvent) {
+                if(endEvent) {
+                  console.log('이벤트 끝났는데 또 들어옴');
+                  firstClicked?.classList.remove("selected");
+
+                  if(tempLine) {
+                    instance.deleteConnection(tempLine);
+                    tempLine = null;
+                    console.log('연결 후 임시 선 연결 해제');
+                  }
+                  if(tempTarget) {
+                    tempTarget.remove();
+                    tempTarget = null;
+                    console.log('연결 후 임시 엔포 지워짐');
+                  }
+
+                  firstClicked = null;
+                  document.body.dataset.connection = "";
+                  return;
+                }
+              }
               if (firstClicked !== el) {
                 let endEvent = false;
                 var existing = instance.getConnections().some(function(conn) {
