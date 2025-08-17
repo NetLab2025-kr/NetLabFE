@@ -740,6 +740,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 values = "Interface";
               }
 
+              console.log("interfacekind:", interfacekind);
+              console.log("values:", values);
+              console.log("interfacekind[values]:", interfacekind[values]);
+
+
               Object.keys(interfacekind[values]).forEach(port => {
                 const IntBox = document.createElement('div');
                 IntBox.className = "IntBox";
