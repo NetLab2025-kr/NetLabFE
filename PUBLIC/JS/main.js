@@ -741,8 +741,6 @@ document.addEventListener('DOMContentLoaded', () => {
               }
 
               console.log("interfacekind:", interfacekind);
-              console.log("values:", values);
-              console.log("interfacekind[values]:", interfacekind[values]);
 
 
               Object.keys(ports).forEach(port => {
