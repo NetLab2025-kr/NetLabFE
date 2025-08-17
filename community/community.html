@@ -4,20 +4,14 @@
   <meta charset="UTF-8" />
   <title>커뮤니티 - 질문 목록</title>
 
-  <!-- 폰트 / jQuery -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <!-- 페이지 전용 CSS -->
   <link rel="stylesheet" href="../assets/css/community.css">
-  <!-- 전역 네비바/공통 스타일 (반드시 community.css 다음에 오지 않아도 무방하나, 통일상 style.css를 뒤에 두지 않는 걸 권장) -->
   <link rel="stylesheet" href="../assets/css/style.css">
-
-  <!-- 네비바 렌더/토큰 관리 -->
   <script src="/PUBLIC/JS/navbarAndToken.js"></script>
 </head>
 <body class="has-navbar">
-  <!-- NAVBAR -->
   <div class="navbar">
     <a href="/index.html" class="brand">NetLab</a>
     <div class="right-group" style="display:flex;align-items:center;gap:18px;">
@@ -26,14 +20,12 @@
     </div>
   </div>
 
-  <!-- CONTENT -->
   <div class="container">
     <h1>커뮤니티</h1>
     <button class="ask-btn" onclick="location.href='/community/add_question.html'">글 등록하기</button>
     <ul class="question-list" id="questionList"></ul>
   </div>
 
-  <!-- MODAL -->
   <div class="modal-bg" id="modalBg">
     <div class="modal-box">
       <button class="close-btn" id="closeModal" aria-label="닫기">&times;</button>
@@ -79,7 +71,7 @@
       const fmtDate  = ts => ts ? ts.replace('T',' ').slice(0,19) : '';
 
       /* ---------------- 목록 렌더 ---------------- */
-      function renderItem($ul, q, canEdit) {
+      function renderItem($ul, q, canDelete) {
         const $li  = $('<li>').attr('data-id', q.id);
 
         const titleText = (q.notice ? '[공지] ' : '') + safeText(q.title);
@@ -91,10 +83,9 @@
         const meta = `작성자: ${safeText(q.author)} | 작성일: ${fmtDate(q.createdAt)}`;
         const $meta = $('<div>').addClass('question-meta').text(meta);
 
-        if (canEdit) {
-          const $edit = $('<button>').addClass('edit-btn').attr('data-id', q.id).text('수정');
+        if (canDelete) {
           const $del  = $('<button>').addClass('delete-btn').attr('data-id', q.id).text('삭제');
-          $meta.append(' ', $edit, ' ', $del);
+          $meta.append(' ', $del);
         }
 
         $li.append($ttl, $meta);
@@ -117,9 +108,9 @@
 
           // 최신 글 위로
           res.slice().reverse().forEach(q => {
-            // 관리자면 무조건 허용, 아니면 본인 글만
-            const canEdit = isAdmin || (!!currentName && q.author === currentName);
-            renderItem($list, q, canEdit);
+            // 관리자면 무조건 삭제 가능, 아니면 본인 글만
+            const canDelete = isAdmin || (!!currentName && q.author === currentName);
+            renderItem($list, q, canDelete);
           });
         } catch (e) {
           alert('질문 목록 불러오기 실패');
@@ -128,7 +119,7 @@
 
       /* ---------------- 상세 모달 ---------------- */
       $(document).on('click', '.question-list li', function (e) {
-        if ($(e.target).is('.edit-btn,.delete-btn')) return;
+        if ($(e.target).is('.delete-btn')) return;
         const id = $(this).data('id');
 
         $.ajax({
@@ -170,7 +161,7 @@
           return location.href = '/login/login.html';
         }
 
-        // 관리자 API 우선 시도, 실패하면 일반 API로 재시도
+        // 관리자 API 우선, 실패 시 일반 API로 재시도
         const adminUrl = `${API}/admin/questions/${id}`;
         const userUrl  = `${API}/questions/${id}`;
 
