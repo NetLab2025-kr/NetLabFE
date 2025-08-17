@@ -749,18 +749,23 @@ document.addEventListener('DOMContentLoaded', () => {
               IntBox.dataset.target = el.id;
 
               Object.keys(ports).forEach(port => {
-                const clickBox = document.createElement('div');
-                clickBox.className = "clickBox";
+                if(!document.querySelector(`IntBox[data-target=${el.id}]`)) {
+                  const clickBox = document.createElement('div');
+                  clickBox.className = "clickBox";
 
-                const IntP = document.createElement('p');
-                IntP.innerText = port;
+                  const IntP = document.createElement('p');
+                  IntP.innerText = port;
 
-                clickBox.appendChild(IntP);
-                IntBox.appendChild(clickBox);
+                  clickBox.appendChild(IntP);
+                  IntBox.appendChild(clickBox);
+                  IntContainer.appendChild(IntBox);
 
+                  IntBox.style.left = e.clientX + "px";
+                  IntBox.style.top = e.clientY + "px";
+                }
               });
-              IntContainer.style.left = e.clientX + "px";
-              IntContainer.style.top = e.clientY + "px";
+              IntBox.style.left = e.clientX + "px";
+              IntBox.style.top = e.clientY + "px";
               IntContainer.appendChild(IntBox);
 
               selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
@@ -853,8 +858,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     IntBox.appendChild(clickBox);
 
                   });
-                  IntContainer.style.left = e.clientX + "px";
-                  IntContainer.style.top = e.clientY + "px";
+                  IntBox.style.left = e.clientX + "px";
+                  IntBox.style.top = e.clientY + "px";
                   IntContainer.appendChild(IntBox);
                   
                   selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);

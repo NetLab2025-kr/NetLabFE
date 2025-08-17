@@ -66,17 +66,16 @@
   }
 
   #IntContainer {
-    position: absolute;
     width: 130px;
     height: auto;
     background-color: white;
-    z-index: 3000;
+    position: relative;
   }
 
   .IntBox {
     display: flex;
-    width: inherit;
-    height: inherit;
+    width: calc(inherit -1px);
+    height: calc(inherit - 1px);
     flex-direction: column;
     background-color: gray;
   }
