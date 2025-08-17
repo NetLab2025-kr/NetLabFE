@@ -740,7 +740,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 values = "Interface";
               }
 
-              interfacekind[values].forEach(port => {
+              Object.keys(interfacekind[values]).forEach(port => {
                 const IntBox = document.createElement('div');
                 IntBox.className = "IntBox";
 
@@ -826,7 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     values = "Interface";
                   }
 
-                  interfacekind[values].forEach(port => {
+                  Object.keys(interfacekind[values]).forEach(port => {
                     const IntBox = document.createElement('div');
                     IntBox.className = "IntBox";
                     const IntP = document.createElement('p');
