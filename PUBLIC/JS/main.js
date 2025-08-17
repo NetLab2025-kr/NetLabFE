@@ -728,6 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
             var dotline = connType[2]; // 실선 점선
 
             const IntContainer = document.getElementById('IntContainer');
+            IntContainer.style.display = "flex";
             
             if (!firstClicked) {
               const interfacekind = current_names.get(el.id);
@@ -742,9 +743,11 @@ document.addEventListener('DOMContentLoaded', () => {
               console.log("interfacekind:", interfacekind);
 
               let selectedBox = null;
+
               const IntBox = document.createElement('div');
               IntBox.className = "IntBox";
               IntBox.dataset.target = el.id;
+
               Object.keys(ports).forEach(port => {
                 if(!document.querySelector(`IntBox[data-target=${el.id}]`)) {
                   const clickBox = document.createElement('div');
