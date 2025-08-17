@@ -928,7 +928,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         anchors: ["Center", "Center"],
                         overlays: []
                       });
-                      //console.log('실선 연결 된건가?');
+                      console.log('실선 연결 된건가?');
                       
                       instance.revalidate(firstClicked);
                       instance.revalidate(el);
