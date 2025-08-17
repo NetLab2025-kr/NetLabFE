@@ -933,6 +933,19 @@ document.addEventListener('DOMContentLoaded', () => {
                       instance.revalidate(firstClicked);
                       instance.revalidate(el);
 
+                      if(!Links[firstClicked.id]["devices"]) {
+                        Links[firstClicked.id]["devices"] = [];
+                      }
+                      if(!Links[el.id]["devices"]) {
+                        Links[el.id]["devices"] = [];
+                      }
+                      if(!Links[firstClicked.id]["port"]) {
+                        Links[firstClicked.id]["port"] = [];
+                      }
+                      if(!Links[el.id]["port"]) {
+                        Links[el.id]["port"] = [];
+                      }
+
                       Links[firstClicked.id]["devices"].push(el.id);
                       Links[el.id]["devices"].push(firstClicked.id);
 
