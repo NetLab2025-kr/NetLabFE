@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8" />
   <title>문제 목록 - NetLab</title>
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- 여기서만 스타일을 로드 -->
   <link rel="stylesheet" href="../assets/css/list.css">
+  <script src="../PUBLIC/JS/navbar.js"></script>
 </head>
-
 <body>
+  <!-- navbar.js가 관리 -->
   <div class="navbar">
     <a href="/index.html" class="brand">NetLab</a>
     <div class="nav-right">
@@ -26,92 +25,31 @@
   </div>
 
   <script>
-    $(function () {
-      // ---- 토큰/유저명 ----
-      const token = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
-      const name = localStorage.getItem('name') || '';
-      const $nav = $('#nav-links');
-      const $userInfo = $('#user-info');
-
-      // ---- 네비 렌더 ----
-      function renderNav(loggedIn) {
-        let html = `
-          <a href="/index.html">홈</a>
-          <a href="/problems/list.html">문제목록</a>
-          <a href="/community/community.html">커뮤니티</a>
-        `;
-        if (loggedIn) {
-          html += `<a href="#" id="logoutBtn">로그아웃</a>`;
-          $userInfo.text(name).show();
-        } else {
-          html += `
-            <a href="/login/login.html">로그인</a>
-            <a href="/login/signUp.html">회원가입</a>
-          `;
-          $userInfo.hide();
-        }
-        $nav.html(html);
-      }
-
-      // ---- 토큰 갱신 ----
-      function refreshAndRender() {
-        if (!refreshToken) { renderNav(!!token); return; }
-        $.ajax({
-          url: 'https://be.netlab.kr/api/auth/refresh',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({ refreshToken }),
-          success: function (res) {
-            localStorage.setItem('token', res.accessToken);
-            localStorage.setItem('refreshToken', res.refreshToken);
-            if (res.name) localStorage.setItem('name', res.name);
-            renderNav(true);
-          },
-          error: function () {
-            localStorage.clear();
-            renderNav(false);
-          }
+    // ---- 문제 목록 ----
+    $.ajax({
+      url: 'https://be.netlab.kr/api/submit/problems',
+      method: 'GET',
+      success: function (res) {
+        const $list = $('#problemList').empty();
+        res.forEach(p => {
+          const $li = $('<li class="problem-item">').attr('data-id', p.id);
+          $li.append($('<div class="title-line">')
+            .append($('<strong>').text(`ID: ${p.id} - ${p.title}`))
+            .append($('<span class="pill">').text(p.difficulty)));
+          if (p.description) $li.append($('<div class="description">').text(p.description));
+          $li.append($('<div class="tags">').text(`태그: ${p.tags}`));
+          $list.append($li);
         });
-      }
+      },
+      error: function () { alert('문제 목록을 불러오지 못했습니다.'); }
+    });
 
-      if (token) renderNav(true); else refreshAndRender();
-
-      // ---- 로그아웃 ----
-      $(document).on('click', '#logoutBtn', function (e) {
-        e.preventDefault();
-        localStorage.clear();
-        alert('로그아웃 되었습니다');
-        location.href = '/index.html';
-      });
-
-      // ---- 문제 목록 ----
-      $.ajax({
-        url: 'https://be.netlab.kr/api/submit/problems',
-        method: 'GET',
-        success: function (res) {
-          const $list = $('#problemList').empty();
-          res.forEach(p => {
-            const $li = $('<li class="problem-item">').attr('data-id', p.id);
-            $li.append($('<div class="title-line">')
-              .append($('<strong>').text(`ID: ${p.id} - ${p.title}`))
-              .append($('<span class="pill">').text(p.difficulty)));
-            if (p.description) $li.append($('<div class="description">').text(p.description));
-            $li.append($('<div class="tags">').text(`태그: ${p.tags}`));
-            $list.append($li);
-          });
-        },
-        error: function () { alert('문제 목록을 불러오지 못했습니다.'); }
-      });
-
-      // ---- 클릭 이동 ----
-      $(document).on('click', '.problem-item', function () {
-        const id = $(this).data('id');
-        if (!confirm('문제를 풀러 가시겠습니까?')) return;
-        window.open(`/views/index.html?id=${encodeURIComponent(id)}`, '_blank', 'noopener,noreferrer');
-      });
+    // ---- 클릭 이동 ----
+    $(document).on('click', '.problem-item', function () {
+      const id = $(this).data('id');
+      if (!confirm('문제를 풀러 가시겠습니까?')) return;
+      window.open(`/views/index.html?id=${encodeURIComponent(id)}`, '_blank', 'noopener,noreferrer');
     });
   </script>
 </body>
-
 </html>
