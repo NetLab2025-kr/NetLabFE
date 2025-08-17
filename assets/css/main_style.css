@@ -67,14 +67,14 @@
 
   #IntContainer {
     width: 130px;
-    height: auto;
     background-color: white;
+    position: relative;
   }
 
   .IntBox {
     display: flex;
-    width: calc(inherit -1px);
-    height: calc(inherit - 1px);
+    width: 99%;
+    height: 99%;
     flex-direction: column;
     background-color: gray;
     position: absolute;
