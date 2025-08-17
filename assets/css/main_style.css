@@ -65,6 +65,25 @@
     transform: scale(1);
   }
 
+  #IntContainer {
+    display: none;
+    width: 130px;
+    height: auto;
+    background-color: white;
+  }
+
+  .IntBox {
+    display: flex;
+    width: calc(inherit -1px);
+    height: calc(inherit - 1px);
+    flex-direction: column;
+    background-color: gray;
+  }
+
+  .clickBox {
+    text-align: start;
+  }
+
   #bottom-view {
     position: fixed;
     bottom: 0;

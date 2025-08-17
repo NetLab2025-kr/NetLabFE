@@ -104,18 +104,21 @@
         </div>
 
         <!-- ip 세팅 창(cli 없는 기기들) -->
-        <div id="setting-box" style="display: none">
-          <div class="input" id="ip">
-            <p>IPv4</p>
-            <input type="text">
-          </div>
-          <div class="input" id="subnet">
-            <p>Subnet Mask</p>
-            <input type="text">
-          </div>
-          <div class="input" id="gateway">
-            <p>Default Gateway</p>
-            <input type="text">
+        <div id="setting-container">
+          <h3 class="setting-title"></h3>
+          <div class="setting-box" style="display: none">
+            <div class="ip">
+              <p>IPv4</p>
+              <input type="text">
+            </div>
+            <div class="subnet">
+              <p>Subnet Mask</p>
+              <input type="text">
+            </div>
+            <div class="gateway">
+              <p>Default Gateway</p>
+              <input type="text">
+            </div>
           </div>
         </div>
       </div>
@@ -123,7 +126,15 @@
 
     <div id="background">
       <div id="topology-frame">
-        <div id="topology-inner"></div>
+        <div id="topology-inner">
+          <div id="IntContainer" style="display: none;">
+            <div class="IntBox">
+              <div class="clickBox">
+                <p>asassad</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

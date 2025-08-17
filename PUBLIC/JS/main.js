@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import commands from './command_db.js';
 import default_config from './defaultConfiguration.js';
 
@@ -671,15 +672,18 @@ document.addEventListener('DOMContentLoaded', () => {
         current_names.set(deviceId, obj);
       }else if(dragg_default_name=="hub"){
         obj = new Hub(structuredClone(default_config.Hub));
+        current_names.set(deviceId, obj);
       }else if(dragg_default_name=="labtop"){
         obj = new Labtop(structuredClone(default_config.Laptop));
+        current_names.set(deviceId, obj);
       }else if(dragg_default_name=="server"){
         obj = new Server(structuredClone(default_config.Server));
+        current_names.set(deviceId, obj);
       }
       
       
       obj.data.hostname = deviceId;
-      console.log("current_names keys:", Array.from(current_names.keys()));
+      
 
 
       // 위치 보정
@@ -707,67 +711,105 @@ document.addEventListener('DOMContentLoaded', () => {
         // CLI 생성 및 #cli-container에 추가
         const cli = createCLIInterface(deviceId, dragg_default_name);
         document.getElementById('cli-container').appendChild(cli);
+      } else if(!document.body.dataset.connection) {
+        clone.addEventListener('click', () => {
+          document.getElementById("setting-box").style.display = 'flex';
+        });
       }
 
           
       var elements = document.querySelectorAll(".topology-wrapper");
 
       elements.forEach(function(el) {
-        el.addEventListener("click", function() {
+        el.addEventListener("click", function(e) {
           if(document.body.dataset.connection) {
             var connType = window[document.body.dataset.connection]; // 전역변수 참조
             var strokeColor = connType[0]; // 색상
             var connectorType = connType[1]; // 라인 타입
             var dotline = connType[2]; // 실선 점선
+
+            const IntContainer = createElement('div')
+            IntContainer.id = "IntContainer";
             
             if (!firstClicked) {
-              firstClicked = el;
-              console.log(`[TEST]${firstClicked.id}`);
-              el.classList.add("selected");
+              const interfacekind = current_names.get(el.id);
+              const values = "";
+              if(interfacekind["NetworkAdapter"]) {
+                values = "NetworkAdapter";
+              } else if(interfacekind["Interface"]) {
+                values = "Interface";
+              }
 
-              tempTarget = document.createElement('div');
-              console.log('임시 엔포 생성');
-              tempTarget.style.width = "0px";
-              tempTarget.style.height = "0px";
-              tempTarget.style.position = "absolute";
-              tempTarget.style.pointerEvents = "none";
-              topology_inner.appendChild(tempTarget);
+              interfacekind[values].forEach(port => {
+                const IntBox = document.createElement('div');
+                IntBox.className = "IntBox";
 
-              tempLine =  instance.connect({
-                source: firstClicked,
-                target: tempTarget,
-                connector: connectorType,
-                paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                anchors: ["Center", "Center"],
-                overlays: []
+                const clickBox = document.createElement('div');
+                clickBox.class = "clickBox";
+
+                const IntP = document.createElement('p');
+                IntP.innerText = port;
+
+                clickBox.appendChild(IntP);
+                IntBox.appendChild(clickBox);
+                IntContainer.appendChild(IntBox);
               });
-              console.log('임시 선 연결');
 
-              //마우스 커서 따라다님
-              const moveHandler = (e) => {
-                //console.log('함수 들어옴');
-                if (!tempTarget || !tempLine) {
-                  console.log('tempTarget이나 temlLine 없음');
-                  return;
-                }
-                const rect = topology_inner.getBoundingClientRect();
-                const offsetX = tempTarget.offsetWidth / 2;
-                const offsetY = tempTarget.offsetHeight / 2;
+              const selectedBox =  document.querySelector(`.IntBox[data-target="${el.id}"]`);
+              selectedBox.style.left = e.clientX + "px";
+              selectedBox.style.top = e.clientY + "px";
+              selectDevicePort(el.id);
 
-                // 마우스 좌표에 맞춰 위치 변경
-                tempTarget.style.left = (e.clientX - rect.left - offsetX) + "px";
-                tempTarget.style.top  = (e.clientY - rect.top - offsetY) + "px";
+              document.querySelectorAll(`${selectedBox} .IntBox`).addEventListener('click', () => {
+                firstClicked = el;
+                console.log(`[TEST]${firstClicked.id}`);
+                el.classList.add("selected");
 
-                // jsPlumb에 "이거 위치 바뀌었으니 다시 계산해" 요청
-                instance.revalidate(tempTarget);
-              };
-              document.addEventListener('mousemove', moveHandler);
-              console.log('마우스 이벤트 등록');
+                tempTarget = document.createElement('div');
+                console.log('임시 엔포 생성');
+                tempTarget.style.width = "0px";
+                tempTarget.style.height = "0px";
+                tempTarget.style.position = "absolute";
+                tempTarget.style.pointerEvents = "none";
+                topology_inner.appendChild(tempTarget);
 
-              tempTarget.cleanupMouseMove = () => {
-                document.removeEventListener('mousemove', moveHandler);
-              };
-              
+                tempLine =  instance.connect({
+                  source: firstClicked,
+                  target: tempTarget,
+                  connector: connectorType,
+                  paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
+                  anchors: ["Center", "Center"],
+                  overlays: []
+                });
+                console.log('임시 선 연결');
+
+                //마우스 커서 따라다님
+                const moveHandler = (e) => {
+                  //console.log('함수 들어옴');
+                  if (!tempTarget || !tempLine) {
+                    console.log('tempTarget이나 temlLine 없음');
+                    return;
+                  }
+                  const rect = topology_inner.getBoundingClientRect();
+                  const offsetX = tempTarget.offsetWidth / 2;
+                  const offsetY = tempTarget.offsetHeight / 2;
+
+                  // 마우스 좌표에 맞춰 위치 변경
+                  tempTarget.style.left = (e.clientX - rect.left - offsetX) + "px";
+                  tempTarget.style.top  = (e.clientY - rect.top - offsetY) + "px";
+
+                  // jsPlumb에 "이거 위치 바뀌었으니 다시 계산해" 요청
+                  instance.revalidate(tempTarget);
+                };
+                document.addEventListener('mousemove', moveHandler);
+                console.log('마우스 이벤트 등록');
+
+                tempTarget.cleanupMouseMove = () => {
+                  document.removeEventListener('mousemove', moveHandler);
+                };
+
+                selectedBox.style.display = "none";
+              });
             } else {
               if (firstClicked !== el) {
                 var existing = instance.getConnections().some(function(conn) {
@@ -776,70 +818,102 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if(!existing) {
-                  console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
-                  console.log(`elObject = ${el}, elid = ${el.id}`);
-
-                  if(tempLine) {
-                    instance.deleteConnection(tempLine);
-                    tempLine = null;
-                    console.log('연결 전 임시 선 연결 해제');
-                  }
-                  if(tempTarget) {
-                    if(typeof tempTarget.cleanupMouseMove === "function") {
-                      tempTarget.cleanupMouseMove();
-                    }
-                    tempTarget.remove();
-                    tempTarget = null;
-                    console.log('연결 전 임시 엔포 지워짐');
+                  const interfacekind = current_names.get(el.id);
+                  const values = "";
+                  if(interfacekind["NetworkAdapter"]) {
+                    values = "NetworkAdapter";
+                  } else if(interfacekind["Interface"]) {
+                    values = "Interface";
                   }
 
-                  console.log(`${firstClicked.id} ${el.id}`);
-                  console.log(`firstClicked는 ${firstClicked.id}`);
+                  interfacekind[values].forEach(port => {
+                    const IntBox = document.createElement('div');
+                    IntBox.className = "IntBox";
+                    const IntP = document.createElement('p');
+                    IntP.innerText = port;
 
-                  
-                  let sourceEP = instance.getEndpoints(firstClicked);
-                  if (!sourceEP || sourceEP.length === 0) {
-                    console.log(`${firstClicked.id}에 엔포 생성`);
-                    sourceEP = instance.addEndpoint(firstClicked, {
-                      anchors: "Center",
-                      isSource: true,
-                      isTarget: true,
-                      maxConnections: -1   // 연결 제한 없음
-                    });
-                  } else {
-                    sourceEP = sourceEP[0];
-                  }
-
-                  // target
-                  console.log(`el은${el.id}`);
-                  let targetEP = instance.getEndpoints(el);
-                  if (!targetEP || targetEP.length === 0) {
-                    console.log(`${el.id}에 엔포 생성`);
-                    targetEP = instance.addEndpoint(el, {
-                      anchors: "Center",
-                      isSource: true,
-                      isTarget: true,
-                      maxConnections: -1   // 연결 제한 없음
-                    });
-                  } else {
-                    targetEP = targetEP[0];
-                  }
-
-                  instance.connect({
-                    source: sourceEP,
-                    target: targetEP,
-                    connector: connectorType,
-                    paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                    anchors: ["Center", "Center"],
-                    overlays: []
+                    IntBox.appendChild(IntP);
+                    IntContainer.appendChild(IntBox);
                   });
-                  //console.log('실선 연결 된건가?');
-                  
-                  instance.revalidate(firstClicked);
-                  instance.revalidate(el);
+                  document.getElementById("topology-inner").appendChild(IntContainer);
 
-                  Links[firstClicked.id].push(el.id);
-                  Links[el.id].push(firstClicked.id);
+                  const selectedBox =  document.querySelector(`.IntBox[data-target="${el.id}"]`);
+                  selectedBox.style.left = e.clientX + "px";
+                  selectedBox.style.top = e.clientY + "px";
+                  selectDevicePort(el.id);
+
+                  
+                  document.querySelectorAll(`${selectedBox} .IntBox`).addEventListener('click', () => {
+                    console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
+                    console.log(`elObject = ${el}, elid = ${el.id}`);
+
+                    if(tempLine) {
+                      instance.deleteConnection(tempLine);
+                      tempLine = null;
+                      console.log('연결 전 임시 선 연결 해제');
+                    }
+                    if(tempTarget) {
+                      if(typeof tempTarget.cleanupMouseMove === "function") {
+                        tempTarget.cleanupMouseMove();
+                      }
+                      tempTarget.remove();
+                      tempTarget = null;
+                      console.log('연결 전 임시 엔포 지워짐');
+                    }
+
+                    console.log(`${firstClicked.id} ${el.id}`);
+                    console.log(`firstClicked는 ${firstClicked.id}`);
+
+                    
+                    let sourceEP = instance.getEndpoints(firstClicked);
+                    if (!sourceEP || sourceEP.length === 0) {
+                      console.log(`${firstClicked.id}에 엔포 생성`);
+                      sourceEP = instance.addEndpoint(firstClicked, {
+                        anchors: "Center",
+                        isSource: true,
+                        isTarget: true,
+                        maxConnections: -1   // 연결 제한 없음
+                      });
+                    } else {
+                      sourceEP = sourceEP[0];
+                    }
+
+                    // target
+                    console.log(`el은${el.id}`);
+                    let targetEP = instance.getEndpoints(el);
+                    if (!targetEP || targetEP.length === 0) {
+                      console.log(`${el.id}에 엔포 생성`);
+                      targetEP = instance.addEndpoint(el, {
+                        anchors: "Center",
+                        isSource: true,
+                        isTarget: true,
+                        maxConnections: -1   // 연결 제한 없음
+                      });
+                    } else {
+                      targetEP = targetEP[0];
+                    }
+
+                    instance.connect({
+                      source: sourceEP,
+                      target: targetEP,
+                      connector: connectorType,
+                      paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
+                      anchors: ["Center", "Center"],
+                      overlays: []
+                    });
+                    //console.log('실선 연결 된건가?');
+                    
+                    instance.revalidate(firstClicked);
+                    instance.revalidate(el);
+
+                    Links[firstClicked.id]["devices"].push(el.id);
+                    Links[el.id]["devices"].push(firstClicked.id);
+
+                    Links[firstClicked.id]["port"].push(e.currentTarget);
+                    Links[el.id]["port"].push(e.currentTarget);
+
+                    selectedBox.style.display = "none";
+                  });
                 }
                 firstClicked?.classList.remove("selected");
 
@@ -1171,14 +1245,18 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   //ip 설정 탭 만드는 함수 - 미완
-  function createIpSetting() {
+  function createGUI(deviceId) {
     const setBox = document.createElement('div');
     setBox.className = "setting-box";
+    setBox.style.display = "none";
+
+    // title 컨테이너
+    const guiTitle = document.createElement('h3');
+    guiTitle.innerText = deviceId;
     
     // ip 입력 컨테이너
     const ipBox = document.createElement('div');
     ipBox.className = "ip";
-    ipBox.id = "input";
 
     const ipP = document.createElement('p');
     ipP.innerText = "IPv4";
@@ -1190,7 +1268,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 서브넷 마스크 입력 컨테이너
     const subnetBox = document.createElement('div');
     subnetBox.className = "subnet";
-    subnetBox.id = "input";
 
     const subnetP = document.createElement('p');
     subnetP.innerText = "Subnet Mask";
@@ -1202,7 +1279,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 디폴트 게이트웨이 입력 컨테이너
     const gatewayBox = document.createElement('div');
     gatewayBox.className = "gateway";
-    gatewayBox.id = "input";
 
     const gatewayP = document.createElement('p');
     gatewayP.innerText = "Default Gateway";
@@ -1222,6 +1298,36 @@ document.addEventListener('DOMContentLoaded', () => {
     setBox.appendChild(ipBox);
     setBox.appendChild(subnetBox);
     setBox.appendChild(gatewayBox);
+
+    let GuiDevice = current_names.get(deviceId);
+    
+  }
+
+  // 클릭한 기기의 ip 세팅 창 불러오기
+  function selectDeviceGUI(deviceId) {
+    selectedDeviceId = deviceId;
+
+    // 모든 Gui 숨김
+    document.querySelectorAll('#setting-container > .setting-box').forEach(gui => {
+      gui.style.display = 'none';
+    });
+
+    // 선택한 Gui만 보임
+    const targetGUI = document.querySelector(`.setting-box[data-target="${deviceId}"]`);
+    if (targetGUI) {
+      targetGUI.style.display = 'flex';
+    }
+  }
+
+  function selectDevicePort(deviceId) {
+    document.querySelectorAll('#IntContainer > .IntBox').forEach(port => {
+      port.style.display = "none";
+    });
+
+    const targetPort = document.querySelector(`.IntBox[data-target="${deviceId}"]`);
+    if (targetPort) {
+      targetPort.style.display = 'flex';
+    }
   }
 
 
