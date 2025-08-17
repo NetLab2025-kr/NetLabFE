@@ -834,11 +834,13 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
 
                   let selectedBox = null;
+
                   const IntBox = document.createElement('div');
                   IntBox.className = "IntBox";
                   IntBox.dataset.target = el.id;
+
                   Object.keys(ports).forEach(port => {
-                    if(!document.querySelector(`IntBox[data-target=${el.id}]`)) {
+                    if(!document.querySelector(`.IntBox[data-target="${el.id}"]`)) {
                       const clickBox = document.createElement('div');
                       clickBox.className = "clickBox";
 
@@ -853,81 +855,83 @@ document.addEventListener('DOMContentLoaded', () => {
                       IntBox.style.top = e.clientY + "px";
                     }
                   });
-                  selectedBox = document.querySelectorAll(`IntBox[data-target=${el.id}] > .clickBox`);
+                  selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
                   topology_inner.appendChild(IntContainer);
                   selectDevicePort(el.id);
 
                   
-                  selectedBox.addEventListener('click', () => {
-                    console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
-                    console.log(`elObject = ${el}, elid = ${el.id}`);
+                  selectedBox.forEach(box => {
+                    box.addEventListener('click', () => {
+                      console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
+                      console.log(`elObject = ${el}, elid = ${el.id}`);
 
-                    if(tempLine) {
-                      instance.deleteConnection(tempLine);
-                      tempLine = null;
-                      console.log('연결 전 임시 선 연결 해제');
-                    }
-                    if(tempTarget) {
-                      if(typeof tempTarget.cleanupMouseMove === "function") {
-                        tempTarget.cleanupMouseMove();
+                      if(tempLine) {
+                        instance.deleteConnection(tempLine);
+                        tempLine = null;
+                        console.log('연결 전 임시 선 연결 해제');
                       }
-                      tempTarget.remove();
-                      tempTarget = null;
-                      console.log('연결 전 임시 엔포 지워짐');
-                    }
+                      if(tempTarget) {
+                        if(typeof tempTarget.cleanupMouseMove === "function") {
+                          tempTarget.cleanupMouseMove();
+                        }
+                        tempTarget.remove();
+                        tempTarget = null;
+                        console.log('연결 전 임시 엔포 지워짐');
+                      }
 
-                    console.log(`${firstClicked.id} ${el.id}`);
-                    console.log(`firstClicked는 ${firstClicked.id}`);
+                      console.log(`${firstClicked.id} ${el.id}`);
+                      console.log(`firstClicked는 ${firstClicked.id}`);
 
-                    
-                    let sourceEP = instance.getEndpoints(firstClicked);
-                    if (!sourceEP || sourceEP.length === 0) {
-                      console.log(`${firstClicked.id}에 엔포 생성`);
-                      sourceEP = instance.addEndpoint(firstClicked, {
-                        anchors: "Center",
-                        isSource: true,
-                        isTarget: true,
-                        maxConnections: -1   // 연결 제한 없음
+                      
+                      let sourceEP = instance.getEndpoints(firstClicked);
+                      if (!sourceEP || sourceEP.length === 0) {
+                        console.log(`${firstClicked.id}에 엔포 생성`);
+                        sourceEP = instance.addEndpoint(firstClicked, {
+                          anchors: "Center",
+                          isSource: true,
+                          isTarget: true,
+                          maxConnections: -1   // 연결 제한 없음
+                        });
+                      } else {
+                        sourceEP = sourceEP[0];
+                      }
+
+                      // target
+                      console.log(`el은${el.id}`);
+                      let targetEP = instance.getEndpoints(el);
+                      if (!targetEP || targetEP.length === 0) {
+                        console.log(`${el.id}에 엔포 생성`);
+                        targetEP = instance.addEndpoint(el, {
+                          anchors: "Center",
+                          isSource: true,
+                          isTarget: true,
+                          maxConnections: -1   // 연결 제한 없음
+                        });
+                      } else {
+                        targetEP = targetEP[0];
+                      }
+
+                      instance.connect({
+                        source: sourceEP,
+                        target: targetEP,
+                        connector: connectorType,
+                        paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
+                        anchors: ["Center", "Center"],
+                        overlays: []
                       });
-                    } else {
-                      sourceEP = sourceEP[0];
-                    }
+                      //console.log('실선 연결 된건가?');
+                      
+                      instance.revalidate(firstClicked);
+                      instance.revalidate(el);
 
-                    // target
-                    console.log(`el은${el.id}`);
-                    let targetEP = instance.getEndpoints(el);
-                    if (!targetEP || targetEP.length === 0) {
-                      console.log(`${el.id}에 엔포 생성`);
-                      targetEP = instance.addEndpoint(el, {
-                        anchors: "Center",
-                        isSource: true,
-                        isTarget: true,
-                        maxConnections: -1   // 연결 제한 없음
-                      });
-                    } else {
-                      targetEP = targetEP[0];
-                    }
+                      Links[firstClicked.id]["devices"].push(el.id);
+                      Links[el.id]["devices"].push(firstClicked.id);
 
-                    instance.connect({
-                      source: sourceEP,
-                      target: targetEP,
-                      connector: connectorType,
-                      paintStyle: { stroke: strokeColor, strokeWidth: 4, dashstyle: dotline },
-                      anchors: ["Center", "Center"],
-                      overlays: []
+                      Links[firstClicked.id]["port"].push(e.currentTarget);
+                      Links[el.id]["port"].push(e.currentTarget);
+
+                      IntContainer.style.display = "none";
                     });
-                    //console.log('실선 연결 된건가?');
-                    
-                    instance.revalidate(firstClicked);
-                    instance.revalidate(el);
-
-                    Links[firstClicked.id]["devices"].push(el.id);
-                    Links[el.id]["devices"].push(firstClicked.id);
-
-                    Links[firstClicked.id]["port"].push(e.currentTarget);
-                    Links[el.id]["port"].push(e.currentTarget);
-
-                    IntContainer.style.display = "none";
                   });
                 }
                 firstClicked?.classList.remove("selected");
