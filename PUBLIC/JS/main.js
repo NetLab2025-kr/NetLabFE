@@ -851,10 +851,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                       IntBox.style.left = e.clientX + "px";
                       IntBox.style.top = e.clientY + "px";
-
-                      if (!selectedBox) selectedBox = clickBox;
                     }
                   });
+                  selectedBox = document.querySelectorAll(`IntBox[data-target=${el.id}] > .clickBox`);
                   topology_inner.appendChild(IntContainer);
                   selectDevicePort(el.id);
 
