@@ -749,23 +749,20 @@ document.addEventListener('DOMContentLoaded', () => {
               IntBox.dataset.target = el.id;
 
               Object.keys(ports).forEach(port => {
-                if(!document.querySelector(`IntBox[data-target=${el.id}]`)) {
-                  const clickBox = document.createElement('div');
-                  clickBox.className = "clickBox";
+                const clickBox = document.createElement('div');
+                clickBox.className = "clickBox";
 
-                  const IntP = document.createElement('p');
-                  IntP.innerText = port;
+                const IntP = document.createElement('p');
+                IntP.innerText = port;
 
-                  clickBox.appendChild(IntP);
-                  IntBox.appendChild(clickBox);
-                  IntContainer.appendChild(IntBox);
+                clickBox.appendChild(IntP);
+                IntBox.appendChild(clickBox);
 
-                  IntBox.style.left = e.clientX + "px";
-                  IntBox.style.top = e.clientY + "px";
-
-                  if (!selectedBox) selectedBox = clickBox;
-                }
               });
+              IntBox.style.left = e.clientX + "px";
+              IntBox.style.top = e.clientY + "px";
+              IntContainer.appendChild(IntBox);
+
               selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
               topology_inner.appendChild(IntContainer);
               selectDevicePort(el.id);
