@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link rel="stylesheet" href="assets/css/index.css">
+  <script src="/assets/js/navbar.js"></script>
+
 </head>
 <body>
   <div class="navbar">
@@ -30,134 +32,6 @@
     </button>
   </div>
 
-  <script>
-    $(document).ready(function () {
-      const nav = $('#nav-links');
-      const userInfo = $('#user-info');
-  
-      const accessToken = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
-  
-      function renderGuest() {
-        nav.html(
-          '<a href="/problems/list.html">문제목록</a>' +
-          '<a href="/community/community.html">커뮤니티</a>' +
-          '<a href="/login/login.html">로그인</a>' +
-          '<a href="/login/signUp.html">회원가입</a>'
-        );
-        userInfo.hide();
-      }
-  
-      function renderNav(isAdmin, name) {
-        let links = '';
-        if (isAdmin) links += '<a href="/admin/index.html">관리자 메뉴</a>';
-        links += '<a href="/problems/list.html">문제목록</a>';
-        links += '<a href="/community/community.html">커뮤니티</a>';
-        links += '<a href="#" id="logoutBtn">로그아웃</a>';
-        nav.html(links);
-  
-        if (name) {
-          userInfo.text(name);
-          userInfo.show();
-        } else {
-          userInfo.hide();
-        }
-      }
-  
-      function getNameFromStorage() {
-        return localStorage.getItem('name');
-      }
-      function setNameToStorage(name) {
-        if (name) localStorage.setItem('name', name);
-      }
-  
-      // 무한 재시도 방지용
-      let triedRefresh = false;
-  
-      function callIsAdmin(token, name) {
-        $.ajax({
-          url: "https://be.netlab.kr/api/auth/is-admin",
-          method: "GET",
-          headers: { "Authorization": "Bearer " + token },
-          success: function (res) {
-            // res가 boolean 또는 {isAdmin:true} 둘 다 대응
-            const isAdmin = (typeof res === 'boolean') ? res : !!res.isAdmin;
-            renderNav(isAdmin, name);
-          },
-          error: function (jqXHR) {
-            // 401이면 refresh 시도
-            if (jqXHR.status === 401 && refreshToken && !triedRefresh) {
-              triedRefresh = true;
-              refreshTokens()
-                .then(({ accessToken: at, refreshToken: rt, name: newName }) => {
-                  localStorage.setItem('token', at);
-                  localStorage.setItem('refreshToken', rt);
-                  setNameToStorage(newName);
-                  callIsAdmin(at, newName || name);
-                })
-                .catch(() => {
-                  // refresh 실패 → 게스트로
-                  clearStorage();
-                  renderGuest();
-                });
-            } else {
-              // 그 외 에러 → 게스트
-              renderGuest();
-            }
-          }
-        });
-      }
-  
-      function refreshTokens() {
-        return new Promise((resolve, reject) => {
-          $.ajax({
-            url: 'https://be.netlab.kr/api/auth/refresh',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ refreshToken: localStorage.getItem('refreshToken') }),
-            success: function (res) {
-              if (res && res.accessToken && res.refreshToken) {
-                resolve(res);
-              } else {
-                reject(new Error('Invalid refresh response'));
-              }
-            },
-            error: function () { reject(new Error('Refresh failed')); }
-          });
-        });
-      }
-  
-      function clearStorage() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('name');
-      }
-  
-      // 초기 진입 로직
-      if (accessToken) {
-        // 먼저 is-admin 호출 → 401 나오면 내부에서 refresh 시도
-        callIsAdmin(accessToken, getNameFromStorage());
-      } else if (refreshToken) {
-        // accessToken이 없고 refreshToken만 있으면 바로 refresh
-        refreshTokens()
-          .then(({ accessToken: at, refreshToken: rt, name }) => {
-            localStorage.setItem('token', at);
-            localStorage.setItem('refreshToken', rt);
-            setNameToStorage(name);
-            callIsAdmin(at, name);
-          })
-          .catch(() => renderGuest());
-      } else {
-        renderGuest();
-      }
-  
-      $(document).on('click', '#logoutBtn', function () {
-        clearStorage();
-        alert('로그아웃 되었습니다');
-        location.reload();
-      });
-    });
-  </script>
   
 </body>
 </html>
