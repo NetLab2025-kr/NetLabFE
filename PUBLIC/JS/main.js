@@ -1175,14 +1175,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const setBox = document.createElement('div');
     setBox.className = "setting-box";
     
+    // ip 입력 컨테이너
     const ipBox = document.createElement('div');
     ipBox.className = "ip";
     ipBox.id = "input";
 
+    const ipP = document.createElement('p');
+    ipP.innerText = "IPv4";
+
+    const ipInput = document.createElement('input');
+    ipInput.type = "text";
+
+
+    // 서브넷 마스크 입력 컨테이너
     const subnetBox = document.createElement('div');
     subnetBox.className = "subnet";
     subnetBox.id = "input";
+
+    const subnetP = document.createElement('p');
+    subnetP.innerText = "Subnet Mask";
+
+    const subnetInput = document.createElement('input');
+    subnetInput.type = "text";
+
     
+    // 디폴트 게이트웨이 입력 컨테이너
+    const gatewayBox = document.createElement('div');
+    gatewayBox.className = "gateway";
+    gatewayBox.id = "input";
+
+    const gatewayP = document.createElement('p');
+    gatewayP.innerText = "Default Gateway";
+
+    const gatewayInput = document.createElement('input');
+    gatewayInput.type = "text";
+
+    ipBox.appendChild(ipP);
+    ipBox.appendChild(ipInput);
+
+    subnetBox.appendChild(subnetP);
+    subnetBox.appendChild(subnetInput);
+
+    gatewayBox.appendChild(gatewayP);
+    gatewayBox.appendChild(gatewayInput);
+    
+    setBox.appendChild(ipBox);
+    setBox.appendChild(subnetBox);
+    setBox.appendChild(gatewayBox);
   }
 
 
