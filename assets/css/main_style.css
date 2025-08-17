@@ -75,8 +75,8 @@
 
   .IntBox {
     display: flex;
-    width: 99%;
-    height: 99%;
+    width: inherit;
+    height: inherit;
     flex-direction: column;
     background-color: gray;
   }
