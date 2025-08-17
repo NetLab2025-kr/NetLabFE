@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link rel="stylesheet" href="../assets/css/signUp.css">
+  <script src="../PUBLIC/JS/navbarAndToken.js"></script> 
+  <link rel="stylesheet" href="../assets/css/style.css">
 
 </head>
 <body>
@@ -13,68 +15,52 @@
     <a class="brand" href="/index.html">NetLab</a>
     <div id="nav-links"></div>
   </div>
+
   <div class="main">
     <div class="signup-box">
       <h2>회원가입</h2>
-      <input type="text" id="userId" placeholder="아이디">
-      <input type="password" id="password" placeholder="비밀번호">
-      <input type="text" id="name" placeholder="닉네임">
-      <button onclick="signUp()">가입하기</button>
+      <form id="signupForm" autocomplete="off">
+        <input type="text" id="userId" placeholder="아이디" required>
+        <input type="password" id="password" placeholder="비밀번호" required>
+        <input type="password" id="password2" placeholder="비밀번호 확인" required>
+        <input type="email" id="email" placeholder="이메일" required>
+        <input type="text" id="name" placeholder="닉네임" required>
+        <button type="submit">가입하기</button>
+      </form>
+
       <div class="login-link">
         이미 회원이신가요?
         <a href="/login/login.html">로그인</a>
       </div>
     </div>
   </div>
-  <script>
-    // 상단바 구성
-    $(document).ready(function () {
-      const token = localStorage.getItem('token');
-      const nav = $('#nav-links');
-      if (token) {
-        nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
-      } else {
-        nav.html('<a href="/index.html">홈</a><a href="/login/login.html">로그인</a>');
-      }
-      $(document).on('click', '#logoutBtn', function () {
-        localStorage.removeItem('token');
-        alert('로그아웃 되었습니다');
-        location.href = '/index.html';
-      });
 
-      // 엔터키 치면 전송
-      $('input').keypress(function(e){
-        if(e.which === 13){
-          signUp();
-        }
+  <script>
+    $(function () {
+      $('#signupForm').on('submit', function (e) {
+        e.preventDefault(); // 폼의 기본 submit 막고 AJAX로 전송
+        const payload = {
+          userId: $('#userId').val().trim(),
+          password: $('#password').val(),
+          confirmPassword: $('#password2').val(),
+          email: $('#email').val().trim(),
+          name: $('#name').val().trim()
+        };
+  
+        $.ajax({
+          url: 'https://be.netlab.kr/api/auth/signup',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(payload),
+          success: () => {
+            alert('회원가입 성공! 로그인 페이지로 이동합니다.');
+            location.href = '/login/login.html';
+          },
+          error: (xhr) => alert('회원가입 실패: ' + xhr.responseText)
+        });
       });
     });
-
-    // 회원가입 처리
-    function signUp() {
-      const userId = $('#userId').val();
-      const password = $('#password').val();
-      const name = $('#name').val();
-
-      if (!userId || !password || !name) {
-        alert('모든 항목을 입력해주세요.');
-        return;
-      }
-
-      $.ajax({
-        url: 'https://be.netlab.kr/api/auth/signup',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ userId, password, name }),
-        success: function(response) {
-          alert('회원가입 성공! 로그인 페이지로 이동합니다.');
-          window.location.href = '/login/login.html';
-        },
-        error: function(xhr) {
-          alert('회원가입 실패: ' + xhr.responseText);
-        }
-      });
-    }
   </script>
+  
 </body>
 </html>

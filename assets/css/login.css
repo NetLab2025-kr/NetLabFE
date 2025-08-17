@@ -2,55 +2,14 @@
           box-sizing: border-box;
       }
 
+
       body {
           font-family: 'Pretendard', sans-serif;
           margin: 0;
           background: #f8fafb;
       }
 
-      .navbar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          background: #3DAEFA;
-          padding: 0 36px;
-          height: 64px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          z-index: 1000;
-          box-shadow: 0 4px 16px rgba(61, 174, 250, 0.06);
-      }
-
-      .navbar .brand {
-          font-size: 22px;
-          font-weight: 700;
-          color: #fff;
-          text-shadow: 0 1px 2px #36a6ee44;
-          letter-spacing: 0.5px;
-          transition: opacity 0.2s;
-      }
-
-      .navbar .brand:hover {
-          opacity: 0.85;
-      }
-
-      .navbar #nav-links a {
-          color: #fff;
-          text-decoration: none;
-          margin-left: 26px;
-          font-size: 16px;
-          font-weight: 500;
-          padding: 8px 14px;
-          border-radius: 7px;
-          transition: background 0.16s;
-          background: transparent;
-      }
-
-      .navbar #nav-links a:hover {
-          background: #379fde;
-      }
+     
 
       .main {
           display: flex;
@@ -82,7 +41,7 @@
       }
 
       input {
-          display: block;
+          display: inline;
           width: 100%;
           padding: 13px;
           margin: 12px 0 0 0;
@@ -137,14 +96,6 @@
       }
 
       @media (max-width: 700px) {
-          .navbar {
-              padding: 0 12px;
-              height: 54px;
-          }
-
-          .navbar .brand {
-              font-size: 18px;
-          }
 
           .login-box {
               padding: 26px 12px 26px 12px;

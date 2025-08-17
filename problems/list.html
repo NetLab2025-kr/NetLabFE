@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8" />
   <title>문제 목록 - NetLab</title>
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- 여기서만 스타일을 로드 -->
-  <link rel="stylesheet" href="../assets/css/list.css">
-</head>
+  <link rel="stylesheet" href="../assets/css/list.css" />
+  <link rel="stylesheet" href="../assets/css/style.css">
 
+  <script src="../PUBLIC/JS/navbarAndToken.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
 <body>
   <div class="navbar">
     <a href="/index.html" class="brand">NetLab</a>
@@ -20,98 +20,139 @@
     </div>
   </div>
 
+  <header class="page-hero">
+    <div class="hero-inner">
+      <h1>문제 목록</h1>
+      <p class="sub">연습하고 싶은 문제를 골라보세요. 난이도 배지 색으로 빠르게 구분할 수 있어요</p>
+    </div>
+  </header>
+
   <div class="container">
-    <h1>문제 목록</h1>
-    <ul id="problemList"></ul>
+    <div class="toolbar">
+      <input id="searchInput" type="search" placeholder="제목 또는 태그로 검색" />
+      <select id="difficultyFilter" aria-label="난이도 필터">
+        <option value="">전체 난이도</option>
+        <option value="EASY">EASY</option>
+        <option value="NORMAL">NORMAL</option>
+        <option value="HARD">HARD</option>
+      </select>
+    </div>
+
+    <ul id="problemList" class="problem-list"></ul>
+
+    <!-- 로딩 스켈레톤 -->
+    <ul id="skeleton" class="problem-list">
+      <li class="problem-item skeleton"></li>
+      <li class="problem-item skeleton"></li>
+      <li class="problem-item skeleton"></li>
+    </ul>
   </div>
 
   <script>
-    $(function () {
-      // ---- 토큰/유저명 ----
-      const token = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
-      const name = localStorage.getItem('name') || '';
-      const $nav = $('#nav-links');
-      const $userInfo = $('#user-info');
+    const API_URL = 'https://be.netlab.kr/api/submit/problems';
 
-      // ---- 네비 렌더 ----
-      function renderNav(loggedIn) {
-        let html = `
-          <a href="/index.html">홈</a>
-          <a href="/problems/list.html">문제목록</a>
-          <a href="/community/community.html">커뮤니티</a>
-        `;
-        if (loggedIn) {
-          html += `<a href="#" id="logoutBtn">로그아웃</a>`;
-          $userInfo.text(name).show();
-        } else {
-          html += `
-            <a href="/login/login.html">로그인</a>
-            <a href="/login/signUp.html">회원가입</a>
-          `;
-          $userInfo.hide();
-        }
-        $nav.html(html);
+    // 난이도 → 클래스 매핑
+    function difficultyClass(diff) {
+      if (!diff) return 'unknown';
+      const d = String(diff).trim().toUpperCase();
+      if (d === 'EASY') return 'easy';
+      if (d === 'HARD') return 'hard';
+      if (d === 'NORMAL') return 'NORMAL';
+      return 'unknown';
+    }
+
+    // 태그 텍스트 → 칩 요소들
+    function renderTags(text) {
+      if (!text) return $('<div class="tags" />');
+      const tags = String(text)
+        .split(/[,\s]+/)     // 콤마/공백 구분 모두 허용
+        .map(t => t.trim())
+        .filter(Boolean);
+      const $wrap = $('<div class="tags" />');
+      tags.forEach(t => {
+        $wrap.append($('<span class="tag" />').text(t));
+      });
+      return $wrap;
+    }
+
+    // 문제 카드 DOM 생성
+    function makeItem(p) {
+      const $li = $('<li class="problem-item">')
+        .attr('data-id', p.id)
+        .attr('data-title', (p.title || '').toLowerCase())
+        .attr('data-tags', (p.tags || '').toLowerCase())
+        .attr('data-difficulty', (p.difficulty || '').toUpperCase());
+
+      const $titleLine = $('<div class="title-line">');
+      $titleLine.append(
+        $('<div class="title-left">')
+          .append($('<span class="id">').text(`ID: ${p.id}`))
+          .append($('<strong class="ttl">').text(p.title || '제목 없음'))
+      );
+
+      $titleLine.append(
+        $('<span class="pill">')
+          .addClass(difficultyClass(p.difficulty))
+          .text((p.difficulty || 'UNKNOWN').toUpperCase())
+      );
+
+      $li.append($titleLine);
+
+      if (p.description) {
+        $li.append($('<div class="description">').text(p.description));
       }
 
-      // ---- 토큰 갱신 ----
-      function refreshAndRender() {
-        if (!refreshToken) { renderNav(!!token); return; }
-        $.ajax({
-          url: 'https://be.netlab.kr/api/auth/refresh',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({ refreshToken }),
-          success: function (res) {
-            localStorage.setItem('token', res.accessToken);
-            localStorage.setItem('refreshToken', res.refreshToken);
-            if (res.name) localStorage.setItem('name', res.name);
-            renderNav(true);
-          },
-          error: function () {
-            localStorage.clear();
-            renderNav(false);
-          }
-        });
+      $li.append(renderTags(p.tags));
+      return $li;
+    }
+
+    // 목록 렌더링
+    function renderList(arr) {
+      const $list = $('#problemList').empty();
+      arr.forEach(p => $list.append(makeItem(p)));
+    }
+
+    // 클릭 이동
+    $(document).on('click', '.problem-item', function () {
+      if ($(this).hasClass('skeleton')) return;
+      const id = $(this).data('id');
+      if (!confirm('문제를 풀러 가시겠습니까?')) return;
+      window.open(`/views/index.html?id=${encodeURIComponent(id)}`, '_blank', 'noopener,noreferrer');
+    });
+
+    // 검색/필터
+    function applyFilter() {
+      const q = $('#searchInput').val().trim().toLowerCase();
+      const diff = $('#difficultyFilter').val().toUpperCase();
+
+      $('#problemList .problem-item').each(function () {
+        const title = $(this).attr('data-title') || '';
+        const tags = $(this).attr('data-tags') || '';
+        const dNow = ($(this).attr('data-difficulty') || '').toUpperCase();
+
+        const textMatch = !q || title.includes(q) || tags.includes(q);
+        const diffMatch = !diff || dNow === diff || (diff === 'MEDIUM' && dNow === 'NORMAL');
+
+        $(this).toggle(textMatch && diffMatch);
+      });
+    }
+
+    $('#searchInput').on('input', applyFilter);
+    $('#difficultyFilter').on('change', applyFilter);
+
+    // 초기 데이터 로드
+    $.ajax({
+      url: API_URL,
+      method: 'GET',
+      success: function (res) {
+        $('#skeleton').remove();
+        renderList(res || []);
+      },
+      error: function () {
+        $('#skeleton').remove();
+        alert('문제 목록을 불러오지 못했습니다.');
       }
-
-      if (token) renderNav(true); else refreshAndRender();
-
-      // ---- 로그아웃 ----
-      $(document).on('click', '#logoutBtn', function (e) {
-        e.preventDefault();
-        localStorage.clear();
-        alert('로그아웃 되었습니다');
-        location.href = '/index.html';
-      });
-
-      // ---- 문제 목록 ----
-      $.ajax({
-        url: 'https://be.netlab.kr/api/submit/problems',
-        method: 'GET',
-        success: function (res) {
-          const $list = $('#problemList').empty();
-          res.forEach(p => {
-            const $li = $('<li class="problem-item">').attr('data-id', p.id);
-            $li.append($('<div class="title-line">')
-              .append($('<strong>').text(`ID: ${p.id} - ${p.title}`))
-              .append($('<span class="pill">').text(p.difficulty)));
-            if (p.description) $li.append($('<div class="description">').text(p.description));
-            $li.append($('<div class="tags">').text(`태그: ${p.tags}`));
-            $list.append($li);
-          });
-        },
-        error: function () { alert('문제 목록을 불러오지 못했습니다.'); }
-      });
-
-      // ---- 클릭 이동 ----
-      $(document).on('click', '.problem-item', function () {
-        const id = $(this).data('id');
-        if (!confirm('문제를 풀러 가시겠습니까?')) return;
-        window.open(`/views/index.html?id=${encodeURIComponent(id)}`, '_blank', 'noopener,noreferrer');
-      });
     });
   </script>
 </body>
-
 </html>

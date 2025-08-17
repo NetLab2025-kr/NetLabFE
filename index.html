@@ -5,9 +5,12 @@
   <title>NetLab</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/index.css">
+  <script src="PUBLIC/JS/navbarAndToken.js"></script>
 </head>
-<body>
+<body class="has-navbar">
+  <!-- 네비바 -->
   <div class="navbar">
     <a class="brand" href="/index.html">NetLab</a>
     <div class="right-group">
@@ -16,109 +19,28 @@
     </div>
   </div>
 
+  <!-- 메인 컨텐츠 -->
   <div class="main-content">
     <h1>NetLab에 오신 걸 환영합니다</h1>
     <p>네트워크 실습을 효율적으로 관리하고 평가하세요.</p>
-    <div class="feature-box">
-      <span style="color:#99b2c9;">여기에 주요 기능이 표시됩니다.</span>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h2>📘 문제 풀러가기</h2>
+        <p>다양한 네트워크 문제를 풀면서 실력을 향상시켜 보세요.</p>
+        <button class="go-community-btn" onclick="location.href='/problems/list.html'">
+          문제 페이지 이동
+        </button>
+      </div>
+
+      <div class="feature-card">
+        <h2>💬 커뮤니티</h2>
+        <p>궁금한 점을 질문하고 다른 사람과 소통할 수 있어요.</p>
+        <button class="go-community-btn" onclick="location.href='/community/community.html'">
+          커뮤니티 바로가기
+        </button>
+      </div>
     </div>
-    <button class="go-community-btn" onclick="location.href='/problems/list.html'" style="margin-bottom: 12px;">
-      문제 풀러가기
-    </button>
-    <button class="go-community-btn" onclick="location.href='/community/community.html'">
-      커뮤니티(질문 게시판) 바로가기
-    </button>
   </div>
-
-  <script>
-    $(document).ready(function () {
-      const accessToken = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
-      const nav = $('#nav-links');
-      const userInfo = $('#user-info');
-  
-      function renderNav(isAdmin, name) {
-        let links = '';
-        if (isAdmin) links += '<a href="/admin/index.html">관리자 메뉴</a>';
-        links += '<a href="/problems/list.html">문제목록</a>';
-        links += '<a href="/community/community.html">커뮤니티</a>';
-        links += '<a href="#" id="logoutBtn">로그아웃</a>';
-        nav.html(links);
-        if (name) {
-          userInfo.text(name);
-          userInfo.show();
-        } else {
-          userInfo.hide();
-        }
-      }
-  
-      function checkAdminAndRender(token, name) {
-        $.ajax({
-          url: "https://be.netlab.kr/api/auth/is-admin",
-          method: "GET",
-          headers: { "Authorization": "Bearer " + token },
-          success: function (isAdmin) { renderNav(isAdmin, name); },
-          error: function () {
-            nav.html(
-              '<a href="/problems/list.html">문제목록</a>' +
-              '<a href="/community/community.html">커뮤니티</a>' +
-              '<a href="/login/login.html">로그인</a>' +
-              '<a href="/login/signUp.html">회원가입</a>'
-            );
-            userInfo.hide();
-          }
-        });
-      }
-
-      function getNameFromStorage() {
-        return localStorage.getItem('name');
-      }
-      function setNameToStorage(name) {
-        if(name) localStorage.setItem('name', name);
-      }
-  
-      if (accessToken) {
-        checkAdminAndRender(accessToken, getNameFromStorage());
-      } else if (refreshToken) {
-        $.ajax({
-          url: 'https://be.netlab.kr/api/auth/refresh',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({ refreshToken }),
-          success: function (res) {
-            localStorage.setItem('token', res.accessToken);
-            localStorage.setItem('refreshToken', res.refreshToken);
-            setNameToStorage(res.name);
-            checkAdminAndRender(res.accessToken, res.name);
-          },
-          error: function () {
-            nav.html(
-              '<a href="/problems/list.html">문제목록</a>' +
-              '<a href="/community/community.html">커뮤니티</a>' +
-              '<a href="/login/login.html">로그인</a>' +
-              '<a href="/login/signUp.html">회원가입</a>'
-            );
-            userInfo.hide();
-          }
-        });
-      } else {
-        nav.html(
-          '<a href="/problems/list.html">문제목록</a>' +
-          '<a href="/community/community.html">커뮤니티</a>' +
-          '<a href="/login/login.html">로그인</a>' +
-          '<a href="/login/signUp.html">회원가입</a>'
-        );
-        userInfo.hide();
-      }
-  
-      $(document).on('click', '#logoutBtn', function () {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('name');
-        alert('로그아웃 되었습니다');
-        location.reload();
-      });
-    });
-  </script>
 </body>
 </html>

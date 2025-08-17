@@ -6,18 +6,24 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link rel="stylesheet" href="../assets/css/add_question.css">
+  <script src="/PUBLIC/JS/navbarAndToken.js"></script>
+  <link rel="stylesheet" href="../assets/css/style.css">
+
 
 </head>
 <body>
   <div class="navbar">
-    <div class="welcome"><a href="/index.html">NetLab</a></div>
+    <a href="/index.html" class="brand">NetLab</a>
     <div style="display:flex; align-items:center;">
       <div id="nav-links"></div>
-      <div id="user-name"></div>
+      <div id="user-info" style="display:none;"></div>
     </div>
   </div>
+
   <div class="container">
     <h1>게시글 등록</h1>
+
+    <!-- 관리자만 노출 -->
     <div id="postTypeGroup" style="display:none;">
       <div class="post-type-btns">
         <label>
@@ -30,101 +36,61 @@
         </label>
       </div>
     </div>
+
     <input type="text" id="title" placeholder="제목을 입력하세요.">
     <textarea id="content" placeholder="질문 내용을 입력하세요."></textarea>
     <button id="submitBtn">등록하기</button>
   </div>
 
-  
-</body>
-<script>
-  $(function () {
-    const token = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('refreshToken');
-    const nav = $('#nav-links');
-    const userNameDiv = $('#user-name');
-    const name = localStorage.getItem('name') || '';
-    let isAdmin = false;
+  <script>
+    $(function () {
+      const API = 'https://be.netlab.kr/api';
 
-    function renderNav(loggedIn) {
-      nav.html(`
-        <a href="/index.html">홈</a>
-        <a href="/problems/list.html">문제목록</a>
-        <a href="/community/community.html">커뮤니티</a>
-        ${loggedIn ? '<a href="#" id="logoutBtn">로그아웃</a>' : '<a href="/login/login.html">로그인</a><a href="/login/signUp.html">회원가입</a>'}
-      `);
-      if (loggedIn) { userNameDiv.text(name).show(); } else { userNameDiv.hide(); }
-    }
-
-    function checkAdmin(tk, cb) {
-      $.ajax({
-        url: 'https://be.netlab.kr/api/auth/is-admin',
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + tk },
-        complete: function (xhr) {
-          isAdmin = (xhr.status === 200 && xhr.responseJSON === true);
+      (function showNoticeIfAdmin() {
+        const at = localStorage.getItem('token');
+        if (!at) return; // 비로그인: 숨김 유지
+        $.ajax({
+          url: `${API}/auth/is-admin`,
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + at }
+        }).done(function (res) {
+          const isAdmin = (typeof res === 'boolean') ? res : !!(res && res.isAdmin);
           if (isAdmin) $('#postTypeGroup').show();
-          cb && cb();
-        }
-      });
-    }
+        }); 
+      })();
 
-    if (token) checkAdmin(token, () => renderNav(true));
-    else renderNav(false);
+      $('#submitBtn').on('click', function () {
+        const title = $('#title').val().trim();
+        const content = $('#content').val().trim();
+        const postType = $('input[name="postType"]:checked').val();
+        if (!title || !content) return alert('제목과 내용을 모두 입력해주세요.');
 
-    $(document).on('click', '#logoutBtn', function () {
-      localStorage.clear();
-      alert('로그아웃 되었습니다');
-      location.href = '/index.html';
-    });
+        const url = (postType === 'notice')
+          ? `${API}/admin/notices`
+          : `${API}/questions`;
 
-    $('#submitBtn').on('click', function () {
-      const title = $('#title').val().trim();
-      const content = $('#content').val().trim();
-      const postType = $('input[name="postType"]:checked').val();
+        const at = localStorage.getItem('token');
+        const headers = at ? { 'Authorization': 'Bearer ' + at } : {};
 
-      if (!title || !content) { alert('제목과 내용을 모두 입력해주세요.'); return; }
-
-      const url = (postType === 'notice')
-        ? 'https://be.netlab.kr/api/admin/notices'
-        : 'https://be.netlab.kr/api/questions';
-
-      const send = (tk) => $.ajax({
-        url, method: 'POST',
-        contentType: 'application/json',
-        headers: tk ? { 'Authorization': 'Bearer ' + tk } : {},
-        data: JSON.stringify({ title, content }),
-        success: function () {
+        $.ajax({
+          url, method: 'POST',
+          contentType: 'application/json',
+          headers,
+          data: JSON.stringify({ title, content })
+        }).done(function () {
           alert(postType === 'notice' ? '공지사항이 등록되었습니다!' : '질문이 등록되었습니다!');
           location.href = '/community/community.html';
-        },
-        error: function (xhr) {
-          if (xhr.status === 401 && refreshToken) {
-            $.ajax({
-              url: 'https://be.netlab.kr/api/auth/refresh',
-              method: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify({ refreshToken }),
-              success: function (res) {
-                localStorage.setItem('token', res.accessToken);
-                localStorage.setItem('refreshToken', res.refreshToken);
-                send(res.accessToken);
-              },
-              error: function () {
-                localStorage.clear();
-                alert('세션 만료. 다시 로그인해주세요.');
-                location.href = '/login/login.html';
-              }
-            });
+        }).fail(function (xhr) {
+          if (xhr.status === 401) {
+            // 여기서 따로 refresh 시도하지 않음 → 공통 로직에 위임
+            alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+            location.href = '/login/login.html';
           } else {
-            alert('등록 실패');
+            alert('등록에 실패했습니다.');
           }
-        }
+        });
       });
-
-      send(token);
     });
-  });
-</script>
-
+  </script>
+</body>
 </html>
