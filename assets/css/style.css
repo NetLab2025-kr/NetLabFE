@@ -1,21 +1,30 @@
 /* ===== NAVBAR (Global) ===== */
-body.has-navbar { padding-top: 64px; } /* 네비바 높이 만큼 컨텐츠 내려앉게 */
+body.has-navbar {
+  padding-top: 64px;
+}
 
-.navbar{
+/* 네비바 높이 만큼 컨텐츠 내려앉게 */
+
+.navbar {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 64px;
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 0 24px;
   background: linear-gradient(135deg, #34b3ff, #3DAEFA 45%, #2b86ff);
   color: #fff;
-  z-index: 2100; /* 다른 고정요소보다 위 */
-  box-shadow: 0 6px 22px rgba(41,125,255,.18);
+  z-index: 2100;
+  /* 다른 고정요소보다 위 */
+  box-shadow: 0 6px 22px rgba(41, 125, 255, .18);
   -webkit-backdrop-filter: saturate(1.2) blur(4px);
   backdrop-filter: saturate(1.2) blur(4px);
 }
 
-.navbar .brand{
+.navbar .brand {
   font-weight: 800;
   letter-spacing: .2px;
   text-decoration: none;
@@ -23,19 +32,32 @@ body.has-navbar { padding-top: 64px; } /* 네비바 높이 만큼 컨텐츠 내�
   font-size: 18px;
 }
 
-.nav-right{ display: flex; align-items: center; gap: 10px; }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-#nav-links a{
-  color: #fff; text-decoration: none;
+#nav-links a {
+  color: #fff;
+  text-decoration: none;
   margin-left: 18px;
-  font-weight: 600; font-size: 14px;
+  font-weight: 600;
+  font-size: 14px;
   padding: 8px 12px;
   border-radius: 10px;
   transition: background .15s ease, transform .08s ease;
 }
-#nav-links a:hover{
-  background: rgba(255,255,255,.16);
+
+#nav-links a:hover {
+  background: rgba(255, 255, 255, .16);
   transform: translateY(-1px);
 }
 
-.user-info{ color: #fff; font-weight: 700; opacity: .95; }
+.user-info {
+  display: inline;
+  color: #fff;
+  font-weight: 700;
+  opacity: .95;
+  
+}
