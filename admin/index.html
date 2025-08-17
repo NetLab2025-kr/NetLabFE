@@ -3,66 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <title>관리자 메뉴 - NetLab</title>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link rel="stylesheet" href="./admin_assets/css/index.css">
+
+  <!-- 1) 전역(네비바 등) 먼저 -->
   <link rel="stylesheet" href="../assets/css/style.css">
-
-
+  <!-- 2) 페이지 전용 CSS는 나중에 (전역 위에 덮어쓰기) -->
+  <link rel="stylesheet" href="./admin_assets/css/index.css">
 </head>
-<body>
-
+<body class="has-navbar">
   <!-- 네비게이션 바 -->
   <div class="navbar">
-    <div class="brand">NetLab 관리자</div>
+    <a href="/index.html" class="brand">NetLab 관리자</a>
     <div id="nav-links"></div>
   </div>
 
   <!-- 관리자 메뉴 -->
   <div class="container">
     <h1>NetLab 관리자 페이지</h1>
+
     <ul class="menu">
-      <li><a href="/admin/add_problems/add_problems.html">문제 등록</a></li>
-      <li><a href="/admin/edit_problems/edit_problems.html">문제 수정</a></li>
-      <li><a href="/admin/submissions/submissions.html">제출 내역</a></li>
-      <li><a href="/admin/view_problems/view_problems.html">문제 내역 조회</a></li>
+      <li>
+        <a class="menu-item" href="/admin/add_problems/add_problems.html">
+          <span class="mi-title">문제 등록</span>
+          <span class="mi-sub">새 문제를 만들어 공개합니다</span>
+        </a>
+      </li>
+      <li>
+        <a class="menu-item" href="/admin/edit_problems/edit_problems.html">
+          <span class="mi-title">문제 수정</span>
+          <span class="mi-sub">기존 문제를 편집/비활성화</span>
+        </a>
+      </li>
+      <li>
+        <a class="menu-item" href="/admin/submissions/submissions.html">
+          <span class="mi-title">제출 내역</span>
+          <span class="mi-sub">학생 제출 현황/채점 결과</span>
+        </a>
+      </li>
+      <li>
+        <a class="menu-item" href="/admin/view_problems/view_problems.html">
+          <span class="mi-title">문제 내역 조회</span>
+          <span class="mi-sub">등록된 문제 전체 보기</span>
+        </a>
+      </li>
     </ul>
   </div>
 
   <script>
-    $(document).ready(function () {
+    $(function () {
       const accessToken = localStorage.getItem('token');
       const refreshToken = localStorage.getItem('refreshToken');
       const nav = $('#nav-links');
 
       function renderNav() {
-        nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
+        nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn" style="margin-left:16px;">로그아웃</a>');
       }
-
       function rejectAccess() {
         alert("접근 권한이 없습니다.");
         location.href = "/index.html";
       }
-
       function checkAdminAndRender(token) {
         $.ajax({
           url: "https://be.netlab.kr/api/auth/is-admin",
           method: "GET",
           headers: { "Authorization": "Bearer " + token },
-          success: function (isAdmin) {
-            if (isAdmin) {
-              renderNav();
-            } else {
-              rejectAccess();
-            }
-          },
-          error: function () {
-            rejectAccess();
-          }
+          success: function (isAdmin) { isAdmin ? renderNav() : rejectAccess(); },
+          error: rejectAccess
         });
       }
-
-      // 자동 refresh + access 체크
       if (accessToken) {
         checkAdminAndRender(accessToken);
       } else if (refreshToken) {
@@ -76,9 +86,7 @@
             localStorage.setItem('refreshToken', res.refreshToken);
             checkAdminAndRender(res.accessToken);
           },
-          error: function () {
-            rejectAccess();
-          }
+          error: rejectAccess
         });
       } else {
         rejectAccess();
