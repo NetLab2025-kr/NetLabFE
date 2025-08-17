@@ -38,7 +38,6 @@
       <select id="difficultyFilter" aria-label="난이도 필터">
         <option value="">전체 난이도</option>
         <option value="EASY">EASY</option>
-        <option value="MEDIUM">MEDIUM</option>
         <option value="NORMAL">NORMAL</option>
         <option value="HARD">HARD</option>
       </select>
@@ -64,8 +63,7 @@
       const d = String(diff).trim().toUpperCase();
       if (d === 'EASY') return 'easy';
       if (d === 'HARD') return 'hard';
-      // 일부 API가 MEDIUM 대신 NORMAL 등을 쓸 가능성 고려
-      if (d === 'MEDIUM' || d === 'NORMAL') return 'medium';
+      if (d === 'NORMAL') return 'NORMAL';
       return 'unknown';
     }
 
@@ -139,7 +137,6 @@
         const dNow = ($(this).attr('data-difficulty') || '').toUpperCase();
 
         const textMatch = !q || title.includes(q) || tags.includes(q);
-        const diffMatch = !diff || dNow === diff || (diff === 'MEDIUM' && dNow === 'NORMAL');
 
         $(this).toggle(textMatch && diffMatch);
       });
