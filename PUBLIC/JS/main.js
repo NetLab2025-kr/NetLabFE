@@ -732,7 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (!firstClicked) {
               const interfacekind = current_names.get(el.id);
-              const values = "";
+              let values = "";
               if(interfacekind["NetworkAdapter"]) {
                 values = "NetworkAdapter";
               } else if(interfacekind["Interface"]) {
@@ -818,7 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if(!existing) {
                   const interfacekind = current_names.get(el.id);
-                  const values = "";
+                  let values = "";
                   if(interfacekind["NetworkAdapter"]) {
                     values = "NetworkAdapter";
                   } else if(interfacekind["Interface"]) {
