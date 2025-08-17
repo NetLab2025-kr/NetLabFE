@@ -10,7 +10,7 @@
 
   <!-- 페이지 전용 CSS -->
   <link rel="stylesheet" href="../assets/css/community.css">
-  <!-- 전역 네비바/공통 스타일 -->
+  <!-- 전역 네비바/공통 스타일 (반드시 community.css 다음에 오지 않아도 무방하나, 통일상 style.css를 뒤에 두지 않는 걸 권장) -->
   <link rel="stylesheet" href="../assets/css/style.css">
 
   <!-- 네비바 렌더/토큰 관리 -->
@@ -45,38 +45,50 @@
     $(function () {
       const API = 'https://be.netlab.kr/api';
 
-      /* ---------------- 네비 상태 참조 ---------------- */
+      /* ---------------- 네비/사용자 상태 ---------------- */
       const navEl  = document.getElementById('nav-links');
       const userEl = document.getElementById('user-info');
 
-      function getIsAdminFromNav() {
-        if (!navEl) return false;
-        return Array.from(navEl.querySelectorAll('a'))
-          .some(a => a.textContent && a.textContent.includes('관리자 메뉴'));
-      }
       function getUserNameFromNav() {
         return (userEl && userEl.textContent) ? userEl.textContent.trim() : '';
       }
 
-      // 네비가 동적으로 바뀔 수 있어 관찰만 연결(현재는 별도 처리 없음)
-      const mo = new MutationObserver(() => {});
+      async function getAdminFlag() {
+        const at = localStorage.getItem('token');
+        if (!at) return false;
+        try {
+          const res = await fetch(`${API}/auth/is-admin`, {
+            headers: { 'Authorization': 'Bearer ' + at }
+          });
+          if (!res.ok) return false;
+          const data = await res.json(); // boolean 또는 {isAdmin:true}
+          return typeof data === 'boolean' ? data : !!data.isAdmin;
+        } catch (e) { return false; }
+      }
+
+      // 네비가 동적으로 바뀌면 목록을 다시 그림(로그인/닉네임 표기 등)
+      let navReadyTimer = null;
+      const mo = new MutationObserver(() => {
+        clearTimeout(navReadyTimer);
+        navReadyTimer = setTimeout(() => loadQuestions(), 60);
+      });
       if (navEl) mo.observe(navEl, { childList: true, subtree: true, characterData: true });
 
       /* ---------------- 유틸 ---------------- */
       const safeText = s => (s ?? '').toString();
+      const fmtDate  = ts => ts ? ts.replace('T',' ').slice(0,19) : '';
 
       /* ---------------- 목록 렌더 ---------------- */
       function renderItem($ul, q, canEdit) {
         const $li  = $('<li>').attr('data-id', q.id);
 
-        // 공지면 말머리 + 빨강, 아니면 기본 파랑
         const titleText = (q.notice ? '[공지] ' : '') + safeText(q.title);
         const $ttl = $('<div>')
           .addClass('question-title' + (q.notice ? ' notice' : ''))
           .text(titleText)
           .css('color', q.notice ? '#FF3337' : '#2563eb');
 
-        const meta = `작성자: ${safeText(q.author)} | 작성일: ${q.createdAt ? q.createdAt.replace('T',' ').slice(0,19) : ''}`;
+        const meta = `작성자: ${safeText(q.author)} | 작성일: ${fmtDate(q.createdAt)}`;
         const $meta = $('<div>').addClass('question-meta').text(meta);
 
         if (canEdit) {
@@ -89,33 +101,34 @@
         $ul.append($li);
       }
 
-      function loadQuestions() {
-        $.ajax({
-          url: `${API}/questions`,
-          method: 'GET',
-          dataType: 'json',
-          success: function (res) {
-            const $list = $('#questionList').empty();
-            if (!res || res.length === 0) {
-              $list.append($('<li>').css({textAlign:'center', color:'#aaa'}).text('등록된 질문이 없습니다.'));
-              return;
-            }
-            const currentName = getUserNameFromNav();
-            const isAdmin     = getIsAdminFromNav();
+      async function loadQuestions() {
+        try {
+          const [isAdmin, res] = await Promise.all([
+            getAdminFlag(),
+            fetch(`${API}/questions`).then(r => r.json())
+          ]);
 
-            // 최신 글 위로
-            res.slice().reverse().forEach(q => {
-              const canEdit = !!currentName && (isAdmin || q.author === currentName);
-              renderItem($list, q, canEdit);
-            });
-          },
-          error: () => alert('질문 목록 불러오기 실패')
-        });
+          const $list = $('#questionList').empty();
+          if (!res || !res.length) {
+            $list.append($('<li>').css({textAlign:'center', color:'#aaa'}).text('등록된 질문이 없습니다.'));
+            return;
+          }
+          const currentName = getUserNameFromNav();
+
+          // 최신 글 위로
+          res.slice().reverse().forEach(q => {
+            // 관리자면 무조건 허용, 아니면 본인 글만
+            const canEdit = isAdmin || (!!currentName && q.author === currentName);
+            renderItem($list, q, canEdit);
+          });
+        } catch (e) {
+          alert('질문 목록 불러오기 실패');
+        }
       }
 
       /* ---------------- 상세 모달 ---------------- */
       $(document).on('click', '.question-list li', function (e) {
-        if ($(e.target).is('.edit-btn,.delete-btn')) return; // 버튼은 별도 처리
+        if ($(e.target).is('.edit-btn,.delete-btn')) return;
         const id = $(this).data('id');
 
         $.ajax({
@@ -124,16 +137,13 @@
           dataType: 'json',
           success: function (q) {
             const $box = $('#modalInner').empty();
-
-            // 공지면 제목 앞에 [공지] 붙이고 빨간색
             const titleText = (q.notice ? '[공지] ' : '') + safeText(q.title);
             const $title = $('<div>').addClass('modal-title').text(titleText);
             if (q.notice) $title.css('color', '#FF3337');
             $box.append($title);
 
-            const meta = `작성자: ${safeText(q.author)} | 작성일: ${q.createdAt ? q.createdAt.replace('T',' ').slice(0,19) : ''}`;
+            const meta = `작성자: ${safeText(q.author)} | 작성일: ${fmtDate(q.createdAt)}`;
             $('<div>').addClass('modal-meta').text(meta).appendTo($box);
-
             $('<div>').addClass('modal-content').text(safeText(q.content)).appendTo($box);
 
             $('#modalBg').css('display', 'flex');
@@ -154,104 +164,46 @@
         const id = $(this).data('id');
         if (!confirm('정말 삭제할까요?')) return;
 
-        const isAdmin = getIsAdminFromNav();
-        const token   = localStorage.getItem('token');
+        const token = localStorage.getItem('token');
         if (!token) {
           alert('로그인이 필요합니다.');
           return location.href = '/login/login.html';
         }
 
-        const url = isAdmin ? `${API}/admin/questions/${id}` : `${API}/questions/${id}`;
+        // 관리자 API 우선 시도, 실패하면 일반 API로 재시도
+        const adminUrl = `${API}/admin/questions/${id}`;
+        const userUrl  = `${API}/questions/${id}`;
 
         $.ajax({
-          url, method: 'DELETE',
+          url: adminUrl,
+          method: 'DELETE',
           headers: { 'Authorization': 'Bearer ' + token },
           success: function () {
             alert('삭제되었습니다.');
             $('#modalBg').hide();
             loadQuestions();
           },
-          error: function (xhr) {
-            if (xhr.status === 401) {
-              alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-              localStorage.clear();
-              location.href = '/login/login.html';
-            } else {
-              alert('삭제 실패');
-            }
-          }
-        });
-      });
-
-      /* ---------------- 수정 ---------------- */
-      $(document).on('click', '.edit-btn', function (e) {
-        e.stopPropagation();
-        const id = $(this).data('id');
-
-        $.ajax({
-          url: `${API}/questions/${id}`,
-          method: 'GET',
-          dataType: 'json',
-          success: function (q) {
-            const $box = $('#modalInner').empty();
-
-            $('<input>')
-              .attr({type:'text', id:'editTitle'})
-              .addClass('modal-title-edit')
-              .val(q.title || '')
-              .appendTo($box);
-
-            const meta = `작성자: ${safeText(q.author)} | 작성일: ${q.createdAt ? q.createdAt.replace('T',' ').slice(0,19) : ''}`;
-            $('<div>').addClass('modal-meta').text(meta).appendTo($box);
-
-            $('<textarea>')
-              .attr('id','editContent')
-              .addClass('modal-content-edit')
-              .val(q.content || '')
-              .appendTo($box);
-
-            const $btns = $('<div>').addClass('modal-btn-group').appendTo($box);
-            $('<button>').addClass('modal-btn-save').attr('id','saveEditBtn').text('저장').appendTo($btns);
-            $('<button>').addClass('modal-btn-cancel').attr('id','cancelEditBtn').text('취소').appendTo($btns);
-
-            $('#modalBg').css('display','flex');
-
-            $('#cancelEditBtn').off('click').on('click', () => $('#modalBg').hide());
-            $('#saveEditBtn').off('click').on('click', function () {
-              const newTitle = $('#editTitle').val().trim();
-              const newContent = $('#editContent').val().trim();
-              if (!newTitle || !newContent) { alert('제목/내용을 입력하세요.'); return; }
-
-              const token = localStorage.getItem('token');
-              if (!token) {
-                alert('로그인이 필요합니다.');
-                return location.href = '/login/login.html';
-              }
-
-              $.ajax({
-                url: `${API}/questions/${id}`,
-                method: 'PUT',
-                contentType: 'application/json',
-                headers: { 'Authorization': 'Bearer ' + token },
-                data: JSON.stringify({ title: newTitle, content: newContent }),
-                success: function () {
-                  alert('수정 완료!');
-                  $('#modalBg').hide();
-                  loadQuestions();
-                },
-                error: function (xhr) {
-                  if (xhr.status === 401) {
-                    alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-                    localStorage.clear();
-                    location.href = '/login/login.html';
-                  } else {
-                    alert('수정 실패');
-                  }
+          error: function () {
+            $.ajax({
+              url: userUrl,
+              method: 'DELETE',
+              headers: { 'Authorization': 'Bearer ' + token },
+              success: function () {
+                alert('삭제되었습니다.');
+                $('#modalBg').hide();
+                loadQuestions();
+              },
+              error: function (xhr) {
+                if (xhr.status === 401) {
+                  alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+                  localStorage.clear();
+                  location.href = '/login/login.html';
+                } else {
+                  alert('삭제 실패');
                 }
-              });
+              }
             });
-          },
-          error: () => alert('글 정보를 불러오지 못했습니다.')
+          }
         });
       });
 
