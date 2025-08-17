@@ -71,6 +71,7 @@
     height: auto;
     background-color: white;
     position: absolute;
+    z-index: 9999;
   }
 
   .IntBox {
