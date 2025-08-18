@@ -890,9 +890,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   
                   selectedBox.forEach(box => {
                     box.addEventListener('click', (e) => {
-                      console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
-                      console.log(`elObject = ${el}, elid = ${el.id}`);
-
                       if(tempLine) {
                         instance.deleteConnection(tempLine);
                         tempLine = null;
@@ -903,9 +900,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         tempTarget = null;
                         console.log('연결 전 임시 엔포 지워짐');
                       }
-
-                      console.log(`${firstClicked.id} ${el.id}`);
-                      console.log(`firstClicked는 ${firstClicked.id}`);
 
                       
                       let sourceEP = instance.getEndpoints(firstClicked);
