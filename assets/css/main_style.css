@@ -69,7 +69,7 @@
     width: 130px;
     height: auto;
     background-color: white;
-    position: relative;
+    position: absolute;
   }
 
   .IntBox {
