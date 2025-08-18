@@ -957,8 +957,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         Links[el.id]["devices"] = [];
                       }
 
-                      Links[firstClicked.id]["devices"].push({[e.currentTarget]: el.id});
-                      Links[el.id]["devices"].push({[e.currentTarget]: firstClicked.id});
+                      Links[firstClicked.id]["devices"].push({[e.currentTarget.id]: el.id});
+                      Links[el.id]["devices"].push({[e.currentTarget.id]: firstClicked.id});
                       console.log(Links[firstClicked.id]["devices"]);
                       console.log(Links[el.id]["devices"]);
 
