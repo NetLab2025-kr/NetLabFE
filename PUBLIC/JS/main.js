@@ -137,7 +137,7 @@ class Router{
     console.log(nextRouter.data.hostname);
     if (!nextRouter) {
       console.log(`[${this.data.hostname}] 다음 홉 ${nextHop.nextHop} 라우터를 찾을 수 없음`);
-      return { status: "next_hop_not_found", to: nextHop };
+      return { status: "processed", to: nextHop };
     }
 
     // 다음 라우터의 receivePacket 호출, 출발지 라우터 정보도 넘겨줌
