@@ -730,7 +730,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('cli-container').appendChild(cli);
       } else if(!document.body.dataset.connection) {
         clone.addEventListener('click', () => {
-          document.getElementById("setting-box").style.display = 'flex';
+          //document.getElementById("setting-box").style.display = 'flex';
         });
       }
 
@@ -855,7 +855,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   let ports = null;
 
                   if(interfacekind.data.NetworkAdapter) {
-                    ports = interfacekind.data.NetworkAdapte;
+                    ports = interfacekind.data.NetworkAdapter;
                   } else if(interfacekind.data.Interface) {
                     ports = interfacekind.data.Interface;
                   }
