@@ -957,8 +957,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         Links[el.id]["devices"] = [];
                       }
 
-                      Links[firstClicked.id]["devices"].push({[e.currentTarget.id]: el.id});
-                      Links[el.id]["devices"].push({[e.currentTarget.id]: firstClicked.id});
+                      const text = box.querySelector("p").innerText;
+
+                      Links[firstClicked.id]["devices"].push({[text]: el.id});
+                      Links[el.id]["devices"].push({[text]: firstClicked.id});
                       console.log(Links[firstClicked.id]["devices"]);
                       console.log(Links[el.id]["devices"]);
 
