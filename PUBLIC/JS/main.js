@@ -956,18 +956,9 @@ document.addEventListener('DOMContentLoaded', () => {
                       if(!Links[el.id]["devices"]) {
                         Links[el.id]["devices"] = [];
                       }
-                      if(!Links[firstClicked.id]["port"]) {
-                        Links[firstClicked.id]["port"] = [];
-                      }
-                      if(!Links[el.id]["port"]) {
-                        Links[el.id]["port"] = [];
-                      }
 
-                      Links[firstClicked.id]["devices"].push(el.id);
-                      Links[el.id]["devices"].push(firstClicked.id);
-
-                      Links[firstClicked.id]["port"].push(e.currentTarget);
-                      Links[el.id]["port"].push(e.currentTarget);
+                      Links[firstClicked.id]["devices"].push({[e.currentTarget]: el.id});
+                      Links[el.id]["devices"].push({[e.currentTarget]: firstClicked.id});
 
                       IntContainer.style.display = "none";
                       
