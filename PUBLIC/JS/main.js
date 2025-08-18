@@ -890,7 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                   
                   selectedBox.forEach(box => {
-                    box.addEventListener('click', () => {
+                    box.addEventListener('click', (e) => {
                       console.log(`firstObject = ${firstClicked}, firstid = ${firstClicked.id}`);
                       console.log(`elObject = ${el}, elid = ${el.id}`);
 
