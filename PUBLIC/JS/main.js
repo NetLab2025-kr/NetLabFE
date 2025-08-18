@@ -87,11 +87,11 @@ class Router{
   }
 
    // 패킷 전송 (실시간 시뮬레이션)
-  findRouterByIp(ip) {
+  findRouterByIp(ip,port) {
     const myLink = Links[this.data.hostname];
 
     if(ip == "0.0.0.0"){
-
+      return Routers[myLink[port]];
     }
     
     for(let DeviceName of myLink){
@@ -126,13 +126,13 @@ class Router{
       return { status: "no_route", to: destination };
     }
 
-    console.log(`[${this.data.hostname}] ${destination}로 패킷 전송 (다음 홉: ${nextHop})`);
+    console.log(`[${this.data.hostname}] ${destination}로 패킷 전송 (다음 홉: ${nextHop.nextHop})`);
     console.log("전송 중...");
 
     await new Promise(r => setTimeout(r, this.stepDelay));
 
     // 다음 홉 라우터 객체 찾기
-    const nextRouter = this.findRouterByIp(nextHop);
+    const nextRouter = this.findRouterByIp(nextHop.nextHop,nextHop.interface);
     if (!nextRouter) {
       console.log(`[${this.data.hostname}] 다음 홉 ${nextHop} 라우터를 찾을 수 없음`);
       return { status: "next_hop_not_found", to: nextHop };

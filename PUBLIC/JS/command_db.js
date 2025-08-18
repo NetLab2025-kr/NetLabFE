@@ -806,11 +806,15 @@ const commands = {
             ['LINE']:{
                 name:'LINE',
                 description:'other network',
-                run:function({commandLine,object}){
+                run:async function({commandLine,object}){
                     const destIP = commandLine.split(' ')[1];
-                    object.sendPacket(destIP,{ msg: "none" });
+                    const output = await object.sendPacket(destIP,{ msg: "none" });
 
-                    return {action:'none'};
+                    if(output.status == 'next_hop_not_found' || output.status == 'no_route'){
+                        return {action:'print_CLI',value:'Host [${destIP}] is unreachable'};
+                    }else if(output.status == 'processed'){
+                        return {action:'print_CLI',value:'Ping to [${destIP}] is Successful'};
+                    }
                 }
             }
         }
