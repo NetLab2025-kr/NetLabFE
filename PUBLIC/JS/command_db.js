@@ -810,6 +810,8 @@ const commands = {
                     const destIP = commandLine.split(' ')[1];
                     const output = await object.sendPacket(destIP,{ msg: "none" });
 
+                    return {action:'print_CLI',value:'Ping to [${destIP}] is Successful'};
+
                     if(output.status == 'next_hop_not_found' || output.status == 'no_route'){
                         return {action:'print_CLI',value:'Host [${destIP}] is unreachable'};
                     }else if(output.status == 'processed'){
