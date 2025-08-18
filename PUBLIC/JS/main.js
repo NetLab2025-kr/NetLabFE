@@ -779,7 +779,6 @@ document.addEventListener('DOMContentLoaded', () => {
               const existingBox = document.querySelector(`.IntBox[data-target="${el.id}"]`);
               if (existingBox) existingBox.remove();
 
-              console.log("interfacekind:", interfacekind);
 
               let selectedBox = null;
 
