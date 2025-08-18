@@ -6,6 +6,7 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../config.js"></script>
 
   <link rel="stylesheet" href="../assets/css/community.css">
   <link rel="stylesheet" href="../assets/css/style.css">
@@ -35,7 +36,7 @@
 
   <script>
     $(function () {
-      const API = 'https://be.netlab.kr/api';
+      const API = window.API_BASE_URL;
 
       /* ---------------- 네비/사용자 상태 ---------------- */
       const navEl  = document.getElementById('nav-links');

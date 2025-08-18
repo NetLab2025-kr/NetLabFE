@@ -5,6 +5,7 @@
   <title>문제 목록</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../../config.js"></script>
   <link rel="stylesheet" href="../admin_assets/css/view_problems.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
 
@@ -36,7 +37,7 @@
       function refreshAndRetry(cb) {
         if (!refreshToken) return rejectAccess();
         $.ajax({
-          url: 'https://be.netlab.kr/api/auth/refresh',
+          url: window.API_BASE_URL + '/auth/refresh',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({ refreshToken }),
@@ -52,7 +53,7 @@
       // ----------- 문제 리스트 불러오기 -----------
       function renderProblemList(token) {
         $.ajax({
-          url: 'https://be.netlab.kr/api/admin/problems',
+          url: window.API_BASE_URL + '/admin/problems',
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + token },
           success: function (res) {
@@ -84,7 +85,7 @@
       // ----------- 관리자 인증 후 네비+리스트 -----------
       function checkAdminAndRender(token) {
         $.ajax({
-          url: "https://be.netlab.kr/api/auth/is-admin",
+          url: window.API_BASE_URL + "/auth/is-admin",
           method: "GET",
           headers: { "Authorization": "Bearer " + token },
           success: function (isAdmin) {
@@ -103,7 +104,7 @@
         if (!confirm(`정말 문제 ${problemId}를 삭제하시겠습니까?`)) return;
         function deleteProblem(token, isRetry) {
           $.ajax({
-            url: `https://be.netlab.kr/api/admin/problems/${problemId}`,
+            url: `${window.API_BASE_URL}/admin/problems/${problemId}`,
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + token },
             success: function () {

@@ -5,6 +5,7 @@
   <title>질문 게시글 등록</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../config.js"></script>
   <link rel="stylesheet" href="../assets/css/add_question.css">
   <script src="/PUBLIC/JS/navbarAndToken.js"></script>
   <link rel="stylesheet" href="../assets/css/style.css">
@@ -44,7 +45,7 @@
 
   <script>
     $(function () {
-      const API = 'https://be.netlab.kr/api';
+      const API = window.API_BASE_URL;
 
       (function showNoticeIfAdmin() {
         const at = localStorage.getItem('token');

@@ -1,6 +1,6 @@
 // 전역 네임스페이스
 window.NetLab = (function () {
-  const API = 'https://be.netlab.kr/api';
+  const API = window.API_BASE_URL;
   let triedRefreshOnce = false;
 
   const $nav  = () => $('#nav-links');

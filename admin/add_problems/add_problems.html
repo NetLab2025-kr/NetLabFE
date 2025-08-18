@@ -5,6 +5,7 @@
   <title>문제 등록</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../../config.js"></script>
   <link rel="stylesheet" href="../admin_assets/css/add_problems.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
 
@@ -36,7 +37,7 @@
       function refreshAndRetry(cb) {
         if (!refreshToken) return rejectAccess();
         $.ajax({
-          url: 'https://be.netlab.kr/api/auth/refresh',
+          url: window.API_BASE_URL + '/auth/refresh',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({ refreshToken }),
@@ -59,7 +60,7 @@
           }
           function doRegister(token2, retry) {
             $.ajax({
-              url: 'https://be.netlab.kr/api/admin/problems',
+              url: window.API_BASE_URL + '/admin/problems',
               method: 'POST',
               contentType: 'application/json',
               data: JSON.stringify(problemData),
@@ -91,7 +92,7 @@
       }
       function checkAdminAndInit(token) {
         $.ajax({
-          url: "https://be.netlab.kr/api/auth/is-admin",
+          url: window.API_BASE_URL + "/auth/is-admin",
           method: "GET",
           headers: { "Authorization": "Bearer " + token },
           success: function (isAdmin) {
