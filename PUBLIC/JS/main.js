@@ -90,6 +90,7 @@ class Router{
   findRouterByIp(ip,port) {
     const myLink = Links[this.data.hostname];
 
+    console.log(Routers);
     if(ip == "0.0.0.0"){
       return Routers[myLink[port]];
     }
@@ -133,8 +134,9 @@ class Router{
 
     // 다음 홉 라우터 객체 찾기
     const nextRouter = this.findRouterByIp(nextHop.nextHop,nextHop.interface);
+    console.log(nextRouter.data.hostname);
     if (!nextRouter) {
-      console.log(`[${this.data.hostname}] 다음 홉 ${nextHop} 라우터를 찾을 수 없음`);
+      console.log(`[${this.data.hostname}] 다음 홉 ${nextHop.nextHop} 라우터를 찾을 수 없음`);
       return { status: "next_hop_not_found", to: nextHop };
     }
 
