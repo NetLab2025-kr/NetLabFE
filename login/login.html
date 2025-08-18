@@ -5,6 +5,7 @@
   <title>NetLab 로그인</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../config.js"></script>
   <script src="../PUBLIC/JS/navbarAndToken.js"></script>
   <link rel="stylesheet" href="../assets/css/login.css"/>
   <link rel="stylesheet" href="../assets/css/style.css">
@@ -47,7 +48,7 @@
         }
 
         $.ajax({
-          url: 'https://be.netlab.kr/api/auth/login',
+          url: window.API_BASE_URL + '/auth/login',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({ userId, password }),

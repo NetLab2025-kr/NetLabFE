@@ -5,6 +5,7 @@
   <title>문제 목록 - NetLab</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../config.js"></script>
   <link rel="stylesheet" href="../assets/css/list.css" />
   <link rel="stylesheet" href="../assets/css/style.css">
 
@@ -49,7 +50,7 @@
   </div>
 
   <script>
-    const API_URL = 'https://be.netlab.kr/api/submit/problems';
+    const API_URL = window.API_BASE_URL + '/submit/problems';
 
     // 난이도 → 클래스 매핑
     function difficultyClass(diff) {

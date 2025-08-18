@@ -10,6 +10,7 @@
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <link rel="stylesheet" href="../assets/css/main_style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../config.js"></script>
 
   <!-- 기존 의존성 (그대로 유지) -->
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -156,7 +157,7 @@
 
       function checkAdmin(token) {
         $.ajax({
-          url: "https://be.netlab.kr/api/auth/is-admin",
+          url: window.API_BASE_URL + "/auth/is-admin",
           method: "GET",
           headers: { "Authorization": "Bearer " + token }
         });
@@ -168,7 +169,7 @@
         checkAdmin(accessToken);
       } else if (refreshToken) {
         $.ajax({
-          url: 'https://be.netlab.kr/api/auth/refresh',
+          url: window.API_BASE_URL + '/auth/refresh',
           method: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({ refreshToken }),
@@ -184,7 +185,7 @@
 
     // ====== 문제 상세 로딩 ======
     (function () {
-      const PROBLEM_DETAIL_API = id => `https://be.netlab.kr/api/submit/problems/${id}`;
+      const PROBLEM_DETAIL_API = id => `${window.API_BASE_URL}/submit/problems/${id}`;
       const params = new URLSearchParams(location.search);
       const id = params.get('id');
       if (!id) { alert('문제 ID가 없습니다'); history.back(); return; }
