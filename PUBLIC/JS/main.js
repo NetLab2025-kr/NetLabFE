@@ -959,6 +959,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                       Links[firstClicked.id]["devices"].push({[e.currentTarget]: el.id});
                       Links[el.id]["devices"].push({[e.currentTarget]: firstClicked.id});
+                      console.log(Links[firstClicked.id]["devices"]);
+                      console.log(Links[el.id]["devices"]);
 
                       IntContainer.style.display = "none";
                       
