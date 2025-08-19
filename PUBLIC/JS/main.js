@@ -2,6 +2,43 @@ import commands from './command_db.js';
 import default_config from './defaultConfiguration.js';
 
 const Routers = {};
+let current_names= new Map(); //현재 존재하는 토폴로지 {토폴로지 이름 : 토폴로지 객체}
+
+// --- CLI 출력 함수 ---
+  // text: 출력할 문자열 또는 배열(배열이면 한 줄씩 출력)
+  // options: { delay: ms (줄 단위 딜레이, 기본 0), scroll: boolean(스크롤 자동, 기본 true) }
+  function printCLI(text, deviceId, options = {}) {
+    const { delay = 0, scroll = true } = options;
+
+    // 동적으로 선택된 기기의 cli-output을 찾음
+    return new Promise(async resolve => {
+      const targetCLI = document.querySelector(`.cli-box[data-target="${deviceId}"] .cli-output`);
+      if(!targetCLI) {
+        console.warn(`[PrintCLI] CLI output for ${deviceId} not found`);
+        resolve();
+        return;
+      }
+
+      if (Array.isArray(text)) {
+        // 배열일 때는 한 줄씩 순차 출력 (delay 있을 때)
+        for (const line of text) {
+          const div = document.createElement('div');
+          div.innerHTML = line;
+          targetCLI.appendChild(div);
+          if (scroll) targetCLI.scrollTop = targetCLI.scrollHeight;
+          if (delay > 0) await new Promise(r => setTimeout(r, delay));
+        } 
+        resolve();
+      } else {
+        // 문자열 단일 출력
+        const div = document.createElement('div');
+        div.innerHTML = text;
+        targetCLI.appendChild(div);
+        if (scroll) targetCLI.scrollTop = targetCLI.scrollHeight;
+        resolve();
+      }
+    });
+  }
 
 class Router{
   constructor(data){
@@ -88,11 +125,17 @@ class Router{
 
    // 패킷 전송 (실시간 시뮬레이션)
   findRouterByIp(ip,port) {
-    const myLink = Links[this.data.hostname];
+    const myLink = Links[this.data.hostname]['devices'];
 
-    console.log(Routers);
-    if(ip == "0.0.0.0"){
-      return Routers[myLink[port]];
+    if(ip == "0.0.0.0"){ //고쳐
+      console.log(`myLink[port] : ${myLink}`);
+
+      for(const obj of myLink){
+        if(obj.hasOwnProperty(port)){
+          return Routers[obj[port]];
+        }
+      }
+      
     }
     
     for(let DeviceName of myLink){
@@ -119,10 +162,11 @@ class Router{
     return false;
   }
 
-  async sendPacket(destination, payload) {
+  async sendPacket(destination, payload,source) {
     const nextHop = this.findNextHop(destination);
 
     if (!nextHop) {
+      printCLI(`destination IP [${destination}] is unreachable`, this.data.hostname);
       console.log(`[${this.data.hostname}] 목적지 ${destination}에 대한 경로 없음`);
       return { status: "no_route", to: destination };
     }
@@ -134,14 +178,16 @@ class Router{
 
     // 다음 홉 라우터 객체 찾기
     const nextRouter = this.findRouterByIp(nextHop.nextHop,nextHop.interface);
-    console.log(nextRouter.data.hostname);
+    console.log(nextRouter);
     if (!nextRouter) {
       console.log(`[${this.data.hostname}] 다음 홉 ${nextHop.nextHop} 라우터를 찾을 수 없음`);
-      return { status: "processed", to: nextHop };
+      printCLI(`destination IP [${destination}] is unreachable`,this.data.hostname);
+      return { status: "next_hop_not_found", to: nextHop.nextHop };
     }
 
     // 다음 라우터의 receivePacket 호출, 출발지 라우터 정보도 넘겨줌
     return nextRouter.receivePacket({
+      source:source,
       from: this.data.hostname,
       to: destination,
       data: payload
@@ -156,6 +202,7 @@ class Router{
     // RIP 패킷 처리
     if (packet.data?.type === "RIP") {
       console.log(`[${this.data.hostname}] RIP 업데이트 수신`);
+      printCLI(`RIP Protocol Updated from [${packet.from}]`,this.data.hostname);
       this.updateRoutingTableFromRip(packet.data.table, packet.from);
       return { status: "rip_update_processed" };
     }
@@ -163,11 +210,12 @@ class Router{
     // 일반 데이터 패킷 처리
     if (this.hasIp(packet.to)) {
       console.log(`[${this.data.hostname}] 목적지 도착. 패킷 처리 완료.`);
+      await printCLI(`ping to [${packet.to}] is successful`,packet.source);
       return { status: "processed", data: packet.data };
     }
 
     console.log(`[${this.data.hostname}] 목적지가 나 아님 → 다시 라우팅`);
-    return this.sendPacket(packet.to, packet.data);
+    return this.sendPacket(packet.to, packet.data,packet.source);
   }
 
   async sendRipUpdate() {
@@ -571,7 +619,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let tempTarget = null;
 
   var selectedDeviceId = null;
-  let current_names= new Map(); //현재 존재하는 토폴로지 {토폴로지 이름 : 토폴로지 객체}
   let is_dragging = false;
   let clone = null;
   let dragg_default_name = "";
@@ -702,8 +749,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       
       obj.data.hostname = deviceId;
-      
-
+    
+      console.log(`device ID is ${deviceId} and Routers[deviceId].hostname is ${Routers[deviceId].data.hostname}`);
 
       // 위치 보정
       const frameRect = topology_frame.getBoundingClientRect();
@@ -799,8 +846,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 IntBox.appendChild(clickBox);
               });
 
-              IntContainer.style.left = e.clientX - 550 + "px";
-              IntContainer.style.top = e.clientY + "px";
+              IntBox.style.left = e.clientX -550 + "px";
+              IntBox.style.top = e.clientY + "px";
               IntContainer.appendChild(IntBox);
 
               selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
@@ -882,8 +929,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     IntBox.appendChild(clickBox);
 
                   });
-                  IntContainer.style.left = e.clientX - 550 + "px";
-                  IntContainer.style.top = e.clientY + "px";
+                  IntBox.style.left = e.clientX - 550 + "px";
+                  IntBox.style.top = e.clientY + "px";
                   IntContainer.appendChild(IntBox);
                   
                   selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
@@ -1134,41 +1181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // --- CLI 출력 함수 ---
-  // text: 출력할 문자열 또는 배열(배열이면 한 줄씩 출력)
-  // options: { delay: ms (줄 단위 딜레이, 기본 0), scroll: boolean(스크롤 자동, 기본 true) }
-  function printCLI(text, deviceId, options = {}) {
-    const { delay = 0, scroll = true } = options;
-
-    // 동적으로 선택된 기기의 cli-output을 찾음
-    return new Promise(async resolve => {
-      const targetCLI = document.querySelector(`.cli-box[data-target="${deviceId}"] .cli-output`);
-      if(!targetCLI) {
-        console.warn(`[PrintCLI] CLI output for ${deviceId} not found`);
-        resolve();
-        return;
-      }
-
-      if (Array.isArray(text)) {
-        // 배열일 때는 한 줄씩 순차 출력 (delay 있을 때)
-        for (const line of text) {
-          const div = document.createElement('div');
-          div.innerHTML = line;
-          targetCLI.appendChild(div);
-          if (scroll) targetCLI.scrollTop = targetCLI.scrollHeight;
-          if (delay > 0) await new Promise(r => setTimeout(r, delay));
-        } 
-        resolve();
-      } else {
-        // 문자열 단일 출력
-        const div = document.createElement('div');
-        div.innerHTML = text;
-        targetCLI.appendChild(div);
-        if (scroll) targetCLI.scrollTop = targetCLI.scrollHeight;
-        resolve();
-      }
-    });
-  }
+  
 
   // --- 로딩 바 애니메이션 출력 함수 ---
   // barStr: '#' 문자열 긴거
