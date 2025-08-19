@@ -74,10 +74,10 @@
 
   .IntBox {
     display: flex;
-    width: inherit;
-    height: inherit;
+    width: calc(100% -2px);
+    height: calc(100% -2px);
     flex-direction: column;
-    background-color: gray;
+    background-color: #cfcfcf;
   }
 
   .clickBox {
