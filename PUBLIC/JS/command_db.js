@@ -344,7 +344,7 @@ const commands = {
                     for(const data of datas){
                         output += String(data.code).padEnd(8,' ');
                         let prefix = 0;
-                        for(const octet of String(data.mask).split('.')){
+                        for (const octet of String(data.mask).split('.')) {
                             let binary = parseInt(octet, 10).toString(2);
                             prefix += binary.split('1').length - 1;
                         }
@@ -808,15 +808,8 @@ const commands = {
                 description:'other network',
                 run:async function({commandLine,object}){
                     const destIP = commandLine.split(' ')[1];
-                    const output = await object.sendPacket(destIP,{ msg: "none" });
-
-                    return {action:'print_CLI',value:'Ping to [${destIP}] is Successful'};
-
-                    if(output.status == 'next_hop_not_found' || output.status == 'no_route'){
-                        return {action:'print_CLI',value:'Host [${destIP}] is unreachable'};
-                    }else if(output.status == 'processed'){
-                        return {action:'print_CLI',value:'Ping to [${destIP}] is Successful'};
-                    }
+                    const output = await object.sendPacket(destIP,{ msg: "none" },object.data.hostname);
+                    return {action:'none'};
                 }
             }
         }
