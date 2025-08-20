@@ -282,7 +282,21 @@
     gap: 10px;
     margin-top: 7px;
     margin-left: 10px;
+    text-align: center;
+    align-items: center;
   }
+
+  #device-nd p, #device-ed p, #device-cn p {
+    margin-top: 0;
+    font-weight: 460;
+  }
+
+  .nd-box, .ed-box, .cn-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
 
   .tools {
     display: flex;
@@ -464,6 +478,10 @@
     align-items: center;
     background: transparent;
     border: none;
+  }
+
+  .topology-wrapper img {
+    margin-bottom: 0;
   }
 
   circle {

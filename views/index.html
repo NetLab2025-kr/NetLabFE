@@ -50,47 +50,81 @@
           </div>
 
           <div id="device-nd">
-            <button class="tools" id="router" data-type="router">
-              <img src="../assets/router.png" title="Router" draggable="false">
-            </button>
-            <button class="tools" id="switch" data-type="switch">
-              <img src="../assets/switch.png" title="Switch" draggable="false">
-            </button>
-            <button class="tools" id="hub" data-type="hub">
-              <img src="../assets/hub.png" title="Hub" draggable="false">
-            </button>
+            <div class="nd-box" id="router">
+              <button class="tools" id="router" data-type="router">
+                <img src="/assets/router.png" title="Router" draggable="false">
+              </button>
+              <p>Router</p>
+            </div>
+            <div class="nd-box" id="switch">
+              <button class="tools" id="switch" data-type="switch">
+                <img src="/assets/switch.png" title="Switch" draggable="false">
+              </button>
+              <p>Switch</p>
+            </div>
+            <div class="nd-box" id="hub">
+              <button class="tools" id="hub" data-type="hub">
+                <img src="/assets/hub.png" title="Hub" draggable="false">
+              </button>
+              <p>Hub</p>
+            </div>
           </div>
 
           <div id="device-ed">
-            <button class="tools" id="pc">
-              <img src="../assets/pc.png" title="PC" draggable="false">
-            </button>
-            <button class="tools" id="labtop">
-              <img src="../assets/laptop.png" title="Labtop" draggable="false">
-            </button>
-            <button class="tools" id="server">
-              <img src="../assets/fileserver.png" title="Server" draggable="false">
-            </button>
+            <div class="ed-box" id="pc">
+              <button class="tools" id="pc">
+                <img src="/assets/pc.png" title="PC" draggable="false">
+              </button>
+              <p>PC</p>
+            </div>
+            <div class="ed-box" id="labtop">
+              <button class="tools" id="labtop">
+                <img src="/assets/labtop.png" title="Labtop" draggable="false">
+              </button>
+              <p>Labtop</p>
+            </div>
+            <div class="ed-box" id="server">
+              <button class="tools" id="server">
+                <img src="/assets/fileserver.png" title="Server" draggable="false">
+              </button>
+              <p>Server</p>
+            </div>
           </div>
 
           <div id="device-cn">
-            <button class="connections" id="console_line">
-              <img src="/assets/console.png" title="Console" draggable="false">
-            </button>
-            <button class="connections" id="straight_line">
-              <img src="/assets/direct.png" title="Copper Straight-Through" draggable="false">
-            </button>
-            <button class="connections" id="cross_line">
-              <img src="/assets/cross_over.png" title="Copper Cross-over" draggable="false">
-            </button>
-            <button class="connections" id="fiver_line">
-              <img src="/assets/fiber.png" title="Fiber" draggable="false">
-            </button>
-            <button class="connections" id="serial_line">
-              <img src="/assets/serial.png" title="Serial DTE" draggable="false">
-            </button>
+            <div class="cn-box" id="console">
+              <button class="connections" id="console_line">
+                <img src="/assets/console.png" title="Console" draggable="false">
+              </button>
+              <p>Console</p>
+            </div>
+            <div class="cn-box" id="straight">
+              <button class="connections" id="straight_line">
+                <img src="/assets/straight.png" title="Copper Straight-Through" draggable="false">
+              </button>
+              <p>Straight</p>
+            </div>
+            <div class="cn-box" id="cross">
+              <button class="connections" id="cross_line">
+                <img src="/assets/cross_over.png" title="Copper Cross-over" draggable="false">
+              </button>
+              <p>Cross-over</p>
+            </div>
+            <div class="cn-box" id="fiber">
+              <button class="connections" id="fiber_line">
+                <img src="/assets/fiber.png" title="Fiber" draggable="false">
+              </button>
+              <p>Fiber</p>
+            </div>
+            <div class="cn-box" id="serial">
+              <button class="connections" id="serial_line">
+                <img src="/assets/serial.png" title="Serial DTE" draggable="false">
+              </button>
+              <p>Serial</p>
+            </div>
           </div>
         </div>
+
 
         <!-- CLI 창 -->
         <div id="cli-container" style="display: none">

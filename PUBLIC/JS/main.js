@@ -714,11 +714,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (under && under.closest('#topology-frame') && dragg_default_name) {
       // 유니크 id 생성
       let idx = 0;
+      const tag = document.createElement('p');
       let deviceId;
+
       do {
         deviceId = `${dragg_default_name}${idx++}`;
         console.log(`${dragg_default_name}의 id: ${idx}가 생성되었습니다.`);
+        tag.textContent = deviceId;
       } while(current_names.has(deviceId));
+
+      tag.className = 'item_name';
+      clone.appendChild(tag);
 
       clone.id = deviceId;
       console.log(`${clone.id}`);
