@@ -6,8 +6,7 @@
     box-sizing: border-box;
   }
 
-  body,
-  html {
+  body, html {
     height: 100%;
     margin: 0;
     background-color: #f9f9f9;
@@ -66,22 +65,32 @@
   }
 
   #IntContainer {
-    width: 130px;
+    width: auto;
     height: auto;
     background-color: white;
     position: absolute;
+    border: 1px solid black;
+    border-radius: 3px;
   }
 
   .IntBox {
     display: flex;
-    width: calc(100% -2px);
-    height: calc(100% -2px);
+    width: calc(100% -5px);
+    height: calc(100% -5px);
     flex-direction: column;
-    background-color: #cfcfcf;
+    background-color: #eeeeee;
+    margin: 2.4px;
+    margin-left: 0;
   }
 
   .clickBox {
+    padding: 3px;
+    border-top: 0.8px solid black;
     text-align: start;
+  }
+
+  .clickBox:first-child {
+    border-top: none;
   }
 
   #bottom-view {
@@ -119,7 +128,7 @@
     margin: 0;
     font-weight: bold;
     color: white;
-
+    
   }
 
   #tap-updown {
@@ -153,7 +162,7 @@
     height: 40px;
     background-color: #fff;
     overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     z-index: 2000;
   }
 
@@ -198,6 +207,8 @@
     background-color: white;
     margin-top: 40px;
     padding: 12px;
+    padding-left: 0;
+    padding-top: 1px;
     width: 550px;
     height: 685px;
     transition: box-shadow 0.3s ease;
@@ -233,23 +244,38 @@
   /* 토폴로지 목록 */
   #Device-box {
     display: none;
+    width: 550px;
   }
 
-  .device-change {
+  #device-change {
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 550px;
+    height: auto;
   }
 
   .device_change {
-    margin-left: 10px;
+    display: flex;
+    border: none;
+    background-color: #3DAEFA;
+    text-align: center;
+    justify-content: center;
+    width: 183.3px;
+    height: 25px;
+    color: white;
+    margin: 0;
+    padding: 0;
   }
 
+  .device_change.active {
+    height: 32px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+  }
+  
 
-  #device-nd,
-  #device-ed,
-  #device-cn {
+  #device-nd, #device-ed, #device-cn {
     display: none;
     flex-wrap: wrap;
     min-height: 80px;
@@ -359,10 +385,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #f9fcff;
-    /* 흰 배경 */
-    color: #000000;
-    /* 검은 글씨 */
+    background-color: #f9fcff; /* 흰 배경 */
+    color: #000000;            /* 검은 글씨 */
     font-size: 14px;
     padding: 10px;
     overflow: hidden;
@@ -373,9 +397,7 @@
     z-index: 0;
   }
 
-  .cli-box,
-  .cli-input-line,
-  .boot-message {
+  .cli-box, .cli-input-line, .boot-message {
     font-family: 'Courier New', monospace !important;
   }
 
@@ -437,13 +459,12 @@
     display: flex;
     flex-direction: column;
     position: absolute;
-    z-index: 1;
+    z-index: 1000;
     pointer-events: none;
     align-items: center;
     background: transparent;
     border: none;
   }
-
 
   circle {
     display: none;

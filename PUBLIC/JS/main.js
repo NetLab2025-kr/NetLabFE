@@ -750,7 +750,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       obj.data.hostname = deviceId;
     
-      console.log(`device ID is ${deviceId} and Routers[deviceId].hostname is ${Routers[deviceId].data.hostname}`);
+      //console.log(`device ID is ${deviceId} and Routers[deviceId].hostname is ${Routers[deviceId].data.hostname}`);
 
       // 위치 보정
       const frameRect = topology_frame.getBoundingClientRect();
@@ -846,12 +846,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 IntBox.appendChild(clickBox);
               });
 
-              IntBox.style.left = e.clientX -550 + "px";
-              IntBox.style.top = e.clientY + "px";
+              IntContainer.style.left = e.clientX - 550 + "px";
+              IntContainer.style.top = e.clientY + "px";
               IntContainer.appendChild(IntBox);
 
               selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
               selectDevicePort(el.id);
+
+              Object.keys(instance.getManagedElements()).forEach(id => {
+                instance.setDraggable(id, false);
+              });
               
 
               selectedBox.forEach(box => {
@@ -929,8 +933,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     IntBox.appendChild(clickBox);
 
                   });
-                  IntBox.style.left = e.clientX - 550 + "px";
-                  IntBox.style.top = e.clientY + "px";
+                  IntContainer.style.left = e.clientX - 550 + "px";
+                  IntContainer.style.top = e.clientY + "px";
                   IntContainer.appendChild(IntBox);
                   
                   selectedBox = document.querySelectorAll(`.IntBox[data-target="${el.id}"] > .clickBox`);
@@ -991,6 +995,14 @@ document.addEventListener('DOMContentLoaded', () => {
                       
                       instance.revalidate(firstClicked);
                       instance.revalidate(el);
+
+                      Object.keys(instance.getManagedElements()).forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                          instance.setDraggable(id, true);
+                        }
+                      });
+
 
                       if(!Links[firstClicked.id]["devices"]) {
                         Links[firstClicked.id]["devices"] = [];
@@ -1408,8 +1420,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const cloneImg = img.cloneNode();
       
-      cloneImg.style.width = '80px';
-      cloneImg.style.height = '80px';
+      cloneImg.style.width = '65px';
+      cloneImg.style.height = '65px';
       cloneImg.style.objectFit = 'contain';
 
       wrapper.appendChild(cloneImg);
@@ -1540,6 +1552,14 @@ document.addEventListener('DOMContentLoaded', () => {
     problemBox.style.display ='none';
     cliBox.style.display = 'none';
     topologybox.style.display = 'block';
+
+    const deviceBtn = document.querySelectorAll(".device_change");
+    deviceBtn.forEach(btn => {
+      btn.addEventListener('click', () => {
+        deviceBtn.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
   });
 
   problemBtn.addEventListener('click', () => {
@@ -1591,4 +1611,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // --------------------------------------------------------------
-//netlab 계정으로 vercel에 올림

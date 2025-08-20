@@ -4,7 +4,7 @@ function hasSubkey(obj,key){
     );
 }
 
-function addNo(obj){ //노 붙여주노
+function addNo(obj){ //노 붙여
     return (obj.enable===true)?'':'no ';
 }
 
