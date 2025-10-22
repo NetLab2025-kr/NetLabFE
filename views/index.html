@@ -213,7 +213,7 @@
       const id = new URLSearchParams(window.location.search).get("id");
       const token = localStorage.getItem("token");
 
-      fetch(`${API_BASE_URL}/problems/${id}/download`, {
+      fetch(`${API_BASE_URL}/questions/${id}/download`, {
         headers: { "Authorization": "Bearer " + token }
       })
         .then(res => {
