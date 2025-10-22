@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <title>문제 목록 - NetLab</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="../config.js"></script>
   <link rel="stylesheet" href="../assets/css/list.css" />
@@ -12,6 +14,7 @@
   <script src="../PUBLIC/JS/navbarAndToken.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
+
 <body>
   <div class="navbar">
     <a href="/index.html" class="brand">NetLab</a>
@@ -145,6 +148,9 @@
     $.ajax({
       url: API_URL,
       method: 'GET',
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      },
       success: function (res) {
         $('#skeleton').remove();
         renderList(res || []);
@@ -156,4 +162,5 @@
     });
   </script>
 </body>
+
 </html>

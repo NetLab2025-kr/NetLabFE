@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <title>커뮤니티 - 질문 목록</title>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="../config.js"></script>
 
@@ -12,6 +14,7 @@
   <link rel="stylesheet" href="../assets/css/style.css">
   <script src="/PUBLIC/JS/navbarAndToken.js"></script>
 </head>
+
 <body class="has-navbar">
   <div class="navbar">
     <a href="/index.html" class="brand">NetLab</a>
@@ -39,7 +42,7 @@
       const API = window.API_BASE_URL;
 
       /* ---------------- 네비/사용자 상태 ---------------- */
-      const navEl  = document.getElementById('nav-links');
+      const navEl = document.getElementById('nav-links');
       const userEl = document.getElementById('user-info');
 
       function getUserNameFromNav() {
@@ -69,11 +72,11 @@
 
       /* ---------------- 유틸 ---------------- */
       const safeText = s => (s ?? '').toString();
-      const fmtDate  = ts => ts ? ts.replace('T',' ').slice(0,19) : '';
+      const fmtDate = ts => ts ? ts.replace('T', ' ').slice(0, 19) : '';
 
       /* ---------------- 목록 렌더 ---------------- */
       function renderItem($ul, q, canDelete) {
-        const $li  = $('<li>').attr('data-id', q.id);
+        const $li = $('<li>').attr('data-id', q.id);
 
         const titleText = (q.notice ? '[공지] ' : '') + safeText(q.title);
         const $ttl = $('<div>')
@@ -85,7 +88,7 @@
         const $meta = $('<div>').addClass('question-meta').text(meta);
 
         if (canDelete) {
-          const $del  = $('<button>').addClass('delete-btn').attr('data-id', q.id).text('삭제');
+          const $del = $('<button>').addClass('delete-btn').attr('data-id', q.id).text('삭제');
           $meta.append(' ', $del);
         }
 
@@ -97,12 +100,15 @@
         try {
           const [isAdmin, res] = await Promise.all([
             getAdminFlag(),
-            fetch(`${API}/questions`).then(r => r.json())
-          ]);
+            fetch(`${API}/questions`, {
+              headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token")
+              }
+            }).then(r => r.json())]);
 
           const $list = $('#questionList').empty();
           if (!res || !res.length) {
-            $list.append($('<li>').css({textAlign:'center', color:'#aaa'}).text('등록된 질문이 없습니다.'));
+            $list.append($('<li>').css({ textAlign: 'center', color: '#aaa' }).text('등록된 질문이 없습니다.'));
             return;
           }
           const currentName = getUserNameFromNav();
@@ -164,7 +170,7 @@
 
         // 관리자 API 우선, 실패 시 일반 API로 재시도
         const adminUrl = `${API}/admin/questions/${id}`;
-        const userUrl  = `${API}/questions/${id}`;
+        const userUrl = `${API}/questions/${id}`;
 
         $.ajax({
           url: adminUrl,
@@ -204,4 +210,5 @@
     });
   </script>
 </body>
+
 </html>

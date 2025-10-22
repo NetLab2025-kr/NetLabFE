@@ -36,6 +36,8 @@
         <div id="problem-box">
           <div id="problem-head">
             <h1 id="problem-title">Problem 1 - Routing</h1>
+            <button id="downloadBtn" class="btn">.pka 파일 다운로드</button>
+
             <h2 class="problem-level">easy</h2>
           </div>
           <div id="problem-content">로딩 중...</div>
@@ -129,7 +131,7 @@
       <div id="topology-frame">
         <div id="topology-inner">
           <div id="IntContainer" style="display: none;">
-            
+
           </div>
         </div>
       </div>
@@ -207,8 +209,30 @@
         }
       });
     })();
+    document.getElementById("downloadBtn").addEventListener("click", function () {
+      const id = new URLSearchParams(window.location.search).get("id");
+      const token = localStorage.getItem("token");
+
+      fetch(`${API_BASE_URL}/problems/${id}/download`, {
+        headers: { "Authorization": "Bearer " + token }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("다운로드 실패");
+          return res.blob();
+        })
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `problem_${id}.pka`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        })
+        .catch(() => alert("파일 다운로드에 실패했습니다."));
+    });
+
   </script>
 </body>
 
 </html>
-
