@@ -10,6 +10,8 @@
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="../config.js"></script>
+  <!-- ✅ 폭죽 효과 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
   <style>
     body {
@@ -62,7 +64,6 @@
       background: #34b3ff;
     }
 
-    /* 난이도 표시 */
     .problem-level {
       font-weight: 600;
       padding: 5px 12px;
@@ -92,7 +93,6 @@
       line-height: 1.6;
     }
 
-    /* 플래그 제출창 */
     #submit-box {
       margin-top: 20px;
       background: #eef5ff;
@@ -156,7 +156,6 @@
 
       <div id="problem-content">로딩 중...</div>
 
-      <!-- 플래그 제출창 -->
       <div id="submit-box">
         <h3>플래그 제출</h3>
         <input type="text" id="flagInput" placeholder="Sunrin{flag_here}" />
@@ -187,7 +186,6 @@
           const levelElem = $('#problem-level');
           levelElem.text(levelText);
 
-          // 난이도별 색상 클래스 적용
           levelElem.removeClass('difficulty-easy difficulty-normal difficulty-hard');
           if (levelText === 'EASY') levelElem.addClass('difficulty-easy');
           else if (levelText === 'NORMAL') levelElem.addClass('difficulty-normal');
@@ -235,16 +233,61 @@
           headers: token ? { 'Authorization': 'Bearer ' + token } : undefined,
           data: JSON.stringify({ flag }),
           success: function (res) {
-            $('#result-message')
-              .removeClass('success fail')
-              .addClass(res.correct ? 'success' : 'fail')
-              .text(res.correct ? ' 정답입니다!' : ' 오답입니다.');
+            const msgElem = $('#result-message');
+            msgElem.removeClass('success fail');
+
+            if (res.isSuccess === true) {
+              msgElem.addClass('success').text('정답입니다! 🎉');
+              $('#flagInput').prop('disabled', true);
+              $('#submitBtn').prop('disabled', true).text('제출 완료');
+
+              //  폭죽 효과
+              confetti({
+                particleCount: 200,
+                spread: 70,
+                origin: { y: 0.6 }
+              });
+
+              confetti({
+                particleCount: 120,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0, y: 0.6 }
+              });
+              confetti({
+                particleCount: 120,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1, y: 0.6 }
+              });
+
+              // 2초간 연속 폭죽
+              let duration = 2 * 1000;
+              let end = Date.now() + duration;
+              (function frame() {
+                confetti({
+                  particleCount: 5,
+                  angle: 60,
+                  spread: 55,
+                  origin: { x: 0, y: 0.6 }
+                });
+                confetti({
+                  particleCount: 5,
+                  angle: 120,
+                  spread: 55,
+                  origin: { x: 1, y: 0.6 }
+                });
+                if (Date.now() < end) requestAnimationFrame(frame);
+              })();
+            } else {
+              msgElem.addClass('fail').text('틀렸습니다. 다시 시도해보세요.');
+            }
           },
-          error: function () {
+          error: function (xhr) {
             $('#result-message')
               .removeClass('success fail')
               .addClass('fail')
-              .text('서버 오류가 발생했습니다.');
+              .text(xhr.responseText || '서버 오류가 발생했습니다.');
           }
         });
       });
