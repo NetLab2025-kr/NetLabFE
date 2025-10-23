@@ -8,32 +8,37 @@
   <script src="../../config.js"></script>
   <link rel="stylesheet" href="../admin_assets/css/add_problems.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
-
-
 </head>
+
 <body>
   <div class="navbar">
     <div class="brand"><a href="/admin/index.html">← 관리자 홈</a></div>
     <div id="nav-links"></div>
   </div>
+
   <div class="container">
     <h1>문제 등록</h1>
+    <input type="file" id="fileInput" accept=".pka">
     <textarea id="problemJson" placeholder='문제 정보를 JSON 형식으로 입력하세요.'></textarea>
     <button id="submitBtn">등록하기</button>
   </div>
+
   <script>
     $(document).ready(function () {
       const accessToken = localStorage.getItem('token');
       const refreshToken = localStorage.getItem('refreshToken');
       const nav = $('#nav-links');
+
       function rejectAccess() {
         alert('접근 권한이 없습니다.');
         location.href = '/index.html';
       }
+
       function renderNav() {
         nav.html('<a href="/index.html">홈</a><a href="#" id="logoutBtn">로그아웃</a>');
       }
-      // refresh + 등록 재시도 함수
+
+      // refresh + 등록 재시도
       function refreshAndRetry(cb) {
         if (!refreshToken) return rejectAccess();
         $.ajax({
@@ -49,6 +54,8 @@
           error: function () { rejectAccess(); }
         });
       }
+
+      // 🔹 문제 등록 로직
       function setupRegisterHandler(token) {
         $('#submitBtn').off('click').on('click', function () {
           let jsonText = $('#problemJson').val();
@@ -58,18 +65,30 @@
           } catch (e) {
             return alert("유효한 JSON 형식이 아닙니다.");
           }
+
+          const fileInput = document.getElementById("fileInput");
+          if (!fileInput || fileInput.files.length === 0) {
+            return alert("업로드할 .pka 파일을 선택하세요.");
+          }
+
+          const formData = new FormData();
+          formData.append("file", fileInput.files[0]);
+          formData.append("data", new Blob([JSON.stringify(problemData)], { type: "application/json" }));
+
           function doRegister(token2, retry) {
             $.ajax({
               url: window.API_BASE_URL + '/admin/problems',
               method: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify(problemData),
+              processData: false,
+              contentType: false,
+              data: formData,
               headers: {
                 'Authorization': 'Bearer ' + token2
               },
               success: function () {
                 alert("문제 등록 성공!");
                 $('#problemJson').val('');
+                $('#fileInput').val('');
               },
               error: function (xhr) {
                 if (xhr.status === 401 && !retry) {
@@ -82,7 +101,8 @@
           }
           doRegister(token, false);
         });
-        // textarea에서 엔터만(shift 없이)로도 등록
+
+        // 엔터(Shift 없이)로 등록
         $('#problemJson').keydown(function(e) {
           if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -90,6 +110,8 @@
           }
         });
       }
+
+      // 관리자 권한 확인
       function checkAdminAndInit(token) {
         $.ajax({
           url: window.API_BASE_URL + "/auth/is-admin",
@@ -106,6 +128,8 @@
           error: function () { rejectAccess(); }
         });
       }
+
+      // 초기 인증 체크
       if (accessToken) {
         checkAdminAndInit(accessToken);
       } else if (refreshToken) {
@@ -113,18 +137,19 @@
       } else {
         rejectAccess();
       }
+
+      // 로그아웃 처리
       $(document).on('click', '#logoutBtn', function () {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         alert('로그아웃 되었습니다');
         location.href = '/index.html';
       });
-      // 예제 자동 삽입
+
+      // JSON 예시 자동삽입
       const exampleJson = {
         "title": "IP 설정 문제",
         "description": "PC 2대에 각각 IP 주소를 설정하세요. PC1은 192.168.1.2, PC2는 192.168.1.3이어야 합니다.",
-        "expectedCommandsJson": "{\"pc1\": [\"ip address 192.168.1.2 255.255.255.0\"], \"pc2\": [\"ip address 192.168.1.3 255.255.255.0\"]}",
-        "requiredDevicesJson": "{\"pc\": 2}",
         "difficulty": "EASY",
         "tags": "ip,pc"
       };

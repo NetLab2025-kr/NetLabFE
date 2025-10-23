@@ -202,7 +202,7 @@
           $('#problem-title').text(p.title || `Problem ${id}`);
           $('.problem-level').text(p.difficulty || '');
           $('#problem-content').text(p.description || '내용 없음');
-        },
+        },  
         error: function (xhr) {
           $('#problem-title').text('문제 로딩 실패');
           $('#problem-content').text(xhr.responseText || xhr.statusText || '에러');
