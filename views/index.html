@@ -8,183 +8,149 @@
 
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-  <link rel="stylesheet" href="../assets/css/main_style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="../config.js"></script>
 
-  <!-- 기존 의존성 (그대로 유지) -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/js/jsplumb.min.js"></script>
-  <script type="module" src="../PUBLIC/JS/main.js"></script>
+  <style>
+    body {
+      font-family: 'Pretendard';
+      margin: 0;
+      background: linear-gradient(135deg, #e6f0ff, #ffffff);
+      color: #222;
+    }
+
+    #top-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 50px;
+    }
+
+    #problem-box {
+      background: #f9fbff;
+      box-shadow: 0 4px 10px rgba(0, 90, 255, 0.1);
+      border-radius: 12px;
+      padding: 40px;
+      width: 700px;
+      border: 1px solid #dce6ff;
+    }
+
+    #problem-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    #problem-title {
+      font-size: 24px;
+      color: #003cba;
+      font-weight: 700;
+    }
+
+    .btn {
+      background: #0066ff;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #004ad8;
+    }
+
+    .problem-level {
+      background: #0066ff20;
+      color: #004ad8;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    #problem-content {
+      font-size: 16px;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    /* 플래그 제출창 */
+    #submit-box {
+      margin-top: 20px;
+      background: #eef5ff;
+      border-radius: 10px;
+      padding: 25px;
+      border: 1px solid #c8dfff;
+    }
+
+    #submit-box h3 {
+      color: #004ad8;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    #flagInput {
+      width: 80%;
+      padding: 10px;
+      border: 1px solid #a8c6ff;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    #submitBtn {
+      margin-left: 10px;
+      background: #0055ff;
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #submitBtn:hover {
+      background: #0040cc;
+    }
+
+    #result-message {
+      margin-top: 15px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .success {
+      color: #007b0c;
+    }
+
+    .fail {
+      color: #d80000;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- ===== 네비바 전체 제거됨 ===== -->
-
-  <!-- 기존 페이지 UI -->
   <div id="top-view">
-    <div id="top-bar">
-      <div id="tap">
-        <button class="tap" id="problem">Problem</button>
-        <button class="tap" id="cli">CLI</button>
-        <button class="tap" id="topology">Topology</button>
+    <div id="problem-box">
+      <div id="problem-head">
+        <h1 id="problem-title">문제 제목</h1>
+        <button id="downloadBtn" class="btn">.pka 파일 다운로드</button>
+        <h2 class="problem-level">EASY</h2>
       </div>
 
-      <div id="bar">
-        <!-- 문제 탭 -->
-        <div id="problem-box">
-          <div id="problem-head">
-            <h1 id="problem-title">Problem 1 - Routing</h1>
-            <button id="downloadBtn" class="btn">.pka 파일 다운로드</button>
+      <div id="problem-content">로딩 중...</div>
 
-            <h2 class="problem-level">easy</h2>
-          </div>
-          <div id="problem-content">로딩 중...</div>
-        </div>
-
-        <!-- topology 창 -->
-        <div id="Device-box">
-          <div id="device-change">
-            <button class="device_change" id="nd">Network Device</button>
-            <button class="device_change" id="ed">End Device</button>
-            <button class="device_change" id="cn">Connection</button>
-          </div>
-
-          <div id="device-nd">
-            <button class="tools" id="router" data-type="router">
-              <img src="../assets/router.png" title="Router" draggable="false">
-            </button>
-            <button class="tools" id="switch" data-type="switch">
-              <img src="../assets/switch.png" title="Switch" draggable="false">
-            </button>
-            <button class="tools" id="hub" data-type="hub">
-              <img src="../assets/hub.png" title="Hub" draggable="false">
-            </button>
-          </div>
-
-          <div id="device-ed">
-            <button class="tools" id="pc">
-              <img src="../assets/pc.png" title="PC" draggable="false">
-            </button>
-            <button class="tools" id="labtop">
-              <img src="../assets/laptop.png" title="Labtop" draggable="false">
-            </button>
-            <button class="tools" id="server">
-              <img src="../assets/fileserver.png" title="Server" draggable="false">
-            </button>
-          </div>
-
-          <div id="device-cn">
-            <button class="connections" id="console_line">
-              <img src="/assets/console.png" title="Console" draggable="false">
-            </button>
-            <button class="connections" id="straight_line">
-              <img src="/assets/direct.png" title="Copper Straight-Through" draggable="false">
-            </button>
-            <button class="connections" id="cross_line">
-              <img src="/assets/cross_over.png" title="Copper Cross-over" draggable="false">
-            </button>
-            <button class="connections" id="fiver_line">
-              <img src="/assets/fiber.png" title="Fiber" draggable="false">
-            </button>
-            <button class="connections" id="serial_line">
-              <img src="/assets/serial.png" title="Serial DTE" draggable="false">
-            </button>
-          </div>
-        </div>
-
-        <!-- CLI 창 -->
-        <div id="cli-container" style="display: none">
-          <div class="cli-box">
-            <div class="cli-output">
-              <div class="cli-input-line">
-                <span class="cli-prompt">Router&gt;</span>
-                <input class="cli-input" type="text" autocomplete="off">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ip 세팅 창(cli 없는 기기들) -->
-        <div id="setting-container">
-          <h3 class="setting-title"></h3>
-          <div class="setting-box" style="display: none">
-            <div class="ip">
-              <p>IPv4</p>
-              <input type="text">
-            </div>
-            <div class="subnet">
-              <p>Subnet Mask</p>
-              <input type="text">
-            </div>
-            <div class="gateway">
-              <p>Default Gateway</p>
-              <input type="text">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="background">
-      <div id="topology-frame">
-        <div id="topology-inner">
-          <div id="IntContainer" style="display: none;">
-
-          </div>
-        </div>
+      <!-- 플래그 제출창 -->
+      <div id="submit-box">
+        <h3>플래그 제출</h3>
+        <input type="text" id="flagInput" placeholder="Layer7{flag_here}" />
+        <button id="submitBtn">제출</button>
+        <div id="result-message"></div>
       </div>
     </div>
   </div>
 
-  <div id="bottom-view">
-    <div id="time-about">
-      <div id="time-left">
-        <h5 id="time-shower">Time: 00:00:00</h5>
-        <button id="tap-updown">Tap Down</button>
-      </div>
-      <div id="time-right">
-        <button id="skip">skip</button>
-        <button id="back">back</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 토큰 유지 + 관리자 확인만 남김 -->
   <script>
-    (function () {
-      const accessToken = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
-
-      function checkAdmin(token) {
-        $.ajax({
-          url: window.API_BASE_URL + "/auth/is-admin",
-          method: "GET",
-          headers: { "Authorization": "Bearer " + token }
-        });
-      }
-
-      function setStoredName(n) { if (n) localStorage.setItem('name', n); }
-
-      if (accessToken) {
-        checkAdmin(accessToken);
-      } else if (refreshToken) {
-        $.ajax({
-          url: window.API_BASE_URL + '/auth/refresh',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({ refreshToken }),
-          success: function (res) {
-            localStorage.setItem('token', res.accessToken);
-            localStorage.setItem('refreshToken', res.refreshToken);
-            setStoredName(res.name);
-            checkAdmin(res.accessToken);
-          }
-        });
-      }
-    })();
-
     // ====== 문제 상세 로딩 ======
     (function () {
       const PROBLEM_DETAIL_API = id => `${window.API_BASE_URL}/submit/problems/${id}`;
@@ -199,7 +165,7 @@
         method: 'GET',
         headers: token ? { 'Authorization': 'Bearer ' + token } : undefined,
         success: function (p) {
-          $('#problem-title').text(p.title || `Problem ${id}`);
+          $('#problem-title').text(p.title || `문제 ${id}`);
           $('.problem-level').text(p.difficulty || '');
           $('#problem-content').text(p.description || '내용 없음');
         },
@@ -208,30 +174,57 @@
           $('#problem-content').text(xhr.responseText || xhr.statusText || '에러');
         }
       });
+
+      // ====== 다운로드 기능 ======
+      document.getElementById("downloadBtn").addEventListener("click", function () {
+        const token = localStorage.getItem("token");
+
+        fetch(`${API_BASE_URL}/problems/${id}/download`, {
+          headers: { "Authorization": "Bearer " + token }
+        })
+          .then(res => {
+            if (!res.ok) throw new Error("다운로드 실패");
+            return res.blob();
+          })
+          .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `problem_${id}.pka`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          })
+          .catch(() => alert("파일 다운로드에 실패했습니다."));
+      });
+
+      // ====== 플래그 제출 ======
+      $('#submitBtn').on('click', function () {
+        const flag = $('#flagInput').val().trim();
+        const token = localStorage.getItem('token');
+        if (!flag) return alert('플래그를 입력하세요');
+
+        $.ajax({
+          url: `${window.API_BASE_URL}/submit/${id}`,
+          method: 'POST',
+          contentType: 'application/json',
+          headers: token ? { 'Authorization': 'Bearer ' + token } : undefined,
+          data: JSON.stringify({ flag }),
+          success: function (res) {
+            $('#result-message')
+              .removeClass('success fail')
+              .addClass(res.correct ? 'success' : 'fail')
+              .text(res.correct ? ' 정답입니다!' : ' 오답입니다.');
+          },
+          error: function () {
+            $('#result-message')
+              .removeClass('success fail')
+              .addClass('fail')
+              .text('서버 오류가 발생했습니다.');
+          }
+        });
+      });
     })();
-    document.getElementById("downloadBtn").addEventListener("click", function () {
-      const id = new URLSearchParams(window.location.search).get("id");
-      const token = localStorage.getItem("token");
-
-      fetch(`${API_BASE_URL}/problems/${id}/download`, {
-        headers: { "Authorization": "Bearer " + token }
-      })
-        .then(res => {
-          if (!res.ok) throw new Error("다운로드 실패");
-          return res.blob();
-        })
-        .then(blob => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `problem_${id}.pka`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-        })
-        .catch(() => alert("파일 다운로드에 실패했습니다."));
-    });
-
   </script>
 </body>
 
