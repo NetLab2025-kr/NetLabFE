@@ -62,12 +62,28 @@
       background: #34b3ff;
     }
 
+    /* 난이도 표시 */
     .problem-level {
-      background: #0066ff20;
-      color: #34b3ff;
       font-weight: 600;
-      padding: 5px 10px;
+      padding: 5px 12px;
       border-radius: 8px;
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+
+    .difficulty-easy {
+      background: #d9f9e5;
+      color: #27b86d;
+    }
+
+    .difficulty-normal {
+      background: #e5f1ff;
+      color: #34b3ff;
+    }
+
+    .difficulty-hard {
+      background: #ffe5e5;
+      color: #ff5b5b;
     }
 
     #problem-content {
@@ -86,7 +102,7 @@
     }
 
     #submit-box h3 {
-      color: #46fe5c;
+      color: #34b3ff;
       margin-bottom: 15px;
       font-size: 18px;
     }
@@ -135,7 +151,7 @@
       <div id="problem-head">
         <h1 id="problem-title">문제 제목</h1>
         <button id="downloadBtn" class="btn">.pka 파일 다운로드</button>
-        <h2 class="problem-level">EASY</h2>
+        <h2 class="problem-level" id="problem-level">EASY</h2>
       </div>
 
       <div id="problem-content">로딩 중...</div>
@@ -143,7 +159,7 @@
       <!-- 플래그 제출창 -->
       <div id="submit-box">
         <h3>플래그 제출</h3>
-        <input type="text" id="flagInput" placeholder="Layer7{flag_here}" />
+        <input type="text" id="flagInput" placeholder="Sunrin{flag_here}" />
         <button id="submitBtn">제출</button>
         <div id="result-message"></div>
       </div>
@@ -151,7 +167,6 @@
   </div>
 
   <script>
-    // ====== 문제 상세 로딩 ======
     (function () {
       const PROBLEM_DETAIL_API = id => `${window.API_BASE_URL}/submit/problems/${id}`;
       const params = new URLSearchParams(location.search);
@@ -166,8 +181,17 @@
         headers: token ? { 'Authorization': 'Bearer ' + token } : undefined,
         success: function (p) {
           $('#problem-title').text(p.title || `문제 ${id}`);
-          $('.problem-level').text(p.difficulty || '');
           $('#problem-content').text(p.description || '내용 없음');
+
+          const levelText = (p.difficulty || 'NORMAL').toUpperCase();
+          const levelElem = $('#problem-level');
+          levelElem.text(levelText);
+
+          // 난이도별 색상 클래스 적용
+          levelElem.removeClass('difficulty-easy difficulty-normal difficulty-hard');
+          if (levelText === 'EASY') levelElem.addClass('difficulty-easy');
+          else if (levelText === 'NORMAL') levelElem.addClass('difficulty-normal');
+          else if (levelText === 'HARD') levelElem.addClass('difficulty-hard');
         },
         error: function (xhr) {
           $('#problem-title').text('문제 로딩 실패');
