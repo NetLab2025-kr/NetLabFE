@@ -38,39 +38,43 @@
     }
 
     #problem-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
 
-    #problem-title {
-      font-size: 24px;
-      color: #34b3ff;
-      font-weight: 700;
-    }
+#problem-title {
+  font-size: 24px;
+  color: #34b3ff;
+  font-weight: 700;
+  flex: 1;
+}
 
-    .btn {
-      background: #34b3ff;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+.btn {
+  background: #34b3ff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+  white-space: nowrap;
+}
 
-    .btn:hover {
-      background: #34b3ff;
-    }
+.btn:hover {
+  background: #2a9de6;
+}
 
-    .problem-level {
-      font-weight: 600;
-      padding: 5px 12px;
-      border-radius: 8px;
-      text-transform: uppercase;
-      font-size: 14px;
-    }
+.problem-level {
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  font-size: 14px;
+  white-space: nowrap;
+}
 
     .difficulty-easy {
       background: #d9f9e5;

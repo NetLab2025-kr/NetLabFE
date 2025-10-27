@@ -1,0 +1,228 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: 'Pretendard', sans-serif;
+  background: linear-gradient(to bottom, #f5f9ff 0%, #ffffff 100%);
+  min-height: 100vh;
+}
+
+/* 메인 컨텐츠 */
+.main-content {
+  max-width: 800px;
+  margin: 100px auto 40px;
+  padding: 0 20px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.page-header h1 {
+  font-size: 32px;
+  color: #23272f;
+  margin-bottom: 8px;
+}
+.page-header p {
+  font-size: 16px;
+  color: #5c5c6b;
+}
+
+/* 프로필 아바타 섹션 */
+.avatar-section {
+  background: #fff;
+  border-radius: 16px;
+  border: 1.5px solid #dbeafe;
+  box-shadow: 0 2px 12px rgba(61, 174, 250, 0.06);
+  padding: 40px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.avatar-container {
+  display: inline-block;
+  position: relative;
+  margin-bottom: 20px;
+}
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3DAEFA 0%, #5CB3FF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #fff;
+  font-weight: bold;
+}
+.avatar-edit-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3DAEFA;
+  border: 3px solid #fff;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.avatar-edit-btn:hover {
+  background: #3499d6;
+}
+
+/* 폼 카드 */
+.form-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1.5px solid #dbeafe;
+  box-shadow: 0 2px 12px rgba(61, 174, 250, 0.06);
+  padding: 40px;
+  margin-bottom: 24px;
+}
+.form-card h2 {
+  font-size: 20px;
+  color: #23272f;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 폼 그룹 */
+.form-group {
+  margin-bottom: 24px;
+}
+.form-group:last-child {
+  margin-bottom: 0;
+}
+.form-label {
+  display: block;
+  font-size: 15px;
+  color: #23272f;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.form-label .required {
+  color: #ff4d4f;
+  margin-left: 4px;
+}
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  border: 1.5px solid #dbeafe;
+  border-radius: 8px;
+  font-family: 'Pretendard', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #3DAEFA;
+  box-shadow: 0 0 0 3px rgba(61, 174, 250, 0.1);
+}
+.form-input:disabled {
+  background: #f5f9ff;
+  color: #5c5c6b;
+  cursor: not-allowed;
+}
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+.form-help {
+  font-size: 13px;
+  color: #5c5c6b;
+  margin-top: 6px;
+}
+
+/* 버튼 그룹 */
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 32px;
+}
+.btn {
+  padding: 14px 32px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: 'Pretendard', sans-serif;
+}
+.btn-primary {
+  background: #3DAEFA;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(61, 174, 250, 0.18);
+}
+.btn-primary:hover {
+  background: #3499d6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(61, 174, 250, 0.25);
+}
+.btn-secondary {
+  background: #fff;
+  color: #5c5c6b;
+  border: 1.5px solid #dbeafe;
+}
+.btn-secondary:hover {
+  background: #f5f9ff;
+  border-color: #3DAEFA;
+  color: #3DAEFA;
+}
+.btn-danger {
+  background: #fff;
+  color: #ff4d4f;
+  border: 1.5px solid #ffccc7;
+}
+.btn-danger:hover {
+  background: #fff1f0;
+  border-color: #ff4d4f;
+}
+
+/* 위험 영역 */
+.danger-zone {
+  background: #fff;
+  border-radius: 16px;
+  border: 1.5px solid #ffccc7;
+  box-shadow: 0 2px 12px rgba(255, 77, 79, 0.06);
+  padding: 40px;
+}
+.danger-zone h2 {
+  font-size: 20px;
+  color: #ff4d4f;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.danger-zone p {
+  font-size: 15px;
+  color: #5c5c6b;
+  margin-bottom: 20px;
+}
+
+/* 반응형 */
+@media (max-width: 900px) {
+  .navbar {
+    padding: 0 20px;
+  }
+  .form-card {
+    padding: 32px 24px;
+  }
+  .button-group {
+    flex-direction: column-reverse;
+  }
+  .btn {
+    width: 100%;
+  }
+}

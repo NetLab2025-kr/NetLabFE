@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>NetLab - 내 정보</title>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="../assets/css/profile.css">
+  <script src="PUBLIC/JS/navbarAndToken.js"></script>
+</head>
+
+<body>
+  <template id="activity-item-temp">
+    <div class="activity-item" id="activity-item">
+      <span class="activity-title" id="activity-title">TCP 3-Way Handshake 문제 해결</span>
+      <span class="activity-date" id="activity-date">2일 전</span>
+    </div>
+  </template>
+  <!-- 네비바 -->
+  <div class="navbar">
+    <a class="brand" href="/index.html">NetLab</a>
+    <div class="right-group">
+      <div id="nav-links"></div>
+      <div class="user-info" id="user-info" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- 메인 컨텐츠 -->
+  <div class="main-content">
+    <!-- 프로필 헤더 -->
+    <div class="profile-header">
+      <div class="profile-avatar" id="profile-avatar">김</div>
+      <div class="profile-info">
+        <div class="profile-name" id="profile-name">김철수</div>
+        <div class="profile-moto" id="profile-moto">chulsoo.kim@example.com</div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-label" id="solved-problem">해결한 문제</div>
+            <div class="stat-value">24</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">티어 포인트</div>
+            <div class="stat-value" id="tier-point">15</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">티어</div>
+            <div class="inliner">
+              <div class="stat-value" id="tier-name">1,250</div>
+              
+              <img src="../assets/Diamond.png" alt="tier_image" id="tier-image">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 정보 그리드 -->
+    <div class="info-grid">
+      <div class="info-card">
+        <h2>티어</h2>
+        <div class="info-row">
+          <span class="info-label">닉네임</span>
+          <span class="info-value" id="info-username">김철수</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">현재 티어</span>
+          <span class="info-value" id="info-tiername">chulsoo.kim@example.com</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">승급까지</span>
+          <span class="info-value" id="info-tierremain">2024.03.15</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h2>추가 정보</h2>
+        <div class="info-row">
+          <span class="info-label">총 문제 풀이</span>
+          <span class="info-value" id="total-solved">24 / 50</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">정답률</span>
+          <span class="info-value" id="correct-rate">82%</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">소개글</span>
+          <span class="info-value" id="user-intro">18xp / 200xp</span>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button class="btn btn-secondary" style="width: 100%;" id="edit-btn" onclick="alert('준비 중입니다')" >프로필 수정</button>
+        </div> 
+      </div>
+    </div>
+
+    <!-- 최근 활동 -->
+    <div class="activity-list">
+      <h2>최근 활동</h2>
+    </div>
+  </div>
+
+
+  <script>
+    import tier_points from '../tier_config.js ';
+
+    function get_solved(array){
+      const total = array.length;
+      let solved = 0;
+
+      array.forEach(element => {
+        if (element.isCorrect){
+          solved++;
+        }
+      });
+
+      return solved
+    }
+
+    function render_userProfile(info) {
+      const solved_cnt = get_solved(info.submissions);
+      const tier_image = document.getElementById("tier-image");
+
+      tier_image.src = tier_points[info.tier].image;
+
+      document.title = `내 정보 - ${info.name}`;
+
+      const profile_name = document.getElementById('profile-name');
+      profile_name.textContent = info.name;
+
+      const profile_avatar = document.getElementById('profile-avatar');
+      profile_avatar.textContent = info.name[0].toUpperCase();
+
+      const profile_moto = document.getElementById('profile-moto');
+      profile_moto.textContent = info.intro;
+
+      const solved_problem = document.getElementById("solved-problem");
+      solved_problem.textContent = solved_cnt;
+
+      const tier_point = document.getElementById("tier-point");
+      tier_point.textContent = info.tierPoint;
+
+      const tier_name = document.getElementById("tier-name");
+      tier_name.textContent = info.tier;
+
+      const info_username = document.getElementById("info-username");
+      info_username.textContent = info.name;
+
+      const info_tiername = document.getElementById("info-tiername");
+      info_tiername.textContent = info.tier;
+
+      const info_tierremain = document.getElementById("info-tierremain");
+      const current_newtier_start = tier_points[info.tier].end+1;
+      info_tiername.textContent = `${current_newtier_start-info.tierPoint}p`;
+
+      const total_solved = document.getElementById("total-solved");
+      total_solved.textContent = `${solved_cnt}/${info.submissions.length}`;
+      
+      const user_intro = document.getElementById("user-intro");
+      user_intro.textContent = info.intro;
+
+      const activity_list = document.getElementById("activity-list");
+      const activity_template = document.getElementById("activity-item-temp");
+      info.submissions.forEach(element=>{
+        const clone_node = document.importNode(activity_template.content,true);
+        clone_node.getElementById("activity-title").textContent = `${element.problemTitle} 해결`;
+        clone_node.getElementById("activity-date").textContent = element.submittedAt;
+        activity_list.appendChild(clone_node);
+      });
+    }
+
+    addEventListener("DOMContentLoaded", (event) => {
+      const API_URL = window.API_BASE_URL + '/mypage';
+      const USER_DETAIL_API = user => { return }
+
+      const at = localStorage.getItem('token');
+      const headers = at ? { 'Authorization': 'Bearer' + at } : {};
+
+      // 초기 유저 정보 로드
+      $.ajax({
+        url: PROBLEM_DETAIL_API(id),
+        method: 'GET',
+        headers: headers,
+        success: function (res) {
+          render_userProfile(res);
+        }
+      });
+
+      const edit_btn = document.getElementById("edit-btn");
+    });
+  </script>
+
+</body>
+
+</html>
