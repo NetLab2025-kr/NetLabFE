@@ -24,7 +24,7 @@ window.NetLab = (function () {
     links += '<a href="/community/community.html">커뮤니티</a>';
     links += '<a href="#" id="logoutBtn">로그아웃</a>';
     $nav().html(links);
-    if (name) { $user().html('<a href="/profile/profile.html" style="decoration:none;">' + name + '</a>').show() } else { $user().hide(); }
+    if (name) { $user().html('<a href="/profile/profile.html" style="text-decoration: none;">' + name + '</a>').show() } else { $user().hide(); }
   }
 
   /* ---------- 토큰 유틸 ---------- */
