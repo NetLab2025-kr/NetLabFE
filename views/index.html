@@ -240,8 +240,27 @@
             const msgElem = $('#result-message');
             msgElem.removeClass('success fail');
 
-            if (res.isSuccess === true) {
-              msgElem.addClass('success').text('정답입니다! 🎉');
+            const successRaw =
+              res && res.hasOwnProperty('isSuccess') ? res.isSuccess :
+              res && res.hasOwnProperty('success') ? res.success :
+              res && res.hasOwnProperty('result') ? res.result :
+              false;
+
+            let isCorrect = false;
+            if (typeof successRaw === 'string') {
+              isCorrect = successRaw.toLowerCase() === 'true';
+            } else if (typeof successRaw === 'number') {
+              isCorrect = successRaw === 1;
+            } else {
+              isCorrect = !!successRaw;
+            }
+
+            const serverMessage = res && (res.msg || res.message);
+            const successMessage = serverMessage || '정답입니다! 🎉';
+            const failureMessage = serverMessage || '틀렸습니다. 다시 시도해보세요.';
+
+            if (isCorrect) {
+              msgElem.addClass('success').text(successMessage);
               $('#flagInput').prop('disabled', true);
               $('#submitBtn').prop('disabled', true).text('제출 완료');
 
@@ -284,7 +303,7 @@
                 if (Date.now() < end) requestAnimationFrame(frame);
               })();
             } else {
-              msgElem.addClass('fail').text('틀렸습니다. 다시 시도해보세요.');
+              msgElem.addClass('fail').text(failureMessage);
             }
           },
           error: function (xhr) {
