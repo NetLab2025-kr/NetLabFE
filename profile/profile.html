@@ -7,8 +7,10 @@
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <link rel="stylesheet" href="../assets/css/profile.css">
-  <script src="../PUBLIC/JS/navbarAndToken.js"></script>
+  <!-- jQuery를 먼저 로드 -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- 그 다음에 navbarAndToken.js 로드 -->
+  <script src="../PUBLIC/JS/navbarAndToken.js"></script>
 </head>
 
 <body>
@@ -127,9 +129,12 @@
       const correct_rate = get_correct_rate(info.submissions);
 
       // 티어 이미지
+      const tier_image = document.getElementById("tier-image");
       if (tier_points[info.tier]) {
-        const tier_image = document.getElementById("tier-image");
         tier_image.src = tier_points[info.tier].image;
+      }
+      else {
+        tier_image.src = '';
       }
 
       // 페이지 타이틀
@@ -143,7 +148,13 @@
       // 통계
       document.getElementById("solved-problem").textContent = solved_cnt;
       document.getElementById("tier-point").textContent = info.tierPoint;
-      document.getElementById("tier-name").textContent = info.tier;
+      if (info.tier == null) {
+        document.getElementById("tier-name").textContent = "Unrank";
+      }
+      else {
+        document.getElementById("tier-name").textContent = info.tier;
+      }
+
 
       // 티어 정보 카드
       document.getElementById("info-username").textContent = info.name;
@@ -179,7 +190,7 @@
 
       // 유저 정보 로드
       $.ajax({
-        url:  "https://be.netlab.kr/api/mypage",
+        url: "https://be.netlab.kr/api/mypage",
         method: 'GET',
         headers: headers,
         success: function (res) {
