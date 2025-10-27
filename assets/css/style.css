@@ -78,6 +78,19 @@ body.has-navbar {
   margin-left: 6px;
 }
 
+.user-info a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.user-info a:hover,
+.user-info a:focus,
+.user-info a:active,
+.user-info a:visited {
+  color: #fff;
+}
+
 /* 반응형: 공간 줄어들 때 닉네임 최대폭 축소 */
 @media (max-width: 700px) {
   .navbar { padding: 0 14px; height: 54px; }
