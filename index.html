@@ -21,27 +21,167 @@
   </div>
 
   <!-- 메인 컨텐츠 -->
-  <div class="main-content">  
-    <h1>NetLab에 오신 걸 환영합니다</h1>
-    <p>네트워크 실습을 효율적으로 관리하고 평가하세요.</p>
-
-    <div class="feature-grid">
-      <div class="feature-card">
-        <h2>📘 문제 풀러가기</h2>
-        <p>다양한 네트워크 문제를 풀면서 실력을 향상시켜 보세요.</p>
-        <button class="go-community-btn" onclick="location.href='/problems/list.html'">
-          문제 페이지 이동
-        </button>
+  <div class="main-content">
+    <section class="hero">
+      <span class="hero-tag">실전 네트워크 실습 플랫폼</span>
+      <h1>NetLab에서 문제를 풀고 티어를 올려보세요</h1>
+      <p>
+        패킷 트레이서(.pka) 실습을 통해 장비를 구성하고 숨겨진 플래그를 찾아 제출하면,
+        NetLab 서버가 즉시 검증하여 티어 포인트와 통계를 업데이트합니다.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="location.href='/problems/list.html'">문제 풀러가기</button>
+        <button class="btn btn-secondary" onclick="location.href='/community/community.html'">커뮤니티 살펴보기</button>
       </div>
-
-      <div class="feature-card">
-        <h2>💬 커뮤니티</h2>
-        <p>궁금한 점을 질문하고 다른 사람과 소통할 수 있어요.</p>
-        <button class="go-community-btn" onclick="location.href='/community/community.html'">
-          커뮤니티 바로가기
-        </button>
+      <div class="hero-tier-ribbon">
+        <div class="hero-tier">
+          <img src="assets/Bronze.png" alt="Bronze tier 배지">
+          <span>Bronze</span>
+          <small>0 ~ 999p</small>
+        </div>
+        <div class="hero-tier">
+          <img src="assets/Silver.png" alt="Silver tier 배지">
+          <span>Silver</span>
+          <small>1000 ~ 2499p</small>
+        </div>
+        <div class="hero-tier">
+          <img src="assets/Gold.png" alt="Gold tier 배지">
+          <span>Gold</span>
+          <small>2500 ~ 3999p</small>
+        </div>
+        <div class="hero-tier">
+          <img src="assets/Emerald.png" alt="Platinum tier 배지">
+          <span>Platinum</span>
+          <small>4000 ~ 5999p</small>
+        </div>
+        <div class="hero-tier">
+          <img src="assets/Diamond.png" alt="Diamond tier 배지">
+          <span>Diamond</span>
+          <small>6000 ~ 8999p</small>
+        </div>
+        <div class="hero-tier hero-tier-top">
+          <img src="assets/Ruby.png" alt="Ruby tier 배지">
+          <span>Ruby</span>
+          <small>9000p 이상</small>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <section class="tier-section">
+      <div class="section-head">
+        <h2>티어를 올리며 성장하세요</h2>
+        <p>문제를 해결하고 포인트를 모으면 다음 티어에 도전할 수 있습니다. 각 티어는 필요한 역량과 서포트하는 학습 방향을 제시합니다.</p>
+      </div>
+      <div class="tier-grid">
+        <article class="tier-card tier-bronze">
+          <img src="assets/Bronze.png" alt="Bronze tier 이미지">
+          <div class="tier-card-body">
+            <h3>Bronze</h3>
+            <span class="tier-range">0 ~ 999p</span>
+            <p>IP 설정, 기본 토폴로지 구성 등 기초 실습을 통해 네트워크 감각을 익힙니다.</p>
+          </div>
+        </article>
+        <article class="tier-card tier-silver">
+          <img src="assets/Silver.png" alt="Silver tier 이미지">
+          <div class="tier-card-body">
+            <h3>Silver</h3>
+            <span class="tier-range">1000 ~ 2499p</span>
+            <p>스위칭과 라우팅 개념을 다지고, 트러블슈팅 과제를 해결하며 안정적인 구성을 연습합니다.</p>
+          </div>
+        </article>
+        <article class="tier-card tier-gold">
+          <img src="assets/Gold.png" alt="Gold tier 이미지">
+          <div class="tier-card-body">
+            <h3>Gold</h3>
+            <span class="tier-range">2500 ~ 3999p</span>
+            <p>VLAN, STP, DHCP 등 엔터프라이즈 환경에서 쓰이는 기능들을 실습하고 자동화 아이디어를 시도합니다.</p>
+          </div>
+        </article>
+        <article class="tier-card tier-emerald">
+          <img src="assets/Emerald.png" alt="Platinum tier 이미지">
+          <div class="tier-card-body">
+            <h3>Platinum</h3>
+            <span class="tier-range">4000 ~ 5999p</span>
+            <p>복합 시나리오에서 서비스 품질을 유지하고, 다양한 장애 상황을 재현해 빠르게 복구하는 능력을 키웁니다.</p>
+          </div>
+        </article>
+        <article class="tier-card tier-diamond">
+          <img src="assets/Diamond.png" alt="Diamond tier 이미지">
+          <div class="tier-card-body">
+            <h3>Diamond</h3>
+            <span class="tier-range">6000 ~ 8999p</span>
+            <p>고급 라우팅, 보안 정책, 멀티사이트 연결을 설계하며 팀 단위 운영을 위한 전략을 수립합니다.</p>
+          </div>
+        </article>
+        <article class="tier-card tier-ruby">
+          <img src="assets/Ruby.png" alt="Ruby tier 이미지">
+          <div class="tier-card-body">
+            <h3>Ruby</h3>
+            <span class="tier-range">9000p 이상</span>
+            <p>실제 운영 환경을 모사한 미션을 완수하고, 새로운 문제를 제안하며 커뮤니티의 멘토로 활약하세요.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="workflow-section">
+      <div class="workflow-content">
+        <div class="section-head">
+          <h2>플래그 기반 자동 채점</h2>
+          <p>.pka 파일에서 플래그를 찾아 제출하면, NetLab 서버가 즉시 검증하고 결과를 반영합니다. 반복 학습으로 실무 감각을 빠르게 길러보세요.</p>
+        </div>
+        <div class="workflow-steps">
+          <div class="workflow-step">
+            <div class="step-number">1</div>
+            <h3>.pka 파일 실행</h3>
+            <p>실습 가이드를 따라 장비를 구성하고 숨겨진 플래그를 찾아보세요.</p>
+          </div>
+          <div class="workflow-step">
+            <div class="step-number">2</div>
+            <h3>플래그 제출</h3>
+            <p>획득한 플래그를 문제 페이지에 입력하면 서버가 즉시 검증합니다.</p>
+          </div>
+          <div class="workflow-step">
+            <div class="step-number">3</div>
+            <h3>자동 채점 &amp; 티어 상승</h3>
+            <p>정답이면 티어 포인트와 통계가 업데이트되고, 커뮤니티에서 해결 전략을 공유할 수 있습니다.</p>
+          </div>
+        </div>
+        <ul class="workflow-benefits">
+          <li>자동 채점으로 결과를 기다릴 필요가 없습니다.</li>
+          <li>실습 기록과 티어 포인트가 한눈에 정리됩니다.</li>
+          <li>커뮤니티와 함께 문제를 분석하며 실력을 더 빠르게 올려보세요.</li>
+        </ul>
+      </div>
+      <div class="workflow-preview">
+        <div class="problem-preview">
+          <div class="preview-header">
+            <h3>문제 목록</h3>
+            <p>연습하고 싶은 문제를 골라보세요. 난이도 배지 색으로 빠르게 구분할 수 있어요.</p>
+          </div>
+          <div class="preview-search">
+            <div class="search-bar">제목 또는 태그로 검색</div>
+            <div class="difficulty-filter">전체 난이도</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-card-top">
+              <div class="preview-title-block">
+                <span class="preview-id">ID: 1</span>
+                <span class="preview-title">IP 설정 문제</span>
+              </div>
+              <span class="preview-badge">HARD</span>
+            </div>
+            <p class="preview-desc">
+              PC 2대에 각각 IP 주소를 설정하세요. PC1은 192.168.1.2, PC2는 192.168.1.3이어야 합니다.
+            </p>
+            <div class="preview-tags">
+              <span class="tag">ip</span>
+              <span class="tag">pc</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </body>
 </html>
