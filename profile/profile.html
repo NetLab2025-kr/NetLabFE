@@ -8,6 +8,8 @@
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <link rel="stylesheet" href="../assets/css/profile.css">
   <script src="../PUBLIC/JS/navbarAndToken.js"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -47,7 +49,7 @@
             <div class="stat-label">티어</div>
             <div class="inliner">
               <div class="stat-value" id="tier-name">1,250</div>
-              
+
               <img src="../assets/Diamond.png" alt="tier_image" id="tier-image">
             </div>
           </div>
@@ -89,8 +91,9 @@
         </div>
 
         <div style="margin-top: 20px;">
-          <button class="btn btn-secondary" style="width: 100%;" id="edit-btn" onclick="alert('준비 중입니다')" >프로필 수정</button>
-        </div> 
+          <button class="btn btn-secondary" style="width: 100%;" id="edit-btn" onclick="alert('준비 중입니다')">프로필
+            수정</button>
+        </div>
       </div>
     </div>
 
@@ -104,12 +107,12 @@
   <script>
     import tier_points from '../tier_config.js ';
 
-    function get_solved(array){
+    function get_solved(array) {
       const total = array.length;
       let solved = 0;
 
       array.forEach(element => {
-        if (element.isCorrect){
+        if (element.isCorrect) {
           solved++;
         }
       });
@@ -150,19 +153,19 @@
       info_tiername.textContent = info.tier;
 
       const info_tierremain = document.getElementById("info-tierremain");
-      const current_newtier_start = tier_points[info.tier].end+1;
-      info_tiername.textContent = `${current_newtier_start-info.tierPoint}p`;
+      const current_newtier_start = tier_points[info.tier].end + 1;
+      info_tiername.textContent = `${current_newtier_start - info.tierPoint}p`;
 
       const total_solved = document.getElementById("total-solved");
       total_solved.textContent = `${solved_cnt}/${info.submissions.length}`;
-      
+
       const user_intro = document.getElementById("user-intro");
       user_intro.textContent = info.intro;
 
       const activity_list = document.getElementById("activity-list");
       const activity_template = document.getElementById("activity-item-temp");
-      info.submissions.forEach(element=>{
-        const clone_node = document.importNode(activity_template.content,true);
+      info.submissions.forEach(element => {
+        const clone_node = document.importNode(activity_template.content, true);
         clone_node.getElementById("activity-title").textContent = `${element.problemTitle} 해결`;
         clone_node.getElementById("activity-date").textContent = element.submittedAt;
         activity_list.appendChild(clone_node);
