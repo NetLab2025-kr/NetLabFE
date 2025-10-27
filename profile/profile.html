@@ -174,13 +174,12 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      const API_URL = window.API_BASE_URL + '/mypage';
       const at = localStorage.getItem('token');
       const headers = at ? { 'Authorization': 'Bearer ' + at } : {};
 
       // 유저 정보 로드
       $.ajax({
-        url: API_URL,
+        url:  window.API_BASE_URL + "/mypage",
         method: 'GET',
         headers: headers,
         success: function (res) {
