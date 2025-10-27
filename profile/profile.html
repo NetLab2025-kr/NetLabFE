@@ -132,10 +132,14 @@
 
       // 티어 이미지
       const tier_image = document.getElementById("tier-image");
-      if (tier_points[info.tier]) {
-        tier_image.src = tier_points[info.tier].image;
-      }
-      else {
+      const tier_data = tier_points[info.tier];
+      tier_image.classList.remove('top-tier-badge');
+      if (tier_data) {
+        tier_image.src = tier_data.image;
+        if (!Number.isFinite(tier_data.end)) {
+          tier_image.classList.add('top-tier-badge');
+        }
+      } else {
         tier_image.src = '';
       }
 
@@ -160,11 +164,25 @@
 
       // 티어 정보 카드
       document.getElementById("info-username").textContent = info.name;
-      document.getElementById("info-tiername").textContent = info.tier;
+      document.getElementById("info-tiername").textContent = info.tier || 'Unrank';
 
-      if (tier_points[info.tier]) {
-        const current_newtier_start = tier_points[info.tier].end + 1;
-        document.getElementById("info-tierremain").textContent = `${current_newtier_start - info.tierPoint}p`;
+      const tier_remain_el = document.getElementById("info-tierremain");
+      const tier_point_value = Number(info.tierPoint);
+      const has_numeric_tier_point = Number.isFinite(tier_point_value);
+      tier_remain_el.classList.remove('top-tier-flag');
+      if (tier_data) {
+        if (Number.isFinite(tier_data.end)) {
+          const current_newtier_start = tier_data.end + 1;
+          const remain = has_numeric_tier_point
+            ? Math.max(current_newtier_start - tier_point_value, 0)
+            : current_newtier_start;
+          tier_remain_el.textContent = `${remain}p`;
+        } else {
+          tier_remain_el.textContent = 'Top Rank';
+          tier_remain_el.classList.add('top-tier-flag');
+        }
+      } else {
+        tier_remain_el.textContent = '-';
       }
 
       // 추가 정보
