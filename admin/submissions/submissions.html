@@ -62,17 +62,46 @@
             const list = $('#submissionList');
             list.empty();
             res.forEach(s => {
-              list.append(`
-                <li>
-                  <div><span>사용자</span>: ${s.user}</div>
-                  <div><span>문제 이름</span>: ${s.problem.title}</div>
-                  <div><span>문제 난이도</span>: ${s.problem.difficulty}</div>
-                  <div><span>정답 플래그</span>: ${s.problem.flag}</div>
-                  <div><span>제출한 답</span>: ${s.submittedAnswer}</div>
-                  <div><span>정답 여부</span>: ${s.isCorrect}</div>
-                  <div><span>제출 시각</span>: ${s.submittedAt}</div>
-                  <div><span>제출 시각</span>: ${s.submittedAt}</div>
+              const difficulty = (s.problem.difficulty || '미정').toString();
+              const difficultyClass = 'difficulty-' + difficulty.toLowerCase().replace(/\s+/g, '-');
+              const submittedAt = s.submittedAt
+                ? new Date(s.submittedAt).toLocaleString('ko-KR', { hour12: false })
+                : '-';
+              const statusLabel = s.isCorrect ? '정답' : '오답';
+              const statusClass = s.isCorrect ? 'badge-correct' : 'badge-wrong';
 
+              list.append(`
+                <li class="submission-card">
+                  <div class="submission-card__header">
+                    <div class="submission-card__title">
+                      <h2>${s.problem.title}</h2>
+                      <span class="badge difficulty ${difficultyClass}">${difficulty}</span>
+                    </div>
+                    <span class="badge result ${statusClass}">${statusLabel}</span>
+                  </div>
+                  <div class="submission-card__meta">
+                    <div class="meta-item">
+                      <span class="label">사용자</span>
+                      <div class="value">
+                        ${s.user.name}
+                        <span class="subtle">(${s.user.userId})</span>
+                      </div>
+                    </div>
+                    <div class="meta-item">
+                      <span class="label">제출 시각</span>
+                      <div class="value">${submittedAt}</div>
+                    </div>
+                  </div>
+                  <div class="submission-card__body">
+                    <div class="info-row">
+                      <span class="label">제출 답</span>
+                      <div class="value code">${s.submittedAnswer}</div>
+                    </div>
+                    <div class="info-row">
+                      <span class="label">정답 플래그</span>
+                      <div class="value code">${s.problem.flag}</div>
+                    </div>
+                  </div>
                 </li>
               `);
             });
