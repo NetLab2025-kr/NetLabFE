@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <title>제출 내역</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="../../config.js"></script>
   <link rel="stylesheet" href="../admin_assets/css/submissions.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
 
 </head>
+
 <body>
   <div class="navbar">
     <div class="brand"><a href="/admin/index.html">← 관리자 홈</a></div>
@@ -61,9 +64,15 @@
             res.forEach(s => {
               list.append(`
                 <li>
-                  <div><span>사용자</span>: ${s.userId}</div>
-                  <div><span>문제 ID</span>: ${s.problemId}</div>
-                  <div><span>결과</span>: ${s.result}</div>
+                  <div><span>사용자</span>: ${s.user}</div>
+                  <div><span>문제 이름</span>: ${s.problem.title}</div>
+                  <div><span>문제 난이도</span>: ${s.problem.difficulty}</div>
+                  <div><span>정답 플래그</span>: ${s.problem.flag}</div>
+                  <div><span>제출한 답</span>: ${s.submittedAnswer}</div>
+                  <div><span>정답 여부</span>: ${s.isCorrect}</div>
+                  <div><span>제출 시각</span>: ${s.submittedAt}</div>
+                  <div><span>제출 시각</span>: ${s.submittedAt}</div>
+
                 </li>
               `);
             });
@@ -110,4 +119,5 @@
     });
   </script>
 </body>
+
 </html>
