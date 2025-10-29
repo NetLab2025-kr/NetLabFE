@@ -1,3 +1,17 @@
+(function bootstrapTheme() {
+  try {
+    const stored = localStorage.getItem('netlab-theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = (stored === 'dark' || stored === 'light')
+      ? stored
+      : (prefersDark ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark-mode', theme === 'dark');
+    document.documentElement.style.colorScheme = theme === 'dark' ? 'dark' : 'light';
+  } catch (err) {
+    console.warn('Theme bootstrap failed', err);
+  }
+})();
+
 // 전역 네임스페이스
 window.NetLab = (function () {
   const API = window.API_BASE_URL;
@@ -5,6 +19,106 @@ window.NetLab = (function () {
 
   const $nav  = () => $('#nav-links');
   const $user = () => $('#user-info');
+  const THEME_STORAGE_KEY = 'netlab-theme';
+
+  /* ---------- 테마 ---------- */
+  const prefersDark = () =>
+    window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  function getStoredTheme() {
+    try {
+      return localStorage.getItem(THEME_STORAGE_KEY);
+    } catch {
+      return null;
+    }
+  }
+
+  function resolveTheme(explicitTheme) {
+    if (explicitTheme === 'dark' || explicitTheme === 'light') {
+      return explicitTheme;
+    }
+    return prefersDark() ? 'dark' : 'light';
+  }
+
+  function applyTheme(theme) {
+    const resolved = resolveTheme(theme);
+    const isDark = resolved === 'dark';
+    const body = document.body;
+    if (body) body.classList.toggle('dark-mode', isDark);
+    document.documentElement.classList.toggle('dark-mode', isDark);
+    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+    updateThemeToggle(isDark);
+  }
+
+  function storeTheme(theme) {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch (err) {
+      console.warn('Unable to persist theme preference', err);
+    }
+  }
+
+  function toggleTheme() {
+    const current = resolveTheme(getStoredTheme());
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    storeTheme(next);
+  }
+
+  function updateThemeToggle(isDark) {
+    const $btn = $('#theme-toggle');
+    if (!$btn.length) return;
+    const label = isDark ? '라이트 모드로 전환' : '다크 모드로 전환';
+
+    $btn.attr({
+      'aria-label': label,
+      'title': label
+    });
+    $btn.toggleClass('is-dark', isDark);
+    $btn.find('.theme-toggle__icon').text(isDark ? '☀️' : '🌙');
+  }
+
+  function ensureThemeToggle() {
+    const $navbar = $('.navbar');
+    if (!$navbar.length) return;
+
+    if (!$('#theme-toggle').length) {
+      const $btn = $(`
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-live="polite">
+          <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+        </button>
+      `);
+      $btn.on('click', toggleTheme);
+
+      const $rightGroup = $navbar.find('.right-group');
+      if ($rightGroup.length) {
+        $rightGroup.append($btn);
+      } else {
+        $navbar.append($btn);
+      }
+    }
+    updateThemeToggle(resolveTheme(getStoredTheme()) === 'dark');
+  }
+
+  function initTheme() {
+    applyTheme(getStoredTheme());
+    ensureThemeToggle();
+
+    if (window.matchMedia) {
+      const mql = window.matchMedia('(prefers-color-scheme: dark)');
+      if (mql.addEventListener) {
+        mql.addEventListener('change', e => {
+          if (getStoredTheme()) return;
+          applyTheme(e.matches ? 'dark' : 'light');
+        });
+      } else if (mql.addListener) {
+        mql.addListener(e => {
+          if (getStoredTheme()) return;
+          applyTheme(e.matches ? 'dark' : 'light');
+        });
+      }
+    }
+  }
 
   /* ---------- UI ---------- */
   function renderGuest() {
@@ -15,6 +129,7 @@ window.NetLab = (function () {
       '<a href="/login/signUp.html">회원가입</a>'
     );
     $user().hide();
+    ensureThemeToggle();
   }
 
   function renderNav(isAdmin, name) {
@@ -25,6 +140,7 @@ window.NetLab = (function () {
     links += '<a href="#" id="logoutBtn">로그아웃</a>';
     $nav().html(links);
     if (name) { $user().html('<a href="/profile/profile.html" style="text-decoration: none;">' + name + '</a>').show() } else { $user().hide(); }
+    ensureThemeToggle();
   }
 
   /* ---------- 토큰 유틸 ---------- */
@@ -124,8 +240,13 @@ window.NetLab = (function () {
     });
   }
 
-  return { initNavbar };
+  return { initNavbar, initTheme };
 })();
 
 // DOM 준비되면 자동 실행
-$(function(){ NetLab.initNavbar(); });
+$(function(){
+  if (NetLab.initTheme) {
+    NetLab.initTheme();
+  }
+  NetLab.initNavbar();
+});

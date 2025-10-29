@@ -1,3 +1,77 @@
+:root {
+  color-scheme: light;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f6f9ff;
+  --color-border: rgba(61, 174, 250, 0.18);
+  --color-text-strong: #0f172a;
+  --color-text: #23272f;
+  --color-text-muted: #5c5c6b;
+  --color-primary: #3DAEFA;
+  --color-primary-contrast: #ffffff;
+  --navbar-bg: linear-gradient(135deg, #34b3ff, #3DAEFA 45%, #2b86ff);
+  --navbar-text: #ffffff;
+  --navbar-hover: rgba(255, 255, 255, 0.16);
+  --navbar-shadow: 0 6px 22px rgba(41, 125, 255, 0.18);
+  --control-bg: #ffffff;
+  --control-border: #dbeafe;
+}
+
+body.dark-mode {
+  color-scheme: dark;
+  --color-surface: rgba(15, 23, 42, 0.92);
+  --color-surface-muted: rgba(30, 41, 59, 0.7);
+  --color-border: rgba(148, 163, 184, 0.28);
+  --color-text-strong: #f8fafc;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-primary: #38bdf8;
+  --color-primary-contrast: #0b1120;
+  --navbar-bg: linear-gradient(135deg, #0b1120, #12233e 55%, #1f3b71);
+  --navbar-text: #e2e8f0;
+  --navbar-hover: rgba(148, 163, 184, 0.22);
+  --navbar-shadow: 0 12px 30px rgba(2, 6, 23, 0.45);
+  --control-bg: rgba(30, 41, 59, 0.68);
+  --control-border: rgba(148, 163, 184, 0.35);
+}
+
+html {
+  background: var(--color-surface-muted);
+}
+
+body {
+  color: var(--color-text);
+  transition: background-color 0.28s ease, color 0.28s ease;
+}
+
+body.dark-mode {
+  background: #0b1120;
+}
+
+body.dark-mode::selection {
+  background: rgba(56, 189, 248, 0.35);
+  color: #f8fafc;
+}
+
+input,
+textarea,
+select,
+button {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  background: var(--control-bg);
+  color: var(--color-text);
+  border-color: var(--control-border);
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
 /* ===== NAVBAR (Global) ===== */
 body.has-navbar {
   padding-top: 64px; /* 네비바 높이만큼 컨텐츠 내려앉게 */
@@ -9,10 +83,11 @@ body.has-navbar {
   height: 64px;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px;
-  background: linear-gradient(135deg, #34b3ff, #3DAEFA 45%, #2b86ff);
-  color: #fff;
+  gap: 14px;
+  background: var(--navbar-bg);
+  color: var(--navbar-text);
   z-index: 2100; /* 다른 고정요소보다 위 */
-  box-shadow: 0 6px 22px rgba(41,125,255,.18);
+  box-shadow: var(--navbar-shadow);
   -webkit-backdrop-filter: saturate(1.2) blur(4px);
   backdrop-filter: saturate(1.2) blur(4px);
 }
@@ -23,7 +98,7 @@ body.has-navbar {
   font-weight: 800;
   letter-spacing: .2px;
   text-decoration: none;
-  color: #fff;
+  color: var(--navbar-text);
   font-size: 18px;
 }
 
@@ -49,7 +124,7 @@ body.has-navbar {
 }
 
 #nav-links a {
-  color: #fff;
+  color: var(--navbar-text);
   text-decoration: none;
   margin-left: 18px;
   font-weight: 600;
@@ -61,7 +136,7 @@ body.has-navbar {
 }
 
 #nav-links a:hover {
-  background: rgba(255,255,255,.16);
+  background: var(--navbar-hover);
   transform: translateY(-1px);
 }
 
@@ -72,14 +147,14 @@ body.has-navbar {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #fff;
+  color: var(--navbar-text);
   font-weight: 700;
   opacity: .95;
   margin-left: 6px;
 }
 
 .user-info a {
-  color: #fff;
+  color: inherit;
   text-decoration: none;
   font-weight: inherit;
 }
@@ -88,7 +163,186 @@ body.has-navbar {
 .user-info a:focus,
 .user-info a:active,
 .user-info a:visited {
-  color: #fff;
+  color: inherit;
+}
+
+.theme-toggle {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: var(--navbar-text);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+
+.theme-toggle:active {
+  transform: scale(0.94);
+}
+
+body.dark-mode .theme-toggle {
+  border-color: rgba(148, 163, 184, 0.48);
+}
+
+body.dark-mode .theme-toggle:hover {
+  background: rgba(148, 163, 184, 0.2);
+}
+
+.theme-toggle__icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ===== DARK THEME OVERRIDES ===== */
+body.dark-mode #nav-links a:hover {
+  background: var(--navbar-hover);
+}
+
+body.dark-mode .navbar .brand,
+body.dark-mode .navbar .brand a,
+body.dark-mode .user-info {
+  color: var(--navbar-text);
+}
+
+body.dark-mode a {
+  color: #93c5fd;
+}
+
+body.dark-mode a:hover {
+  color: #bfdbfe;
+}
+
+body.dark-mode .container,
+body.dark-mode .profile-header,
+body.dark-mode .info-card,
+body.dark-mode .activity-list,
+body.dark-mode .submission-card,
+body.dark-mode .card,
+body.dark-mode .modal,
+body.dark-mode .table-wrapper {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  box-shadow: 0 18px 42px rgba(2, 6, 23, 0.42);
+}
+
+body.dark-mode .submission-card__body .info-row,
+body.dark-mode .submission-card__meta {
+  background-color: transparent;
+  border-color: var(--color-border);
+}
+
+body.dark-mode .profile-avatar {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.45) 0%, rgba(14, 165, 233, 0.6) 100%);
+  color: #f8fafc;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6,
+body.dark-mode strong,
+body.dark-mode .profile-name {
+  color: var(--color-text-strong);
+}
+
+body.dark-mode .profile-moto,
+body.dark-mode .info-label,
+body.dark-mode .activity-date,
+body.dark-mode .stat-label,
+body.dark-mode .meta-item .label,
+body.dark-mode .label {
+  color: var(--color-text-muted);
+}
+
+body.dark-mode .info-value,
+body.dark-mode .activity-title,
+body.dark-mode .stat-value,
+body.dark-mode .submission-card__title h2,
+body.dark-mode .meta-item .value,
+body.dark-mode .value {
+  color: var(--color-text);
+}
+
+body.dark-mode .activity-item {
+  background: var(--color-surface-muted);
+  border-color: rgba(148, 163, 184, 0.2);
+  box-shadow: none;
+}
+
+body.dark-mode .info-row {
+  border-color: rgba(148, 163, 184, 0.2);
+  background: transparent;
+}
+
+body.dark-mode .value.code {
+  color: #bfdbfe;
+}
+
+body.dark-mode .meta-item {
+  color: var(--color-text);
+}
+
+body.dark-mode .badge {
+  background: rgba(59, 130, 246, 0.24);
+  color: #bfdbfe;
+}
+
+body.dark-mode .badge-correct {
+  background: rgba(22, 163, 74, 0.28);
+  color: #bbf7d0;
+}
+
+body.dark-mode .badge-wrong {
+  background: rgba(220, 38, 38, 0.28);
+  color: #fecaca;
+}
+
+body.dark-mode .badge.difficulty-hard {
+  background: rgba(239, 68, 68, 0.28);
+  color: #fecaca;
+}
+
+body.dark-mode .badge.difficulty-medium {
+  background: rgba(234, 179, 8, 0.28);
+  color: #fef3c7;
+}
+
+body.dark-mode .badge.difficulty-easy {
+  background: rgba(16, 185, 129, 0.28);
+  color: #bbf7d0;
+}
+
+body.dark-mode .btn {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: transparent;
+}
+
+body.dark-mode .btn:hover {
+  background: #0ea5e9;
+}
+
+body.dark-mode .btn-secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+body.dark-mode .btn-secondary:hover {
+  background: rgba(56, 189, 248, 0.12);
 }
 
 /* 반응형: 공간 줄어들 때 닉네임 최대폭 축소 */
